@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @license GPL-3.0-or-later
  * Copyright (C) 2025 Caleb Gyamfi - Omnixys Technologies
@@ -15,22 +16,22 @@
  * For more information, visit <https://www.gnu.org/licenses/>.
  */
 
-import { LoggerPlusService } from '../logger/logger-plus.service.js';
 import {
   KafkaEvent,
   KafkaHandler,
-} from '../messaging/decorators/kafka-event.decorator.js';
+} from '../kafka/decorators/kafka-event.decorator.js';
 import {
   type KafkaEventContext,
   KafkaEventHandler,
-} from '../messaging/interface/kafka-event.interface.js';
-import { getTopic, getTopics } from '../messaging/kafka-topic.properties.js';
+} from '../kafka/interface/kafka-event.interface.js';
+import { getTopic, getTopics } from '../kafka/kafka-topic.properties.js';
+import { LoggerPlusService } from '../logger/logger-plus.service.js';
 import { AssignSeatDTO } from '../seat/models/dto/assign-seat.input.js';
 import { SeatWriteService } from '../seat/services/seat-write.service.js';
 import { Injectable } from '@nestjs/common';
 
 /**
- * Kafka event handler responsible for useristrative commands such as
+ * Kafka e vent handler responsible for useristrative commands such as
  * shutdown and restart. It listens for specific user-related topics
  * and delegates the actual process control logic to the {@link UserService}.
  *
@@ -43,7 +44,7 @@ export class TicketHandler implements KafkaEventHandler {
   private readonly logger;
 
   /**
-   * Creates a new instance of {@link UserHandler}.
+   * Creat es a new instance of {@link UserHandler}.
    *
    * @param loggerService - The central logger service used for structured logging.
    * @param userService - The service responsible for handling system-level user operations.
@@ -56,7 +57,7 @@ export class TicketHandler implements KafkaEventHandler {
   }
 
   /**
-   * Handles incoming Kafka user events and executes the appropriate useristrative command.
+   * Handl es incoming Kafka user events and executes the appropriate useristrative command.
    *
    * @param topic - The Kafka topic representing the user command (e.g. shutdown, restart).
    * @param data - The payload associated with the Kafka message.
@@ -67,7 +68,7 @@ export class TicketHandler implements KafkaEventHandler {
   @KafkaEvent(...getTopics('addGuest'))
   async handle(
     topic: string,
-    // TODO DTO implementieren
+    // TODO DTO im plementieren
     data: any,
     context: KafkaEventContext,
   ): Promise<void> {

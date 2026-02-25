@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ShapeType } from '../enums/shape.enum.js';
 import { Field, InputType, Int } from '@nestjs/graphql';
 

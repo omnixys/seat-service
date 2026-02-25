@@ -19,10 +19,10 @@ import { AdminModule } from './admin/admin.module.js';
 import { env } from './config/env.js';
 import { HandlerModule } from './handlers/handler.module.js';
 import { HealthModule } from './health/health.module.js';
+import { KafkaModule } from './kafka/kafka.module.js';
 import { LayoutModule } from './layout/layout.module.js';
 import { LoggerModule } from './logger/logger.module.js';
 import { RequestLoggerMiddleware } from './logger/request-logger.middleware.js';
-import { KafkaModule } from './messaging/kafka.module.js';
 import { SeatModule } from './seat/seat.module.js';
 import { SectionModule } from './section/section.module.js';
 import { TableModule } from './table/table.module.js';
@@ -30,7 +30,7 @@ import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/ap
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 const { SCHEMA_TARGET } = env;
 

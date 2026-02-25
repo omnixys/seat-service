@@ -40,7 +40,7 @@ export class RoleGuard implements CanActivate {
     const roles = event.roles ?? [];
     const allowed = requiredRoles.some((r) => roles.includes(r));
 
-    console.log({ event, roles, requiredRoles });
+    console.debug({ event, roles, requiredRoles });
 
     if (!allowed) {
       throw new ForbiddenException('Insufficient permissions');

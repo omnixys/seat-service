@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { Table } from '../../../prisma/generated/client.js';
+import type { Table } from '../../../prisma/generated/client.js';
 import type { ShapeOptions } from './type.js';
 
 export const uShape = (

@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ShapeOptions } from '../layout/utils/shape/type.js';
+import type { ShapeOptions } from '../layout/utils/shape/type.js';
 import type { Prisma } from '../prisma/generated/client.js';
 
 /**

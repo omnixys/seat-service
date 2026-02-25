@@ -1,4 +1,4 @@
-import { SeatingConfigInput } from '../inputs/seating-config.input.js';
+import type { SeatingConfigInput } from '../inputs/seating-config.input.js';
 
 export interface AutoGenerateLayoutDTO {
   eventId: string;

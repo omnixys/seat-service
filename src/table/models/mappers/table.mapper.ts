@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { Table } from '../../../prisma/generated/client.js';
 import { n2u } from '../../../utils/null-to-undefined.js';
 import type { TablePayload } from '../payloads/table.payload.js';

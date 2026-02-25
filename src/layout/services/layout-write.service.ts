@@ -22,7 +22,7 @@ import {
 } from '../models/inputs/move-seat.input.js';
 import { SaveLayoutVersionInput } from '../models/inputs/save-layout-version.input.js';
 
-import { KafkaProducerService } from '../../messaging/kafka-producer.service.js';
+import { KafkaProducerService } from '../../kafka/kafka-producer.service.js';
 import { LayoutVersion } from '../../prisma/generated/client.js';
 import { SeatStatus } from '../../seat/models/enums/seat-status.enum.js';
 import { withSpan } from '../../trace/utils/span.utils.js';
@@ -31,7 +31,7 @@ import { LayoutVersionMapper } from '../models/mappers/layout-version.mapper.js'
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
 import { GeometryEngine } from '../utils/geometry-engine.js';
 
-import { SnapshotSerializer, SeatSnapshot } from '../utils/snapshot-serializer.js';
+import { SeatSnapshot, SnapshotSerializer } from '../utils/snapshot-serializer.js';
 
 import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';

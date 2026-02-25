@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { Section } from '../../../prisma/generated/client.js';
 import { n2u } from '../../../utils/null-to-undefined.js';
 import type { SectionPayload } from '../payloads/section.payload.js';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import type { LayoutVersion } from '../../../prisma/generated/client.js';
 import type { LayoutVersionPayload } from '../payloads/layout-version.payload.js';
 

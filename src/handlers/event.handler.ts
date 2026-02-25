@@ -15,18 +15,18 @@
  * For more information, visit <https://www.gnu.org/licenses/>.
  */
 
-import { AutoGenerateLayoutDTO } from '../layout/models/dto/auto-generate.dto.js';
-import { LayoutWriteService } from '../layout/services/layout-write.service.js';
-import { LoggerPlusService } from '../logger/logger-plus.service.js';
 import {
   KafkaEvent,
   KafkaHandler,
-} from '../messaging/decorators/kafka-event.decorator.js';
+} from '../kafka/decorators/kafka-event.decorator.js';
 import {
   type KafkaEventContext,
   KafkaEventHandler,
-} from '../messaging/interface/kafka-event.interface.js';
-import { getTopic, getTopics } from '../messaging/kafka-topic.properties.js';
+} from '../kafka/interface/kafka-event.interface.js';
+import { getTopic, getTopics } from '../kafka/kafka-topic.properties.js';
+import { AutoGenerateLayoutDTO } from '../layout/models/dto/auto-generate.dto.js';
+import { LayoutWriteService } from '../layout/services/layout-write.service.js';
+import { LoggerPlusService } from '../logger/logger-plus.service.js';
 import { Injectable } from '@nestjs/common';
 
 /**

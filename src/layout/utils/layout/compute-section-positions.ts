@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // src/seat/utils/layout/compute-section-positions.ts
 
 export function computeSectionPositions(sections: number, opts: any = {}) {
