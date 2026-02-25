@@ -15,7 +15,7 @@ jobs:
       - name: Ensure repo default service label
         uses: actions/github-script@v8
         env:
-          SERVICE: ${{ secrets.SERVICE }}
+          SERVICE: ${{ vars.SERVICE }}
         with:
           script: |
             const service = process.env.SERVICE;

@@ -57,7 +57,7 @@ env:
   KC_CLIENT_SECRET: ${{ secrets.KC_CLIENT_SECRET }}
 
   KEYS_PATH: ${{ secrets.KEYS_PATH }}
-  SERVICE: ${{ secrets.SERVICE }}
+  SERVICE: ${{ vars.SERVICE }}
   PORT: ${{ secrets.PORT }}
   GRAPHQL_PLAYGROUND: ${{ secrets.GRAPHQL_PLAYGROUND }}
   NODE_ENV: ${{ secrets.NODE_ENV }}
