@@ -2,6 +2,10 @@
 
 All notable changes in this project will be documented in this file.
 
+## <small>1.0.3 (2026-02-26)</small>
+
+- fix(release-ci): add @semantic-release/npm ([123b139c5b25e97afbe218fd7e91487f5503ccb7](https://github.com/omnixys/omnixys-seat-service/commit/123b139c5b25e97afbe218fd7e91487f5503ccb7))
+
 ## <small>1.0.2 (2026-02-26)</small>
 
 - fix(release-ci): fix Release CI Job ([2a3cc0d4e7a92b583c28b9ef603cb25452947062](https://github.com/omnixys/omnixys-seat-service/commit/2a3cc0d4e7a92b583c28b9ef603cb25452947062))
