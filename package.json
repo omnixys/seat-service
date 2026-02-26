@@ -119,6 +119,7 @@
     "@nestjs/cli": "^11.0.14",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.10",
+    "@semantic-release/npm": "^13.1.4",
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.15.7",
     "@tsconfig/node23": "^23.0.4",
