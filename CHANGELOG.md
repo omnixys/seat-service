@@ -2,6 +2,10 @@
 
 All notable changes in this project will be documented in this file.
 
+## <small>1.0.2 (2026-02-26)</small>
+
+- fix(release-ci): fix Release CI Job ([2a3cc0d4e7a92b583c28b9ef603cb25452947062](https://github.com/omnixys/omnixys-seat-service/commit/2a3cc0d4e7a92b583c28b9ef603cb25452947062))
+
 ## <small>1.0.1 (2026-02-25)</small>
 
 - fix(ci): change serets.SERVICE to vars.SERVICE ([71401d8f14142f394521e21223e0357a9fb28a95](https://github.com/omnixys/omnixys-seat-service/commit/71401d8f14142f394521e21223e0357a9fb28a95))
