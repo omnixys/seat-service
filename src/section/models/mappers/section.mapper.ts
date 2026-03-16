@@ -7,11 +7,20 @@ export class SectionMapper {
     return {
       id: section.id,
       eventId: section.eventId,
+
       name: section.name,
       order: section.order,
       capacity: n2u(section.capacity),
+
+      shape: section.shape,
+
       x: section.x,
       y: section.y,
+
+      width: n2u(section.width),
+      height: n2u(section.height),
+      rotation: n2u(section.rotation),
+
       meta: section.meta,
       createdAt: section.createdAt,
       updatedAt: section.updatedAt,

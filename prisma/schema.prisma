@@ -11,7 +11,7 @@
 ///
 /// THIS SERVICE DOES NOT OWN:
 /// - Event information
-///   → eventId is a foreign reference by ID only (no FK relationship)
+///   → eventId is a foreign reference by ID only
 /// ----------------------------------------------------------------------
 
 generator client {
@@ -25,19 +25,17 @@ datasource db {
 }
 
 //
-// ─────────────────────────────────────────────────────────────
 // SECTION
-// Represents logical areas such as VIP, Germany, Family, Main Floor
-// ─────────────────────────────────────────────────────────────
 //
 
 model Section {
-  id      String @id @default(cuid()) @map("id")
+  id      String @id @default(cuid())
   eventId String @map("event_id")
 
-  name     String @map("name")
-  order    Int    @map("order")
-  capacity Int?   @map("capacity")
+  name  String
+  order Int
+
+  capacity Int?
 
   shape SectionShape @default(RECTANGLE)
 
@@ -47,11 +45,12 @@ model Section {
   width  Float?
   height Float?
 
+  rotation Float? @default(0)
+
+  meta Json?
+
   tables Table[]
   seats  Seat[]
-
-  rotation Float? @default(0)
-  meta     Json? // optional layout config
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -63,21 +62,18 @@ model Section {
 }
 
 //
-// ─────────────────────────────────────────────────────────────
 // TABLE
-// Round table, row table, sector area, etc.
-// ─────────────────────────────────────────────────────────────
 //
 
 model Table {
-  id        String @id @default(cuid()) @map("id")
+  id        String @id @default(cuid())
   eventId   String @map("event_id")
   sectionId String @map("section_id")
 
-  name  String @map("name") // e.g. "1", "A", "Tisch 7"
-  order Int    @map("order")
+  name  String
+  order Int
 
-  capacity Int? @map("capacity")
+  capacity Int?
 
   shape TableShape @default(ROUND)
 
@@ -98,45 +94,48 @@ model Table {
   @@unique([sectionId, name])
   @@index([eventId])
   @@index([sectionId])
+  @@index([eventId, sectionId])
   @@map("table")
   @@schema("seat")
 }
 
 //
-// ─────────────────────────────────────────────────────────────
 // SEAT
-// Stores position, seatType, label, assigned guest, geometry
-// ─────────────────────────────────────────────────────────────
 //
 
 model Seat {
-  id     String     @id @default(cuid()) @map("id")
+  id     String     @id @default(cuid())
   status SeatStatus @default(AVAILABLE)
 
   eventId   String  @map("event_id")
   sectionId String  @map("section_id")
   tableId   String? @map("table_id")
 
-  number Int?    @map("number")
-  label  String? @map("label")
-  note   String? @map("note")
+  number Int?
+  label  String?
+  note   String?
 
-  seatType String? @map("seat_type") // VIP, Standard, Staff, Standing, etc.
+  seatType SeatType?
 
   shape SeatShape @default(CIRCLE)
 
-  x Float? @map("x")
-  y Float? @map("y")
+  x Float?
+  y Float?
 
   width  Float?
   height Float?
   radius Float?
 
-  rotation Float? @map("rotation")
+  rotation Float?
 
-  guestId      String? @map("guest_id") // stored as ID only (from Invitation/User service)
+  zIndex Int?    @default(0)
+  locked Boolean @default(false)
+  hidden Boolean @default(false)
+
+  guestId      String? @map("guest_id")
   invitationId String? @map("invitation_id")
-  meta         Json    @map("meta")
+
+  meta Json?
 
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   table   Table?  @relation(fields: [tableId], references: [id], onDelete: Cascade)
@@ -147,29 +146,29 @@ model Seat {
   @@unique([eventId, invitationId])
   @@unique([eventId, guestId])
   @@index([eventId])
-  @@index([guestId])
   @@index([sectionId])
   @@index([tableId])
+  @@index([guestId])
+  @@index([eventId, sectionId])
+  @@index([eventId, tableId])
   @@map("seat")
   @@schema("seat")
 }
 
 //
-// ─────────────────────────────────────────────────────────────
-// SEAT ASSIGNMENT LOG (historical tracking)
-// OPTIONAL but very useful for security & audit
-// ─────────────────────────────────────────────────────────────
+// SEAT ASSIGNMENT HISTORY
 //
 
 model SeatAssignmentLog {
-  id           String  @id @default(cuid()) @map("id")
+  id           String  @id @default(cuid())
   eventId      String  @map("event_id")
   seatId       String  @map("seat_id")
   guestId      String? @map("guest_id")
   invitationId String? @map("invitation_id")
 
-  action String @map("action") // "ASSIGNED", "UNASSIGNED", "MOVED"
-  data   Json?  @map("data")
+  action SeatAssignmentAction
+
+  data Json?
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -180,21 +179,19 @@ model SeatAssignmentLog {
 }
 
 //
-// ─────────────────────────────────────────────────────────────
-// LAYOUT VERSIONING (optional but recommended)
-// Allows saving snapshots: v1, v2, v3 → Undo/Redo, drafts, publishing
-// ─────────────────────────────────────────────────────────────
+// LAYOUT VERSION SNAPSHOT
 //
 
 model LayoutVersion {
-  id      String @id @default(cuid()) @map("id")
+  id      String @id @default(cuid())
   eventId String @map("event_id")
 
-  version BigInt  @map("version")
-  label   String? @map("label")
-  data    Json    @map("data") // full seating JSON snapshot
+  version BigInt
+  label   String?
 
-  patch        Json? @map("patch")
+  data Json
+
+  patch        Json?
   inversePatch Json? @map("inverse_patch")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -206,19 +203,18 @@ model LayoutVersion {
 }
 
 //
-// ─────────────────────────────────────────────────────────────
-// LAYOUT CHANGE LOG (incremental diff logs)
-// Perfect for CRDT-like syncing in the future
-// ─────────────────────────────────────────────────────────────
+// LAYOUT CHANGE LOG
 //
 
 model LayoutChangeLog {
-  id      String @id @default(cuid()) @map("id")
+  id      String @id @default(cuid())
   eventId String @map("event_id")
 
   actorId String @map("actor_id")
-  type    String @map("type") // "SEAT_MOVE", "SECTION_UPDATE", "TABLE_CREATE"...
-  payload Json   @map("payload")
+
+  type LayoutChangeType
+
+  payload Json
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -226,6 +222,10 @@ model LayoutChangeLog {
   @@map("layout_change_log")
   @@schema("seat")
 }
+
+//
+// ENUMS
+//
 
 enum SeatStatus {
   AVAILABLE
@@ -284,17 +284,28 @@ enum LayoutChangeType {
   SECTION_CREATE
   SECTION_UPDATE
   SECTION_DELETE
+  SECTION_MOVED
+  SECTION_RENAME
+  SECTION_CLONED
 
   TABLE_CREATE
   TABLE_UPDATE
   TABLE_DELETE
+  TABLE_MOVED
+  TABLE_RENAME
+  TABLE_DUPLICATED
 
   SEAT_CREATE
   SEAT_UPDATE
   SEAT_DELETE
+  SEAT_ASSIGNED
+  SEAT_UNASSIGNED
 
-  SEAT_MOVE
+  SEAT_MOVED
   SEAT_ASSIGN
+
+  AUTO_GENERATE_GEOMETRY_V4
+  LAYOUT_VERSION_SAVED
 
   @@schema("seat")
 }

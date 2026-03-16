@@ -1,4 +1,13 @@
 import { ScalarsModule } from '../core/scalars/scalar.module.js';
+import {
+  LayoutChangeType,
+  SeatAssignmentAction,
+  SeatShape,
+  SeatStatus,
+  SeatType,
+  SectionShape,
+  TableShape,
+} from '../prisma/generated/client.js';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { LayoutChangeLogMapper } from './models/mappers/layout-change-log.mapper.js';
 import { LayoutVersionMapper } from './models/mappers/layout-version.mapper.js';
@@ -9,7 +18,36 @@ import { LayoutVersionFieldsResolver } from './resolvers/layout-version-fields.r
 import { LayoutReadService } from './services/layout-read.service.js';
 import { LayoutWriteService } from './services/layout-write.service.js';
 import { Module } from '@nestjs/common';
+import { registerEnumType } from '@nestjs/graphql';
 import { AuthModule } from '@omnixys/auth';
+
+registerEnumType(SectionShape, {
+  name: 'SectionShape',
+});
+
+registerEnumType(TableShape, {
+  name: 'TableShape',
+});
+
+registerEnumType(SeatShape, {
+  name: 'SeatShape',
+});
+
+registerEnumType(SeatStatus, {
+  name: 'SeatStatus',
+});
+
+registerEnumType(SeatType, {
+  name: 'SeatType',
+});
+
+registerEnumType(SeatAssignmentAction, {
+  name: 'SeatAssignmentAction',
+});
+
+registerEnumType(LayoutChangeType, {
+  name: 'LayoutChangeType',
+});
 
 @Module({
   imports: [PrismaModule, AuthModule, ScalarsModule],

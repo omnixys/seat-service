@@ -14,12 +14,18 @@
  *
  * For more information, visit <https://www.gnu.org/licenses/>.
  */
-
 import { env } from '../config/env.js';
-import { KafkaTopics } from '../kafka/kafka-topic.properties.js';
-import type { TraceContext } from '../trace/trace-context.util.js';
 import { getLogger } from './get-logger.js';
 import { getGlobalKafkaProducer } from './logger-plus.service.js';
+import type {
+  LogEventDTO,
+  TraceContext,
+  LogEventDTO,
+  TraceContext,
+} from '@omnixys/contracts';
+import { LogLevel } from '@omnixys/contracts';
+import { LogLevel } from '@omnixys/contracts';
+import { KafkaTopics } from '@omnixys/kafka';
 import {
   context,
   SpanKind,
@@ -29,24 +35,6 @@ import {
   type Tracer,
 } from '@opentelemetry/api';
 import { format } from 'util';
-
-export const LogLevel = {
-  TRACE: 'TRACE',
-  DEBUG: 'DEBUG',
-  INFO: 'INFO',
-  WARN: 'WARN',
-  ERROR: 'ERROR',
-} as const;
-export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
-
-export interface LogEventDTO {
-  level: LogLevel;
-  message: string;
-  service: string;
-  context: string;
-  traceContext?: TraceContext;
-  timestamp: string;
-}
 
 function normalizeForLogging(arg: unknown): unknown {
   if (arg && typeof arg === 'object') {
@@ -125,13 +113,14 @@ export class LoggerPlus {
             };
 
             // Fire-and-Forget: blockiert nicht
-            void producer.send(KafkaTopics.logstream.log, {
-              event: 'log',
-              service: this.serviceName,
-              version: 'v1',
-              trace: traceCtx,
-              payload: logPayload,
-            });
+            void producer.send<typeof KafkaTopics.logstream.seat>(
+              KafkaTopics.logstream.seat,
+
+              logPayload,
+
+              this.serviceName,
+              traceCtx,
+            );
           }
           span.setStatus({ code: SpanStatusCode.OK });
         } catch (err) {

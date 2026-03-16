@@ -8,12 +8,19 @@ export class TableMapper {
       id: table.id,
       eventId: table.eventId,
       sectionId: table.sectionId,
+
       name: table.name,
       order: table.order,
       capacity: n2u(table.capacity),
+
+      shape: table.shape,
+
       x: table.x,
       y: table.y,
+
+      rotation: n2u(table.rotation),
       meta: table.meta,
+
       createdAt: table.createdAt,
       updatedAt: table.updatedAt,
     };

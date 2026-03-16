@@ -11,7 +11,7 @@
 
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
 import { LoggerPlusService } from '../../logger/logger-plus.service.js';
-import { SeatStatus } from '../../prisma/generated/client.js';
+import { LayoutChangeType, SeatStatus } from '../../prisma/generated/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
 import { AssignSeatDTO } from '../models/dto/assign-seat.input.js';
@@ -238,7 +238,7 @@ export class SeatWriteService {
       await this.layoutWriteService.logChange({
         eventId: seat.eventId,
         actorId,
-        type: hasAssignment ? 'SEAT_ASSIGNED' : 'SEAT_UNASSIGNED',
+        type: hasAssignment ? LayoutChangeType.SEAT_ASSIGNED : LayoutChangeType.SEAT_UNASSIGNED,
         payload: input,
       });
 

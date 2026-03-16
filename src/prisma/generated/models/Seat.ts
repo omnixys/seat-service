@@ -33,6 +33,7 @@ export type SeatAvgAggregateOutputType = {
   height: number | null
   radius: number | null
   rotation: number | null
+  zIndex: number | null
 }
 
 export type SeatSumAggregateOutputType = {
@@ -43,6 +44,7 @@ export type SeatSumAggregateOutputType = {
   height: number | null
   radius: number | null
   rotation: number | null
+  zIndex: number | null
 }
 
 export type SeatMinAggregateOutputType = {
@@ -54,7 +56,7 @@ export type SeatMinAggregateOutputType = {
   number: number | null
   label: string | null
   note: string | null
-  seatType: string | null
+  seatType: $Enums.SeatType | null
   shape: $Enums.SeatShape | null
   x: number | null
   y: number | null
@@ -62,6 +64,9 @@ export type SeatMinAggregateOutputType = {
   height: number | null
   radius: number | null
   rotation: number | null
+  zIndex: number | null
+  locked: boolean | null
+  hidden: boolean | null
   guestId: string | null
   invitationId: string | null
   createdAt: Date | null
@@ -77,7 +82,7 @@ export type SeatMaxAggregateOutputType = {
   number: number | null
   label: string | null
   note: string | null
-  seatType: string | null
+  seatType: $Enums.SeatType | null
   shape: $Enums.SeatShape | null
   x: number | null
   y: number | null
@@ -85,6 +90,9 @@ export type SeatMaxAggregateOutputType = {
   height: number | null
   radius: number | null
   rotation: number | null
+  zIndex: number | null
+  locked: boolean | null
+  hidden: boolean | null
   guestId: string | null
   invitationId: string | null
   createdAt: Date | null
@@ -108,6 +116,9 @@ export type SeatCountAggregateOutputType = {
   height: number
   radius: number
   rotation: number
+  zIndex: number
+  locked: number
+  hidden: number
   guestId: number
   invitationId: number
   meta: number
@@ -125,6 +136,7 @@ export type SeatAvgAggregateInputType = {
   height?: true
   radius?: true
   rotation?: true
+  zIndex?: true
 }
 
 export type SeatSumAggregateInputType = {
@@ -135,6 +147,7 @@ export type SeatSumAggregateInputType = {
   height?: true
   radius?: true
   rotation?: true
+  zIndex?: true
 }
 
 export type SeatMinAggregateInputType = {
@@ -154,6 +167,9 @@ export type SeatMinAggregateInputType = {
   height?: true
   radius?: true
   rotation?: true
+  zIndex?: true
+  locked?: true
+  hidden?: true
   guestId?: true
   invitationId?: true
   createdAt?: true
@@ -177,6 +193,9 @@ export type SeatMaxAggregateInputType = {
   height?: true
   radius?: true
   rotation?: true
+  zIndex?: true
+  locked?: true
+  hidden?: true
   guestId?: true
   invitationId?: true
   createdAt?: true
@@ -200,6 +219,9 @@ export type SeatCountAggregateInputType = {
   height?: true
   radius?: true
   rotation?: true
+  zIndex?: true
+  locked?: true
+  hidden?: true
   guestId?: true
   invitationId?: true
   meta?: true
@@ -303,7 +325,7 @@ export type SeatGroupByOutputType = {
   number: number | null
   label: string | null
   note: string | null
-  seatType: string | null
+  seatType: $Enums.SeatType | null
   shape: $Enums.SeatShape
   x: number | null
   y: number | null
@@ -311,9 +333,12 @@ export type SeatGroupByOutputType = {
   height: number | null
   radius: number | null
   rotation: number | null
+  zIndex: number | null
+  locked: boolean
+  hidden: boolean
   guestId: string | null
   invitationId: string | null
-  meta: runtime.JsonValue
+  meta: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   _count: SeatCountAggregateOutputType | null
@@ -350,7 +375,7 @@ export type SeatWhereInput = {
   number?: Prisma.IntNullableFilter<"Seat"> | number | null
   label?: Prisma.StringNullableFilter<"Seat"> | string | null
   note?: Prisma.StringNullableFilter<"Seat"> | string | null
-  seatType?: Prisma.StringNullableFilter<"Seat"> | string | null
+  seatType?: Prisma.EnumSeatTypeNullableFilter<"Seat"> | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFilter<"Seat"> | $Enums.SeatShape
   x?: Prisma.FloatNullableFilter<"Seat"> | number | null
   y?: Prisma.FloatNullableFilter<"Seat"> | number | null
@@ -358,9 +383,12 @@ export type SeatWhereInput = {
   height?: Prisma.FloatNullableFilter<"Seat"> | number | null
   radius?: Prisma.FloatNullableFilter<"Seat"> | number | null
   rotation?: Prisma.FloatNullableFilter<"Seat"> | number | null
+  zIndex?: Prisma.IntNullableFilter<"Seat"> | number | null
+  locked?: Prisma.BoolFilter<"Seat"> | boolean
+  hidden?: Prisma.BoolFilter<"Seat"> | boolean
   guestId?: Prisma.StringNullableFilter<"Seat"> | string | null
   invitationId?: Prisma.StringNullableFilter<"Seat"> | string | null
-  meta?: Prisma.JsonFilter<"Seat">
+  meta?: Prisma.JsonNullableFilter<"Seat">
   createdAt?: Prisma.DateTimeFilter<"Seat"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Seat"> | Date | string
   section?: Prisma.XOR<Prisma.SectionScalarRelationFilter, Prisma.SectionWhereInput>
@@ -384,9 +412,12 @@ export type SeatOrderByWithRelationInput = {
   height?: Prisma.SortOrderInput | Prisma.SortOrder
   radius?: Prisma.SortOrderInput | Prisma.SortOrder
   rotation?: Prisma.SortOrderInput | Prisma.SortOrder
+  zIndex?: Prisma.SortOrderInput | Prisma.SortOrder
+  locked?: Prisma.SortOrder
+  hidden?: Prisma.SortOrder
   guestId?: Prisma.SortOrderInput | Prisma.SortOrder
   invitationId?: Prisma.SortOrderInput | Prisma.SortOrder
-  meta?: Prisma.SortOrder
+  meta?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   section?: Prisma.SectionOrderByWithRelationInput
@@ -407,7 +438,7 @@ export type SeatWhereUniqueInput = Prisma.AtLeast<{
   number?: Prisma.IntNullableFilter<"Seat"> | number | null
   label?: Prisma.StringNullableFilter<"Seat"> | string | null
   note?: Prisma.StringNullableFilter<"Seat"> | string | null
-  seatType?: Prisma.StringNullableFilter<"Seat"> | string | null
+  seatType?: Prisma.EnumSeatTypeNullableFilter<"Seat"> | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFilter<"Seat"> | $Enums.SeatShape
   x?: Prisma.FloatNullableFilter<"Seat"> | number | null
   y?: Prisma.FloatNullableFilter<"Seat"> | number | null
@@ -415,9 +446,12 @@ export type SeatWhereUniqueInput = Prisma.AtLeast<{
   height?: Prisma.FloatNullableFilter<"Seat"> | number | null
   radius?: Prisma.FloatNullableFilter<"Seat"> | number | null
   rotation?: Prisma.FloatNullableFilter<"Seat"> | number | null
+  zIndex?: Prisma.IntNullableFilter<"Seat"> | number | null
+  locked?: Prisma.BoolFilter<"Seat"> | boolean
+  hidden?: Prisma.BoolFilter<"Seat"> | boolean
   guestId?: Prisma.StringNullableFilter<"Seat"> | string | null
   invitationId?: Prisma.StringNullableFilter<"Seat"> | string | null
-  meta?: Prisma.JsonFilter<"Seat">
+  meta?: Prisma.JsonNullableFilter<"Seat">
   createdAt?: Prisma.DateTimeFilter<"Seat"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Seat"> | Date | string
   section?: Prisma.XOR<Prisma.SectionScalarRelationFilter, Prisma.SectionWhereInput>
@@ -441,9 +475,12 @@ export type SeatOrderByWithAggregationInput = {
   height?: Prisma.SortOrderInput | Prisma.SortOrder
   radius?: Prisma.SortOrderInput | Prisma.SortOrder
   rotation?: Prisma.SortOrderInput | Prisma.SortOrder
+  zIndex?: Prisma.SortOrderInput | Prisma.SortOrder
+  locked?: Prisma.SortOrder
+  hidden?: Prisma.SortOrder
   guestId?: Prisma.SortOrderInput | Prisma.SortOrder
   invitationId?: Prisma.SortOrderInput | Prisma.SortOrder
-  meta?: Prisma.SortOrder
+  meta?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SeatCountOrderByAggregateInput
@@ -465,7 +502,7 @@ export type SeatScalarWhereWithAggregatesInput = {
   number?: Prisma.IntNullableWithAggregatesFilter<"Seat"> | number | null
   label?: Prisma.StringNullableWithAggregatesFilter<"Seat"> | string | null
   note?: Prisma.StringNullableWithAggregatesFilter<"Seat"> | string | null
-  seatType?: Prisma.StringNullableWithAggregatesFilter<"Seat"> | string | null
+  seatType?: Prisma.EnumSeatTypeNullableWithAggregatesFilter<"Seat"> | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeWithAggregatesFilter<"Seat"> | $Enums.SeatShape
   x?: Prisma.FloatNullableWithAggregatesFilter<"Seat"> | number | null
   y?: Prisma.FloatNullableWithAggregatesFilter<"Seat"> | number | null
@@ -473,9 +510,12 @@ export type SeatScalarWhereWithAggregatesInput = {
   height?: Prisma.FloatNullableWithAggregatesFilter<"Seat"> | number | null
   radius?: Prisma.FloatNullableWithAggregatesFilter<"Seat"> | number | null
   rotation?: Prisma.FloatNullableWithAggregatesFilter<"Seat"> | number | null
+  zIndex?: Prisma.IntNullableWithAggregatesFilter<"Seat"> | number | null
+  locked?: Prisma.BoolWithAggregatesFilter<"Seat"> | boolean
+  hidden?: Prisma.BoolWithAggregatesFilter<"Seat"> | boolean
   guestId?: Prisma.StringNullableWithAggregatesFilter<"Seat"> | string | null
   invitationId?: Prisma.StringNullableWithAggregatesFilter<"Seat"> | string | null
-  meta?: Prisma.JsonWithAggregatesFilter<"Seat">
+  meta?: Prisma.JsonNullableWithAggregatesFilter<"Seat">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Seat"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Seat"> | Date | string
 }
@@ -487,7 +527,7 @@ export type SeatCreateInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -495,9 +535,12 @@ export type SeatCreateInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   section: Prisma.SectionCreateNestedOneWithoutSeatsInput
@@ -513,7 +556,7 @@ export type SeatUncheckedCreateInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -521,9 +564,12 @@ export type SeatUncheckedCreateInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -535,7 +581,7 @@ export type SeatUpdateInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -543,9 +589,12 @@ export type SeatUpdateInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   section?: Prisma.SectionUpdateOneRequiredWithoutSeatsNestedInput
@@ -561,7 +610,7 @@ export type SeatUncheckedUpdateInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -569,9 +618,12 @@ export type SeatUncheckedUpdateInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -585,7 +637,7 @@ export type SeatCreateManyInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -593,9 +645,12 @@ export type SeatCreateManyInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -607,7 +662,7 @@ export type SeatUpdateManyMutationInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -615,9 +670,12 @@ export type SeatUpdateManyMutationInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -631,7 +689,7 @@ export type SeatUncheckedUpdateManyInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -639,9 +697,12 @@ export type SeatUncheckedUpdateManyInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -683,6 +744,9 @@ export type SeatCountOrderByAggregateInput = {
   height?: Prisma.SortOrder
   radius?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
+  zIndex?: Prisma.SortOrder
+  locked?: Prisma.SortOrder
+  hidden?: Prisma.SortOrder
   guestId?: Prisma.SortOrder
   invitationId?: Prisma.SortOrder
   meta?: Prisma.SortOrder
@@ -698,6 +762,7 @@ export type SeatAvgOrderByAggregateInput = {
   height?: Prisma.SortOrder
   radius?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
+  zIndex?: Prisma.SortOrder
 }
 
 export type SeatMaxOrderByAggregateInput = {
@@ -717,6 +782,9 @@ export type SeatMaxOrderByAggregateInput = {
   height?: Prisma.SortOrder
   radius?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
+  zIndex?: Prisma.SortOrder
+  locked?: Prisma.SortOrder
+  hidden?: Prisma.SortOrder
   guestId?: Prisma.SortOrder
   invitationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -740,6 +808,9 @@ export type SeatMinOrderByAggregateInput = {
   height?: Prisma.SortOrder
   radius?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
+  zIndex?: Prisma.SortOrder
+  locked?: Prisma.SortOrder
+  hidden?: Prisma.SortOrder
   guestId?: Prisma.SortOrder
   invitationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -754,6 +825,7 @@ export type SeatSumOrderByAggregateInput = {
   height?: Prisma.SortOrder
   radius?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
+  zIndex?: Prisma.SortOrder
 }
 
 export type SeatCreateNestedManyWithoutSectionInput = {
@@ -848,8 +920,16 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type NullableEnumSeatTypeFieldUpdateOperationsInput = {
+  set?: $Enums.SeatType | null
+}
+
 export type EnumSeatShapeFieldUpdateOperationsInput = {
   set?: $Enums.SeatShape
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type SeatCreateWithoutSectionInput = {
@@ -859,7 +939,7 @@ export type SeatCreateWithoutSectionInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -867,9 +947,12 @@ export type SeatCreateWithoutSectionInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   table?: Prisma.TableCreateNestedOneWithoutSeatsInput
@@ -883,7 +966,7 @@ export type SeatUncheckedCreateWithoutSectionInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -891,9 +974,12 @@ export type SeatUncheckedCreateWithoutSectionInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -936,7 +1022,7 @@ export type SeatScalarWhereInput = {
   number?: Prisma.IntNullableFilter<"Seat"> | number | null
   label?: Prisma.StringNullableFilter<"Seat"> | string | null
   note?: Prisma.StringNullableFilter<"Seat"> | string | null
-  seatType?: Prisma.StringNullableFilter<"Seat"> | string | null
+  seatType?: Prisma.EnumSeatTypeNullableFilter<"Seat"> | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFilter<"Seat"> | $Enums.SeatShape
   x?: Prisma.FloatNullableFilter<"Seat"> | number | null
   y?: Prisma.FloatNullableFilter<"Seat"> | number | null
@@ -944,9 +1030,12 @@ export type SeatScalarWhereInput = {
   height?: Prisma.FloatNullableFilter<"Seat"> | number | null
   radius?: Prisma.FloatNullableFilter<"Seat"> | number | null
   rotation?: Prisma.FloatNullableFilter<"Seat"> | number | null
+  zIndex?: Prisma.IntNullableFilter<"Seat"> | number | null
+  locked?: Prisma.BoolFilter<"Seat"> | boolean
+  hidden?: Prisma.BoolFilter<"Seat"> | boolean
   guestId?: Prisma.StringNullableFilter<"Seat"> | string | null
   invitationId?: Prisma.StringNullableFilter<"Seat"> | string | null
-  meta?: Prisma.JsonFilter<"Seat">
+  meta?: Prisma.JsonNullableFilter<"Seat">
   createdAt?: Prisma.DateTimeFilter<"Seat"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Seat"> | Date | string
 }
@@ -958,7 +1047,7 @@ export type SeatCreateWithoutTableInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -966,9 +1055,12 @@ export type SeatCreateWithoutTableInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   section: Prisma.SectionCreateNestedOneWithoutSeatsInput
@@ -982,7 +1074,7 @@ export type SeatUncheckedCreateWithoutTableInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -990,9 +1082,12 @@ export type SeatUncheckedCreateWithoutTableInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1031,7 +1126,7 @@ export type SeatCreateManySectionInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -1039,9 +1134,12 @@ export type SeatCreateManySectionInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1053,7 +1151,7 @@ export type SeatUpdateWithoutSectionInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1061,9 +1159,12 @@ export type SeatUpdateWithoutSectionInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   table?: Prisma.TableUpdateOneWithoutSeatsNestedInput
@@ -1077,7 +1178,7 @@ export type SeatUncheckedUpdateWithoutSectionInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1085,9 +1186,12 @@ export type SeatUncheckedUpdateWithoutSectionInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1100,7 +1204,7 @@ export type SeatUncheckedUpdateManyWithoutSectionInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1108,9 +1212,12 @@ export type SeatUncheckedUpdateManyWithoutSectionInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1123,7 +1230,7 @@ export type SeatCreateManyTableInput = {
   number?: number | null
   label?: string | null
   note?: string | null
-  seatType?: string | null
+  seatType?: $Enums.SeatType | null
   shape?: $Enums.SeatShape
   x?: number | null
   y?: number | null
@@ -1131,9 +1238,12 @@ export type SeatCreateManyTableInput = {
   height?: number | null
   radius?: number | null
   rotation?: number | null
+  zIndex?: number | null
+  locked?: boolean
+  hidden?: boolean
   guestId?: string | null
   invitationId?: string | null
-  meta: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1145,7 +1255,7 @@ export type SeatUpdateWithoutTableInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1153,9 +1263,12 @@ export type SeatUpdateWithoutTableInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   section?: Prisma.SectionUpdateOneRequiredWithoutSeatsNestedInput
@@ -1169,7 +1282,7 @@ export type SeatUncheckedUpdateWithoutTableInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1177,9 +1290,12 @@ export type SeatUncheckedUpdateWithoutTableInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1192,7 +1308,7 @@ export type SeatUncheckedUpdateManyWithoutTableInput = {
   number?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seatType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seatType?: Prisma.NullableEnumSeatTypeFieldUpdateOperationsInput | $Enums.SeatType | null
   shape?: Prisma.EnumSeatShapeFieldUpdateOperationsInput | $Enums.SeatShape
   x?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   y?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1200,9 +1316,12 @@ export type SeatUncheckedUpdateManyWithoutTableInput = {
   height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   radius?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  zIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hidden?: Prisma.BoolFieldUpdateOperationsInput | boolean
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1226,6 +1345,9 @@ export type SeatSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   height?: boolean
   radius?: boolean
   rotation?: boolean
+  zIndex?: boolean
+  locked?: boolean
+  hidden?: boolean
   guestId?: boolean
   invitationId?: boolean
   meta?: boolean
@@ -1252,6 +1374,9 @@ export type SeatSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   height?: boolean
   radius?: boolean
   rotation?: boolean
+  zIndex?: boolean
+  locked?: boolean
+  hidden?: boolean
   guestId?: boolean
   invitationId?: boolean
   meta?: boolean
@@ -1278,6 +1403,9 @@ export type SeatSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   height?: boolean
   radius?: boolean
   rotation?: boolean
+  zIndex?: boolean
+  locked?: boolean
+  hidden?: boolean
   guestId?: boolean
   invitationId?: boolean
   meta?: boolean
@@ -1304,6 +1432,9 @@ export type SeatSelectScalar = {
   height?: boolean
   radius?: boolean
   rotation?: boolean
+  zIndex?: boolean
+  locked?: boolean
+  hidden?: boolean
   guestId?: boolean
   invitationId?: boolean
   meta?: boolean
@@ -1311,7 +1442,7 @@ export type SeatSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SeatOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "eventId" | "sectionId" | "tableId" | "number" | "label" | "note" | "seatType" | "shape" | "x" | "y" | "width" | "height" | "radius" | "rotation" | "guestId" | "invitationId" | "meta" | "createdAt" | "updatedAt", ExtArgs["result"]["seat"]>
+export type SeatOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "eventId" | "sectionId" | "tableId" | "number" | "label" | "note" | "seatType" | "shape" | "x" | "y" | "width" | "height" | "radius" | "rotation" | "zIndex" | "locked" | "hidden" | "guestId" | "invitationId" | "meta" | "createdAt" | "updatedAt", ExtArgs["result"]["seat"]>
 export type SeatInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   section?: boolean | Prisma.SectionDefaultArgs<ExtArgs>
   table?: boolean | Prisma.Seat$tableArgs<ExtArgs>
@@ -1340,7 +1471,7 @@ export type $SeatPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     number: number | null
     label: string | null
     note: string | null
-    seatType: string | null
+    seatType: $Enums.SeatType | null
     shape: $Enums.SeatShape
     x: number | null
     y: number | null
@@ -1348,9 +1479,12 @@ export type $SeatPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     height: number | null
     radius: number | null
     rotation: number | null
+    zIndex: number | null
+    locked: boolean
+    hidden: boolean
     guestId: string | null
     invitationId: string | null
-    meta: runtime.JsonValue
+    meta: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["seat"]>
@@ -1786,7 +1920,7 @@ export interface SeatFieldRefs {
   readonly number: Prisma.FieldRef<"Seat", 'Int'>
   readonly label: Prisma.FieldRef<"Seat", 'String'>
   readonly note: Prisma.FieldRef<"Seat", 'String'>
-  readonly seatType: Prisma.FieldRef<"Seat", 'String'>
+  readonly seatType: Prisma.FieldRef<"Seat", 'SeatType'>
   readonly shape: Prisma.FieldRef<"Seat", 'SeatShape'>
   readonly x: Prisma.FieldRef<"Seat", 'Float'>
   readonly y: Prisma.FieldRef<"Seat", 'Float'>
@@ -1794,6 +1928,9 @@ export interface SeatFieldRefs {
   readonly height: Prisma.FieldRef<"Seat", 'Float'>
   readonly radius: Prisma.FieldRef<"Seat", 'Float'>
   readonly rotation: Prisma.FieldRef<"Seat", 'Float'>
+  readonly zIndex: Prisma.FieldRef<"Seat", 'Int'>
+  readonly locked: Prisma.FieldRef<"Seat", 'Boolean'>
+  readonly hidden: Prisma.FieldRef<"Seat", 'Boolean'>
   readonly guestId: Prisma.FieldRef<"Seat", 'String'>
   readonly invitationId: Prisma.FieldRef<"Seat", 'String'>
   readonly meta: Prisma.FieldRef<"Seat", 'Json'>

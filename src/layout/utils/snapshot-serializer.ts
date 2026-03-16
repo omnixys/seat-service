@@ -6,8 +6,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import type { SeatType } from '../../prisma/generated/client.js';
+import { SeatStatus } from '../../prisma/generated/client.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
-import { SeatStatus } from '../../seat/models/enums/seat-status.enum.js';
 import { createId } from '@paralleldrive/cuid2';
 
 export interface SectionSnapshot {
@@ -39,7 +40,7 @@ export interface SeatSnapshot {
   x: number;
   y: number;
   rotation: number;
-  seatType: SeatStatus | null;
+  seatType: SeatType | null;
   status: SeatStatus;
   meta: any;
 }
@@ -90,8 +91,8 @@ export class SnapshotSerializer {
       x: s.x ?? 0,
       y: s.y ?? 0,
       rotation: s.rotation ?? 0,
-      seatType: (s.seatType as SeatStatus | null) ?? null,
-      status: s.status as SeatStatus,
+      seatType: s.seatType,
+      status: s.status,
       meta: s.meta ?? {},
     }));
 

@@ -23,10 +23,15 @@ import {
 } from '../models/inputs/move-seat.input.js';
 import { SaveLayoutVersionInput } from '../models/inputs/save-layout-version.input.js';
 
-import { KafkaProducerService } from '../../kafka/kafka-producer.service.js';
-import { LayoutVersion } from '../../prisma/generated/client.js';
-import { SeatStatus } from '../../seat/models/enums/seat-status.enum.js';
-import { withSpan } from '../../trace/utils/span.utils.js';
+import {
+  LayoutChangeType,
+  LayoutVersion,
+  SeatShape,
+  SeatStatus,
+  SeatType,
+  SectionShape,
+  TableShape,
+} from '../../prisma/generated/client.js';
 import { LogChangeInput } from '../models/inputs/log-change.input.js';
 import { LayoutVersionMapper } from '../models/mappers/layout-version.mapper.js';
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
@@ -38,7 +43,6 @@ import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
 import { CloneSectionInput } from '../models/inputs/clone-section.input.js';
 import { DuplicateTableInput } from '../models/inputs/duplicate-Table-input.js';
-import { trace, Tracer } from '@opentelemetry/api';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 import jsonpatch from 'fast-json-patch';
 
@@ -46,16 +50,13 @@ import jsonpatch from 'fast-json-patch';
 export class LayoutWriteService {
   private readonly logger;
   private readonly geometry = new GeometryEngine();
-  private readonly tracer: Tracer;
   private readonly snapshot: SnapshotSerializer;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly loggerService: LoggerPlusService,
-    private readonly kafkaProducerService: KafkaProducerService,
   ) {
     this.logger = this.loggerService.getLogger(LayoutWriteService.name);
-    this.tracer = trace.getTracer(LayoutWriteService.name);
     this.snapshot = new SnapshotSerializer(prisma);
   }
 
@@ -67,174 +68,227 @@ export class LayoutWriteService {
     input: SaveLayoutVersionInput,
     actorId: string,
   ): Promise<LayoutVersionPayload> {
-    const snap = await this.snapshot.serializeCurrentLayout(input.eventId);
+    const { eventId } = input;
+
+    this.logger.debug('Saving layout version for event %s (version=%s)', eventId, input.version);
+
+    const snapshot = await this.snapshot.serializeCurrentLayout(eventId);
+
+    this.logger.debug(
+      'Snapshot generated (sections=%d tables=%d seats=%d)',
+      snapshot.sections?.length ?? 0,
+      snapshot.tables?.length ?? 0,
+      snapshot.seats?.length ?? 0,
+    );
 
     const created = await this.prisma.layoutVersion.create({
       data: {
-        eventId: input.eventId,
+        eventId,
         version: input.version,
         label: input.label ?? null,
-        data: snap as unknown as InputJsonValue,
+        data: snapshot as unknown as InputJsonValue,
       },
     });
 
     await this.logChange({
       actorId,
-      eventId: input.eventId,
-      type: 'LAYOUT_VERSION_SAVED',
-      payload: created,
+      eventId,
+      type: LayoutChangeType.LAYOUT_VERSION_SAVED,
+      payload: { version: created.version, id: created.id },
     });
+
+    this.logger.debug('Layout version saved (event=%s version=%d)', eventId, created.version);
 
     return LayoutVersionMapper.toPayload(created);
   }
 
   private async loadLatestVersion(eventId: string) {
-    return this.prisma.layoutVersion.findFirst({
+    this.logger.debug('Loading latest layout version for event %s', eventId);
+
+    const version = await this.prisma.layoutVersion.findFirst({
       where: { eventId },
       orderBy: { version: 'desc' },
     });
+
+    if (!version) {
+      this.logger.debug('No layout versions found for event %s', eventId);
+    }
+
+    return version;
   }
 
   async undo(eventId: string): Promise<boolean> {
+    this.logger.debug('Undo requested for event %s', eventId);
+
     const latest = await this.loadLatestVersion(eventId);
     if (!latest) {
+      this.logger.warn('Undo failed: no versions exist (event=%s)', eventId);
       return false;
     }
 
     const previous = await this.prisma.layoutVersion.findFirst({
-      where: { eventId, version: { lt: latest.version } },
+      where: {
+        eventId,
+        version: { lt: latest.version },
+      },
       orderBy: { version: 'desc' },
     });
 
     if (!previous) {
+      this.logger.warn('Undo failed: no previous version exists (event=%s)', eventId);
       return false;
     }
 
     await this.restoreVersion(eventId, previous);
+
+    this.logger.debug('Undo completed (event=%s restoredVersion=%d)', eventId, previous.version);
+
     return true;
   }
 
   async redo(eventId: string): Promise<boolean> {
+    this.logger.debug('Redo requested for event %s', eventId);
+
     const latest = await this.loadLatestVersion(eventId);
     if (!latest) {
+      this.logger.warn('Redo failed: no versions exist (event=%s)', eventId);
       return false;
     }
 
     const next = await this.prisma.layoutVersion.findFirst({
-      where: { eventId, version: { gt: latest.version } },
+      where: {
+        eventId,
+        version: { gt: latest.version },
+      },
       orderBy: { version: 'asc' },
     });
 
     if (!next) {
+      this.logger.warn('Redo failed: no next version exists (event=%s)', eventId);
       return false;
     }
 
     await this.restoreVersion(eventId, next);
+
+    this.logger.debug('Redo completed (event=%s restoredVersion=%d)', eventId, next.version);
+
     return true;
   }
 
   private async restoreVersion(eventId: string, version: LayoutVersion) {
-    // clear
-    await this.prisma.seat.deleteMany({ where: { eventId } });
-    await this.prisma.table.deleteMany({ where: { eventId } });
-    await this.prisma.section.deleteMany({ where: { eventId } });
+    this.logger.debug('Restoring layout version %d for event %s', version.version, eventId);
 
-    const snap = this.snapshot.normalizeSnapshot(version.data);
+    await this.prisma.$transaction(async (tx) => {
+      await tx.seat.deleteMany({ where: { eventId } });
+      await tx.table.deleteMany({ where: { eventId } });
+      await tx.section.deleteMany({ where: { eventId } });
 
-    const sectionMap = new Map<string, string>();
-    const tableMap = new Map<string, string>();
+      const snap = this.snapshot.normalizeSnapshot(version.data);
 
-    // -------------------------------
-    // 1) Sections
-    // -------------------------------
-    for (const sec of snap.sections) {
-      const created = await this.prisma.section.create({
-        data: {
-          eventId,
-          name: sec.name,
-          order: sec.order,
-          x: sec.x,
-          y: sec.y,
-          meta: (sec.meta ?? {}) as InputJsonValue,
-        },
-      });
+      const sectionMap = new Map<string, string>();
+      const tableMap = new Map<string, string>();
 
-      sectionMap.set(sec.id, created.id);
-    }
+      /* Sections */
 
-    // -------------------------------
-    // 2) Tables
-    // -------------------------------
-    for (const tbl of snap.tables) {
-      const newSectionId = sectionMap.get(tbl.sectionId);
-      if (!newSectionId) {
-        continue;
+      for (const sec of snap.sections) {
+        const created = await tx.section.create({
+          data: {
+            eventId,
+            name: sec.name,
+            order: sec.order,
+            x: sec.x,
+            y: sec.y,
+            meta: (sec.meta ?? {}) as InputJsonValue,
+          },
+        });
+
+        sectionMap.set(sec.id, created.id);
       }
 
-      const created = await this.prisma.table.create({
-        data: {
-          eventId,
-          sectionId: newSectionId,
-          name: tbl.name,
-          order: tbl.order,
-          x: tbl.x,
-          y: tbl.y,
-          capacity: tbl.capacity ?? undefined,
-          meta: (tbl.meta ?? {}) as InputJsonValue,
-        },
-      });
+      this.logger.debug('Sections restored: %d', sectionMap.size);
 
-      tableMap.set(tbl.id, created.id);
-    }
+      /* Tables */
 
-    // -------------------------------
-    // 3) Seats (filtered, no undefined IDs)
-    // -------------------------------
-    const seatRows = snap.seats
-      .map((s: SeatSnapshot) => {
-        const newSectionId = sectionMap.get(s.sectionId);
-        const newTableId = tableMap.get(s.tableId);
-
-        if (!newSectionId || !newTableId) {
-          return null;
+      for (const tbl of snap.tables) {
+        const newSectionId = sectionMap.get(tbl.sectionId);
+        if (!newSectionId) {
+          continue;
         }
 
-        return {
-          eventId,
-          sectionId: newSectionId,
-          tableId: newTableId,
-          number: s.number,
-          label: s.label,
-          x: s.x,
-          y: s.y,
-          rotation: s.rotation,
-          seatType: s.seatType ?? SeatStatus.AVAILABLE,
-          status: s.status ?? SeatStatus.AVAILABLE,
-          meta: (s.meta ?? {}) as InputJsonValue,
-        };
-      })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
+        const created = await tx.table.create({
+          data: {
+            eventId,
+            sectionId: newSectionId,
+            name: tbl.name,
+            order: tbl.order,
+            x: tbl.x,
+            y: tbl.y,
+            capacity: tbl.capacity ?? undefined,
+            meta: (tbl.meta ?? {}) as InputJsonValue,
+          },
+        });
 
-    if (seatRows.length > 0) {
-      await this.prisma.seat.createMany({ data: seatRows });
-    }
+        tableMap.set(tbl.id, created.id);
+      }
+
+      this.logger.debug('Tables restored: %d', tableMap.size);
+
+      /* Seats */
+
+      const seatRows = snap.seats
+        .map((s: SeatSnapshot) => {
+          const newSectionId = sectionMap.get(s.sectionId);
+          const newTableId = tableMap.get(s.tableId);
+
+          if (!newSectionId || !newTableId) {
+            return null;
+          }
+
+          return {
+            eventId,
+            sectionId: newSectionId,
+            tableId: newTableId,
+            number: s.number,
+            label: s.label,
+            x: s.x,
+            y: s.y,
+            rotation: s.rotation,
+            seatType: s.seatType ?? SeatType.STANDARD,
+            status: s.status ?? SeatStatus.AVAILABLE,
+            meta: (s.meta ?? {}) as InputJsonValue,
+          };
+        })
+        .filter((r): r is NonNullable<typeof r> => r !== null);
+
+      if (seatRows.length > 0) {
+        await tx.seat.createMany({ data: seatRows });
+      }
+
+      this.logger.debug('Seats restored: %d', seatRows.length);
+    });
+
+    this.logger.debug(
+      'Layout restoration finished (event=%s version=%d)',
+      eventId,
+      version.version,
+    );
   }
 
-  // -------------------------------------------------------
-  // CHANGE LOG
-  // -------------------------------------------------------
-
   async logChange({ eventId, actorId, type, payload }: LogChangeInput) {
+    this.logger.debug('Layout change logged (event=%s type=%s actor=%s)', eventId, type, actorId);
+
     return this.prisma.layoutChangeLog.create({
-      data: { eventId, actorId, type, payload },
+      data: {
+        eventId,
+        actorId,
+        type,
+        payload,
+      },
     });
   }
 
-  // -------------------------------------------------------
-  // AUTO-GENERATE LAYOUT
-  // -------------------------------------------------------
-
   async autoGenerate(input: AutoGenerateLayoutInput, actorId: string) {
+    this.logger.debug('generate Seat Layout automatically');
     const { eventId } = input;
 
     // wipe
@@ -252,7 +306,7 @@ export class LayoutWriteService {
     await this.logChange({
       actorId,
       eventId,
-      type: 'AUTO_GENERATE_GEOMETRY_V4',
+      type: LayoutChangeType.AUTO_GENERATE_GEOMETRY_V4,
       payload: input,
     });
 
@@ -343,7 +397,7 @@ export class LayoutWriteService {
         x: seat.x,
         y: seat.y,
         rotation: seat.rotation ?? 0,
-        seatType: seat.seatType ?? SeatStatus.AVAILABLE,
+        seatType: seat.seatType ?? SeatType.STANDARD,
         status: seat.status ?? SeatStatus.AVAILABLE,
         meta: (seat.meta ?? {}) as InputJsonValue,
       });
@@ -385,8 +439,8 @@ export class LayoutWriteService {
     const after = await this.loadCurrentLayout(seat.eventId);
     const diff = jsonpatch.compare(before, after);
 
-    await this.logDiff(seat.eventId, actorId, 'SEAT_MOVED', diff);
-    await this.broadcastDiff(seat.eventId, diff);
+    await this.logDiff(seat.eventId, actorId, LayoutChangeType.SEAT_MOVED, diff);
+    // await this.broadcastDiff(seat.eventId, diff);
 
     return updated;
   }
@@ -417,8 +471,8 @@ export class LayoutWriteService {
     const after = await this.loadCurrentLayout(section.eventId);
     const diff = jsonpatch.compare(before, after);
 
-    await this.logDiff(section.eventId, actorId, 'SECTION_MOVED', diff);
-    await this.broadcastDiff(section.eventId, diff);
+    await this.logDiff(section.eventId, actorId, LayoutChangeType.SECTION_MOVED, diff);
+    // await this.broadcastDiff(section.eventId, diff);
 
     return updated;
   }
@@ -449,8 +503,8 @@ export class LayoutWriteService {
     const after = await this.loadCurrentLayout(table.eventId);
     const diff = jsonpatch.compare(before, after);
 
-    await this.logDiff(table.eventId, actorId, 'TABLE_MOVED', diff);
-    await this.broadcastDiff(table.eventId, diff);
+    await this.logDiff(table.eventId, actorId, LayoutChangeType.TABLE_MOVED, diff);
+    // await this.broadcastDiff(table.eventId, diff);
 
     return updated;
   }
@@ -463,25 +517,25 @@ export class LayoutWriteService {
     return { sections, tables, seats };
   }
 
-  async logDiff(eventId: string, actorId: string, type: string, diff: any) {
+  async logDiff(eventId: string, actorId: string, type: LayoutChangeType, diff: any) {
     await this.prisma.layoutChangeLog.create({
       data: { eventId, actorId, type, payload: diff },
     });
   }
 
-  async broadcastDiff(eventId: string, diff: any) {
-    return withSpan(this.tracer, this.logger, 'seat.broadcastDiff', async (span) => {
-      const sc = span.spanContext();
-      await this.kafkaProducerService.broadcastDiff(
-        { eventId, diff },
-        'seat.layout-write-service',
-        {
-          traceId: sc.traceId,
-          spanId: sc.spanId,
-        },
-      );
-    });
-  }
+  // async broadcastDiff(eventId: string, diff: any) {
+  //   return withSpan(this.tracer, this.logger, 'seat.broadcastDiff', async (span) => {
+  //     const sc = span.spanContext();
+  //     await this.kafkaProducerService.broadcastDiff(
+  //       { eventId, diff },
+  //       'seat.layout-write-service',
+  //       {
+  //         traceId: sc.traceId,
+  //         spanId: sc.spanId,
+  //       },
+  //     );
+  //   });
+  // }
 
   // ---------------------------------------------------------------------------
   // TABLE OPERATIONS
@@ -533,7 +587,7 @@ export class LayoutWriteService {
     await this.logChange({
       eventId: table.eventId,
       actorId,
-      type: 'TABLE_DUPLICATED',
+      type: LayoutChangeType.TABLE_DUPLICATED,
       payload: { original: table.id, clone: clone.id },
     });
 
@@ -612,7 +666,8 @@ export class LayoutWriteService {
     await this.logChange({
       actorId,
       eventId: section.eventId,
-      type: 'SECTION_CLONED',
+      type: LayoutChangeType.SECTION_CLONED,
+
       payload: { original: section.id, clone: secClone.id },
     });
 
@@ -622,6 +677,21 @@ export class LayoutWriteService {
     );
 
     return secClone;
+  }
+
+  async deleteSeats(input: { actorId: string; eventId: string }) {
+    const { eventId, actorId } = input;
+
+    this.logger.info('Delete Seats from Event: %s by Actor %s', eventId, actorId);
+
+    await this.prisma.seat.deleteMany({ where: { eventId } });
+    await this.prisma.table.deleteMany({ where: { eventId } });
+    await this.prisma.section.deleteMany({ where: { eventId } });
+    await this.prisma.seatAssignmentLog.deleteMany({ where: { eventId } });
+    await this.prisma.layoutVersion.deleteMany({ where: { eventId } });
+    await this.prisma.layoutChangeLog.deleteMany({ where: { eventId } });
+
+    this.logger.debug('Seats Deleted');
   }
 
   /**
@@ -654,11 +724,11 @@ export class LayoutWriteService {
 
         tables.push({
           name: `Table ${tableOrder}`,
-          shape: 'circle',
+          shape: TableShape.ROUND,
           order: tableOrder,
           seats: {
             count: seatCount,
-            shape: 'circle',
+            shape: SeatShape.CIRCLE,
             meta: {},
           },
           meta: {},
@@ -670,7 +740,7 @@ export class LayoutWriteService {
 
       sections.push({
         name: `Section ${sectionOrder}`,
-        shape: 'circle',
+        shape: SectionShape.CIRCLE,
         order: sectionOrder,
         meta: {},
         tables,

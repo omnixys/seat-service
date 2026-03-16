@@ -8,6 +8,7 @@
 
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
 import { LoggerPlusService } from '../../logger/logger-plus.service.js';
+import { LayoutChangeType } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
@@ -57,7 +58,7 @@ export class SectionWriteService {
     await this.layoutWriteService.logChange({
       eventId: input.eventId,
       actorId,
-      type: 'SECTION_CREATE',
+      type: LayoutChangeType.SECTION_CREATE,
       payload: created,
     });
 
@@ -94,7 +95,7 @@ export class SectionWriteService {
     await this.layoutWriteService.logChange({
       eventId: exists.eventId,
       actorId,
-      type: 'SECTION_UPDATE',
+      type: LayoutChangeType.SECTION_UPDATE,
       payload: input,
     });
 
@@ -124,7 +125,7 @@ export class SectionWriteService {
     await this.layoutWriteService.logChange({
       eventId: exists.eventId,
       actorId,
-      type: 'SECTION_DELETE',
+      type: LayoutChangeType.SECTION_DELETE,
       payload: { id: sectionId },
     });
 
@@ -178,7 +179,7 @@ export class SectionWriteService {
     await this.layoutWriteService.logChange({
       eventId: exists.eventId,
       actorId,
-      type: 'SECTION_RENAME',
+      type: LayoutChangeType.SECTION_RENAME,
       payload: {
         from: exists.name,
         to: newName,
@@ -244,7 +245,7 @@ export class SectionWriteService {
       await this.layoutWriteService.logChange({
         eventId: section.eventId,
         actorId,
-        type: 'SECTION_RENAME',
+        type: LayoutChangeType.SECTION_RENAME,
         payload: {
           from: section.name,
           to: input.newName,

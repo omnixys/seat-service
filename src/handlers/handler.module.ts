@@ -18,14 +18,12 @@
 import { AdminModule } from '../admin/admin.module.js';
 import { LayoutModule } from '../layout/layout.module.js';
 import { SeatModule } from '../seat/seat.module.js';
-import { AdminHandler } from './admin.handler.js';
 import { EventHandler } from './event.handler.js';
-import { TicketHandler } from './ticket.handler.js';
 import { Module } from '@nestjs/common';
 
 @Module({
   imports: [AdminModule, LayoutModule, SeatModule],
-  providers: [AdminHandler, EventHandler, TicketHandler],
-  exports: [AdminHandler, EventHandler, TicketHandler],
+  providers: [EventHandler],
+  exports: [EventHandler],
 })
 export class HandlerModule {}

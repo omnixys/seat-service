@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ShapeType } from '../enums/shape.enum.js';
+import {
+  SeatShape,
+  SectionShape,
+  TableShape,
+} from '../../../prisma/generated/client.js';
 import { Field, InputType, Int } from '@nestjs/graphql';
 
 // ========= SIMPLE MODE ==========
@@ -62,20 +66,16 @@ export class SeatingConfigInput {
   tables?: CustomTableConfigInput[];
 
   // SHAPES (required by your service file)
-  @Field(() => ShapeType, { nullable: true })
-  sectionForm?: ShapeType;
+  @Field(() => SectionShape, { nullable: true })
+  sectionForm?: SectionShape;
 
-  @Field(() => ShapeType, { nullable: true })
-  tableForm?: ShapeType;
+  @Field(() => TableShape, { nullable: true })
+  tableForm?: TableShape;
 
-  @Field(() => ShapeType, { nullable: true })
-  seatForm?: ShapeType;
+  @Field(() => SeatShape, { nullable: true })
+  seatForm?: SeatShape;
 
   // META (required by your generator)
   @Field(() => SeatingMetaConfigInput, { nullable: true })
   meta?: SeatingMetaConfigInput;
-
-  // GLOBAL FORM (your previous version)
-  @Field(() => ShapeType, { nullable: true, defaultValue: ShapeType.CIRCLE })
-  form?: ShapeType;
 }

@@ -15,19 +15,17 @@
  * For more information, visit <https://www.gnu.org/licenses/>.
  */
 
-import {
-  KafkaEvent,
-  KafkaHandler,
-} from '../kafka/decorators/kafka-event.decorator.js';
-import {
-  type KafkaEventContext,
-  KafkaEventHandler,
-} from '../kafka/interface/kafka-event.interface.js';
-import { getTopic, getTopics } from '../kafka/kafka-topic.properties.js';
 import { LayoutWriteService } from '../layout/services/layout-write.service.js';
 import { LoggerPlusService } from '../logger/logger-plus.service.js';
 import { Injectable } from '@nestjs/common';
 import { CreateSeatMessageDTO } from '@omnixys/contracts';
+import {
+  KafkaEvent,
+  KafkaEventContext,
+  KafkaEventHandler,
+  KafkaHandler,
+  KafkaTopics,
+} from '@omnixys/kafka';
 
 /**
  * Kafka event handler responsible for useristrative commands such as
@@ -64,20 +62,26 @@ export class EventHandler implements KafkaEventHandler {
    *
    * @returns A Promise that resolves once the command has been processed.
    */
-  @KafkaEvent(...getTopics('generateSeats'))
+  @KafkaEvent(KafkaTopics.seat.createSeats, KafkaTopics.seat.deleteSeats)
   async handle(
     topic: string,
-    data: CreateSeatMessageDTO,
+    data:
+      | CreateSeatMessageDTO
+      | { payload: { actorId: string; eventId: string } },
     context: KafkaEventContext,
   ): Promise<void> {
     this.logger.warn(`User command received: ${topic}`);
     this.logger.debug('Kafka context: %o', context);
 
     switch (topic) {
-      case getTopic('generateSeats'):
-        await this.createSeats(data);
-
+      case KafkaTopics.seat.createSeats:
+        await this.createSeats(data as CreateSeatMessageDTO);
         break;
+
+      case KafkaTopics.seat.deleteSeats:
+        await this.deleteSeats(data);
+        break;
+
       default:
         this.logger.warn(`Unknown user topic: ${topic}`);
     }
@@ -87,5 +91,13 @@ export class EventHandler implements KafkaEventHandler {
     this.logger.debug('autoGenerateLayout %o', data.payload);
 
     await this.layoutWriteService.autoGenerateFromMaxSeats(data.payload);
+  }
+
+  private async deleteSeats(data: {
+    payload: { actorId: string; eventId: string };
+  }): Promise<void> {
+    this.logger.debug('Delete Seats %o', data.payload);
+
+    await this.layoutWriteService.deleteSeats(data.payload);
   }
 }

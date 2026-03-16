@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonScalar } from '../../../core/scalars/json.scalar.js';
+import { SeatType } from '../../../prisma/generated/client.js';
 import { Field, Float, ID, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
@@ -16,8 +17,8 @@ export class UpdateSeatInput {
   @Field(() => Int, { nullable: true })
   number?: number;
 
-  @Field({ nullable: true })
-  seatType?: string;
+  @Field(() => SeatType, { defaultValue: SeatType.STANDARD, nullable: true })
+  seatType?: SeatType;
 
   @Field(() => Float, { nullable: true })
   x?: number;

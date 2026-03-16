@@ -7,7 +7,7 @@ export class LayoutVersionPayload {
   @Field(() => ID)
   id!: string;
 
-  @Field()
+  @Field(() => ID)
   eventId!: string;
 
   @Field()
@@ -18,6 +18,12 @@ export class LayoutVersionPayload {
 
   @Field(() => JsonScalar)
   data!: any;
+
+  @Field(() => JsonScalar, { nullable: true })
+  patch?: any;
+
+  @Field(() => JsonScalar, { nullable: true })
+  inversePatch?: any;
 
   @Field()
   createdAt!: Date;

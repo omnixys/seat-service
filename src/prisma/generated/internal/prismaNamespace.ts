@@ -947,6 +947,9 @@ export const SeatScalarFieldEnum = {
   height: 'height',
   radius: 'radius',
   rotation: 'rotation',
+  zIndex: 'zIndex',
+  locked: 'locked',
+  hidden: 'hidden',
   guestId: 'guestId',
   invitationId: 'invitationId',
   meta: 'meta',
@@ -1164,6 +1167,20 @@ export type ListEnumSeatStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 
 
 /**
+ * Reference to a field of type 'SeatType'
+ */
+export type EnumSeatTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SeatType'>
+    
+
+
+/**
+ * Reference to a field of type 'SeatType[]'
+ */
+export type ListEnumSeatTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SeatType[]'>
+    
+
+
+/**
  * Reference to a field of type 'SeatShape'
  */
 export type EnumSeatShapeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SeatShape'>
@@ -1178,6 +1195,27 @@ export type ListEnumSeatShapeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'SeatAssignmentAction'
+ */
+export type EnumSeatAssignmentActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SeatAssignmentAction'>
+    
+
+
+/**
+ * Reference to a field of type 'SeatAssignmentAction[]'
+ */
+export type ListEnumSeatAssignmentActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SeatAssignmentAction[]'>
+    
+
+
+/**
  * Reference to a field of type 'BigInt'
  */
 export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
@@ -1188,6 +1226,20 @@ export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'BigInt[]'
  */
 export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LayoutChangeType'
+ */
+export type EnumLayoutChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LayoutChangeType'>
+    
+
+
+/**
+ * Reference to a field of type 'LayoutChangeType[]'
+ */
+export type ListEnumLayoutChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LayoutChangeType[]'>
     
 
 /**

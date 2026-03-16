@@ -8,6 +8,7 @@
 
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
 import { LoggerPlusService } from '../../logger/logger-plus.service.js';
+import { LayoutChangeType } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { RenameConflict, RenamePayload } from '../../section/models/payloads/rename.payload.js';
 import { nextOrder } from '../../utils/auto-order.js';
@@ -188,7 +189,7 @@ export class TableWriteService {
     await this.layoutWriteService.logChange({
       eventId: exists.eventId,
       actorId,
-      type: 'TABLE_RENAME',
+      type: LayoutChangeType.TABLE_RENAME,
       payload: {
         from: exists.name,
         to: newName,
@@ -254,7 +255,7 @@ export class TableWriteService {
       await this.layoutWriteService.logChange({
         eventId: table.eventId,
         actorId,
-        type: 'TABLE_RENAME',
+        type: LayoutChangeType.TABLE_RENAME,
         payload: {
           from: table.name,
           to: input.newName,

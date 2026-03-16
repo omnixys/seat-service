@@ -27,7 +27,7 @@ export type LayoutChangeLogMinAggregateOutputType = {
   id: string | null
   eventId: string | null
   actorId: string | null
-  type: string | null
+  type: $Enums.LayoutChangeType | null
   createdAt: Date | null
 }
 
@@ -35,7 +35,7 @@ export type LayoutChangeLogMaxAggregateOutputType = {
   id: string | null
   eventId: string | null
   actorId: string | null
-  type: string | null
+  type: $Enums.LayoutChangeType | null
   createdAt: Date | null
 }
 
@@ -152,7 +152,7 @@ export type LayoutChangeLogGroupByOutputType = {
   id: string
   eventId: string
   actorId: string
-  type: string
+  type: $Enums.LayoutChangeType
   payload: runtime.JsonValue
   createdAt: Date
   _count: LayoutChangeLogCountAggregateOutputType | null
@@ -182,7 +182,7 @@ export type LayoutChangeLogWhereInput = {
   id?: Prisma.StringFilter<"LayoutChangeLog"> | string
   eventId?: Prisma.StringFilter<"LayoutChangeLog"> | string
   actorId?: Prisma.StringFilter<"LayoutChangeLog"> | string
-  type?: Prisma.StringFilter<"LayoutChangeLog"> | string
+  type?: Prisma.EnumLayoutChangeTypeFilter<"LayoutChangeLog"> | $Enums.LayoutChangeType
   payload?: Prisma.JsonFilter<"LayoutChangeLog">
   createdAt?: Prisma.DateTimeFilter<"LayoutChangeLog"> | Date | string
 }
@@ -203,7 +203,7 @@ export type LayoutChangeLogWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.LayoutChangeLogWhereInput | Prisma.LayoutChangeLogWhereInput[]
   eventId?: Prisma.StringFilter<"LayoutChangeLog"> | string
   actorId?: Prisma.StringFilter<"LayoutChangeLog"> | string
-  type?: Prisma.StringFilter<"LayoutChangeLog"> | string
+  type?: Prisma.EnumLayoutChangeTypeFilter<"LayoutChangeLog"> | $Enums.LayoutChangeType
   payload?: Prisma.JsonFilter<"LayoutChangeLog">
   createdAt?: Prisma.DateTimeFilter<"LayoutChangeLog"> | Date | string
 }, "id">
@@ -227,7 +227,7 @@ export type LayoutChangeLogScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"LayoutChangeLog"> | string
   eventId?: Prisma.StringWithAggregatesFilter<"LayoutChangeLog"> | string
   actorId?: Prisma.StringWithAggregatesFilter<"LayoutChangeLog"> | string
-  type?: Prisma.StringWithAggregatesFilter<"LayoutChangeLog"> | string
+  type?: Prisma.EnumLayoutChangeTypeWithAggregatesFilter<"LayoutChangeLog"> | $Enums.LayoutChangeType
   payload?: Prisma.JsonWithAggregatesFilter<"LayoutChangeLog">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LayoutChangeLog"> | Date | string
 }
@@ -236,7 +236,7 @@ export type LayoutChangeLogCreateInput = {
   id?: string
   eventId: string
   actorId: string
-  type: string
+  type: $Enums.LayoutChangeType
   payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -245,7 +245,7 @@ export type LayoutChangeLogUncheckedCreateInput = {
   id?: string
   eventId: string
   actorId: string
-  type: string
+  type: $Enums.LayoutChangeType
   payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -254,7 +254,7 @@ export type LayoutChangeLogUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   actorId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumLayoutChangeTypeFieldUpdateOperationsInput | $Enums.LayoutChangeType
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -263,7 +263,7 @@ export type LayoutChangeLogUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   actorId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumLayoutChangeTypeFieldUpdateOperationsInput | $Enums.LayoutChangeType
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -272,7 +272,7 @@ export type LayoutChangeLogCreateManyInput = {
   id?: string
   eventId: string
   actorId: string
-  type: string
+  type: $Enums.LayoutChangeType
   payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -281,7 +281,7 @@ export type LayoutChangeLogUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   actorId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumLayoutChangeTypeFieldUpdateOperationsInput | $Enums.LayoutChangeType
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -290,7 +290,7 @@ export type LayoutChangeLogUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   actorId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumLayoutChangeTypeFieldUpdateOperationsInput | $Enums.LayoutChangeType
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -318,6 +318,10 @@ export type LayoutChangeLogMinOrderByAggregateInput = {
   actorId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type EnumLayoutChangeTypeFieldUpdateOperationsInput = {
+  set?: $Enums.LayoutChangeType
 }
 
 
@@ -367,7 +371,7 @@ export type $LayoutChangeLogPayload<ExtArgs extends runtime.Types.Extensions.Int
     id: string
     eventId: string
     actorId: string
-    type: string
+    type: $Enums.LayoutChangeType
     payload: runtime.JsonValue
     createdAt: Date
   }, ExtArgs["result"]["layoutChangeLog"]>
@@ -796,7 +800,7 @@ export interface LayoutChangeLogFieldRefs {
   readonly id: Prisma.FieldRef<"LayoutChangeLog", 'String'>
   readonly eventId: Prisma.FieldRef<"LayoutChangeLog", 'String'>
   readonly actorId: Prisma.FieldRef<"LayoutChangeLog", 'String'>
-  readonly type: Prisma.FieldRef<"LayoutChangeLog", 'String'>
+  readonly type: Prisma.FieldRef<"LayoutChangeLog", 'LayoutChangeType'>
   readonly payload: Prisma.FieldRef<"LayoutChangeLog", 'Json'>
   readonly createdAt: Prisma.FieldRef<"LayoutChangeLog", 'DateTime'>
 }

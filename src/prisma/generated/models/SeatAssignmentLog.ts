@@ -29,7 +29,7 @@ export type SeatAssignmentLogMinAggregateOutputType = {
   seatId: string | null
   guestId: string | null
   invitationId: string | null
-  action: string | null
+  action: $Enums.SeatAssignmentAction | null
   createdAt: Date | null
 }
 
@@ -39,7 +39,7 @@ export type SeatAssignmentLogMaxAggregateOutputType = {
   seatId: string | null
   guestId: string | null
   invitationId: string | null
-  action: string | null
+  action: $Enums.SeatAssignmentAction | null
   createdAt: Date | null
 }
 
@@ -166,7 +166,7 @@ export type SeatAssignmentLogGroupByOutputType = {
   seatId: string
   guestId: string | null
   invitationId: string | null
-  action: string
+  action: $Enums.SeatAssignmentAction
   data: runtime.JsonValue | null
   createdAt: Date
   _count: SeatAssignmentLogCountAggregateOutputType | null
@@ -198,7 +198,7 @@ export type SeatAssignmentLogWhereInput = {
   seatId?: Prisma.StringFilter<"SeatAssignmentLog"> | string
   guestId?: Prisma.StringNullableFilter<"SeatAssignmentLog"> | string | null
   invitationId?: Prisma.StringNullableFilter<"SeatAssignmentLog"> | string | null
-  action?: Prisma.StringFilter<"SeatAssignmentLog"> | string
+  action?: Prisma.EnumSeatAssignmentActionFilter<"SeatAssignmentLog"> | $Enums.SeatAssignmentAction
   data?: Prisma.JsonNullableFilter<"SeatAssignmentLog">
   createdAt?: Prisma.DateTimeFilter<"SeatAssignmentLog"> | Date | string
 }
@@ -223,7 +223,7 @@ export type SeatAssignmentLogWhereUniqueInput = Prisma.AtLeast<{
   seatId?: Prisma.StringFilter<"SeatAssignmentLog"> | string
   guestId?: Prisma.StringNullableFilter<"SeatAssignmentLog"> | string | null
   invitationId?: Prisma.StringNullableFilter<"SeatAssignmentLog"> | string | null
-  action?: Prisma.StringFilter<"SeatAssignmentLog"> | string
+  action?: Prisma.EnumSeatAssignmentActionFilter<"SeatAssignmentLog"> | $Enums.SeatAssignmentAction
   data?: Prisma.JsonNullableFilter<"SeatAssignmentLog">
   createdAt?: Prisma.DateTimeFilter<"SeatAssignmentLog"> | Date | string
 }, "id">
@@ -251,7 +251,7 @@ export type SeatAssignmentLogScalarWhereWithAggregatesInput = {
   seatId?: Prisma.StringWithAggregatesFilter<"SeatAssignmentLog"> | string
   guestId?: Prisma.StringNullableWithAggregatesFilter<"SeatAssignmentLog"> | string | null
   invitationId?: Prisma.StringNullableWithAggregatesFilter<"SeatAssignmentLog"> | string | null
-  action?: Prisma.StringWithAggregatesFilter<"SeatAssignmentLog"> | string
+  action?: Prisma.EnumSeatAssignmentActionWithAggregatesFilter<"SeatAssignmentLog"> | $Enums.SeatAssignmentAction
   data?: Prisma.JsonNullableWithAggregatesFilter<"SeatAssignmentLog">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SeatAssignmentLog"> | Date | string
 }
@@ -262,7 +262,7 @@ export type SeatAssignmentLogCreateInput = {
   seatId: string
   guestId?: string | null
   invitationId?: string | null
-  action: string
+  action: $Enums.SeatAssignmentAction
   data?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -273,7 +273,7 @@ export type SeatAssignmentLogUncheckedCreateInput = {
   seatId: string
   guestId?: string | null
   invitationId?: string | null
-  action: string
+  action: $Enums.SeatAssignmentAction
   data?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -284,7 +284,7 @@ export type SeatAssignmentLogUpdateInput = {
   seatId?: Prisma.StringFieldUpdateOperationsInput | string
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  action?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.EnumSeatAssignmentActionFieldUpdateOperationsInput | $Enums.SeatAssignmentAction
   data?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -295,7 +295,7 @@ export type SeatAssignmentLogUncheckedUpdateInput = {
   seatId?: Prisma.StringFieldUpdateOperationsInput | string
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  action?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.EnumSeatAssignmentActionFieldUpdateOperationsInput | $Enums.SeatAssignmentAction
   data?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -306,7 +306,7 @@ export type SeatAssignmentLogCreateManyInput = {
   seatId: string
   guestId?: string | null
   invitationId?: string | null
-  action: string
+  action: $Enums.SeatAssignmentAction
   data?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -317,7 +317,7 @@ export type SeatAssignmentLogUpdateManyMutationInput = {
   seatId?: Prisma.StringFieldUpdateOperationsInput | string
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  action?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.EnumSeatAssignmentActionFieldUpdateOperationsInput | $Enums.SeatAssignmentAction
   data?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -328,7 +328,7 @@ export type SeatAssignmentLogUncheckedUpdateManyInput = {
   seatId?: Prisma.StringFieldUpdateOperationsInput | string
   guestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  action?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.EnumSeatAssignmentActionFieldUpdateOperationsInput | $Enums.SeatAssignmentAction
   data?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -362,6 +362,10 @@ export type SeatAssignmentLogMinOrderByAggregateInput = {
   invitationId?: Prisma.SortOrder
   action?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type EnumSeatAssignmentActionFieldUpdateOperationsInput = {
+  set?: $Enums.SeatAssignmentAction
 }
 
 
@@ -421,7 +425,7 @@ export type $SeatAssignmentLogPayload<ExtArgs extends runtime.Types.Extensions.I
     seatId: string
     guestId: string | null
     invitationId: string | null
-    action: string
+    action: $Enums.SeatAssignmentAction
     data: runtime.JsonValue | null
     createdAt: Date
   }, ExtArgs["result"]["seatAssignmentLog"]>
@@ -852,7 +856,7 @@ export interface SeatAssignmentLogFieldRefs {
   readonly seatId: Prisma.FieldRef<"SeatAssignmentLog", 'String'>
   readonly guestId: Prisma.FieldRef<"SeatAssignmentLog", 'String'>
   readonly invitationId: Prisma.FieldRef<"SeatAssignmentLog", 'String'>
-  readonly action: Prisma.FieldRef<"SeatAssignmentLog", 'String'>
+  readonly action: Prisma.FieldRef<"SeatAssignmentLog", 'SeatAssignmentAction'>
   readonly data: Prisma.FieldRef<"SeatAssignmentLog", 'Json'>
   readonly createdAt: Prisma.FieldRef<"SeatAssignmentLog", 'DateTime'>
 }
