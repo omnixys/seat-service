@@ -26,7 +26,7 @@ variable "APP_NAME" {
 
 # Automatically use today's date (YYYY-MM-DD) as version tag
 variable "APP_VERSION" {
-  default = "0.0.0-dev"
+  default = "dev"
 }
 
 variable "NODE_VERSION" {
@@ -38,6 +38,14 @@ variable "CREATED" {
 }
 
 variable "REVISION" {
+  default = "local-dev"
+}
+
+variable "DATABASE_URL" {
+  default = "kp"
+}
+
+variable "SHADOW_DATABASE_URL" {
   default = "local-dev"
 }
 
@@ -53,12 +61,18 @@ target "build" {
   dockerfile = "./Dockerfile"
   context = "."
 
+      secret = [
+    "id=omnixys_token,src=.secrets/omnixys_token"
+  ]
+
   args = {
     NODE_VERSION = "${NODE_VERSION}"
     APP_NAME     = "${APP_NAME}"
     APP_VERSION  = "${APP_VERSION}"
     CREATED      = "${CREATED}"
     REVISION     = "${REVISION}"
+    DATABASE_URL         = "${DATABASE_URL}"
+    SHADOW_DATABASE_URL  = "${SHADOW_DATABASE_URL}"
   }
 
   labels = {
@@ -73,7 +87,6 @@ target "build" {
   }
 
   tags = [
-    "omnixys/${APP_NAME}-service:latest",
     "omnixys/${APP_NAME}-service:${APP_VERSION}"
   ]
 

@@ -3,11 +3,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 
-import {
-  CurrentUser,
-  CurrentUserData,
-} from '../../auth/decorators/current-user.decorator.js';
-import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard.js';
 import { CreateSectionInput } from '../models/inputs/create-section.input.js';
 import { RenameSectionInput } from '../models/inputs/rename-section.input.js';
 import { UpdateSectionInput } from '../models/inputs/update-section.input.js';
@@ -17,6 +12,7 @@ import {
 } from '../models/payloads/rename.payload.js';
 import { SectionPayload } from '../models/payloads/section.payload.js';
 import { SectionWriteService } from '../services/section-write.service.js';
+import { CookieAuthGuard, CurrentUser, CurrentUserData } from '@omnixys/auth';
 // import { EventAdminGuard } from '../../auth/guards/event-admin.guard.js';
 // import { EventOwnerGuard } from '../../auth/guards/event-owner.guard.js';
 

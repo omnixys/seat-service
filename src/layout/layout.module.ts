@@ -1,4 +1,3 @@
-import { AuthModule } from '../auth/auth.module.js';
 import { ScalarsModule } from '../core/scalars/scalar.module.js';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { LayoutChangeLogMapper } from './models/mappers/layout-change-log.mapper.js';
@@ -10,6 +9,7 @@ import { LayoutVersionFieldsResolver } from './resolvers/layout-version-fields.r
 import { LayoutReadService } from './services/layout-read.service.js';
 import { LayoutWriteService } from './services/layout-write.service.js';
 import { Module } from '@nestjs/common';
+import { AuthModule } from '@omnixys/auth';
 
 @Module({
   imports: [PrismaModule, AuthModule, ScalarsModule],

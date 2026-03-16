@@ -9,6 +9,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { LoggerPlusService } from '../../logger/logger-plus.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { CreateSeatDTO } from '@omnixys/contracts';
 
 import {
   AutoGenerateLayoutInput,
@@ -35,7 +36,6 @@ import { SeatSnapshot, SnapshotSerializer } from '../utils/snapshot-serializer.j
 
 import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
-import { AutoGenerateLayoutDTO } from '../models/dto/auto-generate.dto.js';
 import { CloneSectionInput } from '../models/inputs/clone-section.input.js';
 import { DuplicateTableInput } from '../models/inputs/duplicate-Table-input.js';
 import { trace, Tracer } from '@opentelemetry/api';
@@ -264,7 +264,7 @@ export class LayoutWriteService {
     return true;
   }
 
-  async autoGenerateFromMaxSeats(input: AutoGenerateLayoutDTO) {
+  async autoGenerateFromMaxSeats(input: CreateSeatDTO) {
     const { eventId, maxSeats, actorId } = input;
     const sections = this.buildAutoGenerateInputFromMaxSeats(maxSeats);
 

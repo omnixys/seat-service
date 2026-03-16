@@ -24,10 +24,10 @@ import {
   KafkaEventHandler,
 } from '../kafka/interface/kafka-event.interface.js';
 import { getTopic, getTopics } from '../kafka/kafka-topic.properties.js';
-import { AutoGenerateLayoutDTO } from '../layout/models/dto/auto-generate.dto.js';
 import { LayoutWriteService } from '../layout/services/layout-write.service.js';
 import { LoggerPlusService } from '../logger/logger-plus.service.js';
 import { Injectable } from '@nestjs/common';
+import { CreateSeatMessageDTO } from '@omnixys/contracts';
 
 /**
  * Kafka event handler responsible for useristrative commands such as
@@ -67,7 +67,7 @@ export class EventHandler implements KafkaEventHandler {
   @KafkaEvent(...getTopics('generateSeats'))
   async handle(
     topic: string,
-    data: { payload: AutoGenerateLayoutDTO },
+    data: CreateSeatMessageDTO,
     context: KafkaEventContext,
   ): Promise<void> {
     this.logger.warn(`User command received: ${topic}`);
@@ -75,7 +75,7 @@ export class EventHandler implements KafkaEventHandler {
 
     switch (topic) {
       case getTopic('generateSeats'):
-        await this.createTickets(data as { payload: AutoGenerateLayoutDTO });
+        await this.createSeats(data);
 
         break;
       default:
@@ -83,9 +83,7 @@ export class EventHandler implements KafkaEventHandler {
     }
   }
 
-  private async createTickets(data: {
-    payload: AutoGenerateLayoutDTO;
-  }): Promise<void> {
+  private async createSeats(data: CreateSeatMessageDTO): Promise<void> {
     this.logger.debug('autoGenerateLayout %o', data.payload);
 
     await this.layoutWriteService.autoGenerateFromMaxSeats(data.payload);

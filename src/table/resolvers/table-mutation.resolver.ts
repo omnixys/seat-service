@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import {
-  CurrentUser,
-  CurrentUserData,
-} from '../../auth/decorators/current-user.decorator.js';
-import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard.js';
-import {
   BulkRenamePayload,
   RenamePayload,
 } from '../../section/models/payloads/rename.payload.js';
@@ -16,6 +11,7 @@ import { TablePayload } from '../models/payloads/table.payload.js';
 import { TableWriteService } from '../services/table-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { CookieAuthGuard, CurrentUser, CurrentUserData } from '@omnixys/auth';
 
 @Resolver()
 export class TableMutationResolver {

@@ -1,12 +1,6 @@
 // src/layout/resolvers/layout-mutation.resolver.ts
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import {
-  CurrentUser,
-  CurrentUserData,
-} from '../../auth/decorators/current-user.decorator.js';
-import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard.js';
-
 import { SeatPayload } from '../../seat/models/payloads/seat.payload.js';
 import { SectionPayload } from '../../section/models/payloads/section.payload.js';
 import { TablePayload } from '../../table/models/payloads/table.payload.js';
@@ -26,6 +20,7 @@ import { LayoutWriteService } from '../services/layout-write.service.js';
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { CookieAuthGuard, CurrentUser, CurrentUserData } from '@omnixys/auth';
 
 @Resolver()
 export class LayoutMutationResolver {

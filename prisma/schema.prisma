@@ -38,13 +38,20 @@ model Section {
   name     String @map("name")
   order    Int    @map("order")
   capacity Int?   @map("capacity")
-  meta     Json   @map("meta") // color, layout settings, shape, etc.
+
+  shape SectionShape @default(RECTANGLE)
 
   x Float @default(0)
   y Float @default(0)
 
+  width  Float?
+  height Float?
+
   tables Table[]
   seats  Seat[]
+
+  rotation Float? @default(0)
+  meta     Json? // optional layout config
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -67,13 +74,19 @@ model Table {
   eventId   String @map("event_id")
   sectionId String @map("section_id")
 
-  name     String @map("name") // e.g. "1", "A", "Tisch 7"
-  order    Int    @map("order")
-  capacity Int?   @map("capacity")
-  meta     Json   @map("meta")
+  name  String @map("name") // e.g. "1", "A", "Tisch 7"
+  order Int    @map("order")
+
+  capacity Int? @map("capacity")
+
+  shape TableShape @default(ROUND)
 
   x Float @default(0)
   y Float @default(0)
+
+  rotation Float? @default(0)
+
+  meta Json?
 
   seats Seat[]
 
@@ -84,6 +97,7 @@ model Table {
 
   @@unique([sectionId, name])
   @@index([eventId])
+  @@index([sectionId])
   @@map("table")
   @@schema("seat")
 }
@@ -107,11 +121,18 @@ model Seat {
   label  String? @map("label")
   note   String? @map("note")
 
-  x        Float? @map("x")
-  y        Float? @map("y")
-  rotation Float? @map("rotation")
-
   seatType String? @map("seat_type") // VIP, Standard, Staff, Standing, etc.
+
+  shape SeatShape @default(CIRCLE)
+
+  x Float? @map("x")
+  y Float? @map("y")
+
+  width  Float?
+  height Float?
+  radius Float?
+
+  rotation Float? @map("rotation")
 
   guestId      String? @map("guest_id") // stored as ID only (from Invitation/User service)
   invitationId String? @map("invitation_id")
@@ -211,6 +232,69 @@ enum SeatStatus {
   RESERVED
   ASSIGNED
   BLOCKED
+
+  @@schema("seat")
+}
+
+enum SeatType {
+  STANDARD
+  VIP
+  STAFF
+  STANDING
+  CHILD
+  RESERVED
+
+  @@schema("seat")
+}
+
+enum SeatShape {
+  CIRCLE
+  SQUARE
+  RECTANGLE
+
+  @@schema("seat")
+}
+
+enum TableShape {
+  ROUND
+  RECTANGLE
+  OVAL
+  ROW
+
+  @@schema("seat")
+}
+
+enum SectionShape {
+  RECTANGLE
+  CIRCLE
+  POLYGON
+
+  @@schema("seat")
+}
+
+enum SeatAssignmentAction {
+  ASSIGNED
+  UNASSIGNED
+  MOVED
+
+  @@schema("seat")
+}
+
+enum LayoutChangeType {
+  SECTION_CREATE
+  SECTION_UPDATE
+  SECTION_DELETE
+
+  TABLE_CREATE
+  TABLE_UPDATE
+  TABLE_DELETE
+
+  SEAT_CREATE
+  SEAT_UPDATE
+  SEAT_DELETE
+
+  SEAT_MOVE
+  SEAT_ASSIGN
 
   @@schema("seat")
 }

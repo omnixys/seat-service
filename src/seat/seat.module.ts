@@ -1,4 +1,3 @@
-import { AuthModule } from '../auth/auth.module.js';
 import { ScalarsModule } from '../core/scalars/scalar.module.js';
 import { LayoutModule } from '../layout/layout.module.js';
 import { PrismaModule } from '../prisma/prisma.module.js';
@@ -8,6 +7,7 @@ import { SeatQueryResolver } from './resolvers/seat-query.resolver.js';
 import { SeatReadService } from './services/seat-read.service.js';
 import { SeatWriteService } from './services/seat-write.service.js';
 import { Module } from '@nestjs/common';
+import { AuthModule } from '@omnixys/auth';
 
 @Module({
   imports: [PrismaModule, AuthModule, ScalarsModule, LayoutModule],
