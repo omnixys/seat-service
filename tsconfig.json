@@ -61,13 +61,5 @@
   "include": ["src/**/*", "(tmp)/(TODO)/sub"],
   "exclude": ["node_modules", "dist", "coverage", "__tests__/"],
   "types": ["node", "fastify", "@types/node"],
-  "typeRoots": ["./src/types", "./node_modules/@types"],
-
-  /* ──────────────── 🧩 ts-node (nur DEV) ──────────────── */
-  "ts-node": {
-    "esm": true,
-    "swc": false,
-    "transpileOnly": true,
-    "files": true
-  }
+  "typeRoots": ["./src/types", "./node_modules/@types"]
 }

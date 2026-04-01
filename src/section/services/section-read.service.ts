@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { LoggerPlusService } from '../../logger/logger-plus.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { SectionMapper } from '../models/mappers/section.mapper.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { OmnixysLogger } from '@omnixys/logger';
 
 @Injectable()
 export class SectionReadService {
@@ -11,9 +11,9 @@ export class SectionReadService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly loggerService: LoggerPlusService,
+    private readonly omnixysLogger: OmnixysLogger,
   ) {
-    this.logger = this.loggerService.getLogger(SectionReadService.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name);
   }
 
   /** Throws if section does not exist */

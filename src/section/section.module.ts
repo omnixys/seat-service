@@ -8,7 +8,7 @@ import { SectionQueryResolver } from './resolvers/section-query.resolver.js';
 import { SectionReadService } from './services/section-read.service.js';
 import { SectionWriteService } from './services/section-write.service.js';
 import { Module } from '@nestjs/common';
-import { AuthModule } from '@omnixys/auth';
+import { AuthModule } from '@omnixys/security';
 
 @Module({
   imports: [PrismaModule, AuthModule, ScalarsModule, LayoutModule],

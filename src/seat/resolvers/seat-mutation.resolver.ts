@@ -7,7 +7,11 @@ import { SeatPayload } from '../models/payloads/seat.payload.js';
 import { SeatWriteService } from '../services/seat-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { CookieAuthGuard, CurrentUser, CurrentUserData } from '@omnixys/auth';
+import {
+  CookieAuthGuard,
+  CurrentUser,
+  CurrentUserData,
+} from '@omnixys/security';
 
 @Resolver()
 export class SeatMutationResolver {

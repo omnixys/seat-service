@@ -11,7 +11,11 @@ import { TablePayload } from '../models/payloads/table.payload.js';
 import { TableWriteService } from '../services/table-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { CookieAuthGuard, CurrentUser, CurrentUserData } from '@omnixys/auth';
+import {
+  CookieAuthGuard,
+  CurrentUser,
+  CurrentUserData,
+} from '@omnixys/security';
 
 @Resolver()
 export class TableMutationResolver {

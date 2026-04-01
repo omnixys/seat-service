@@ -7,7 +7,6 @@
  * ------------------------------------------------------------------------- */
 
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
-import { LoggerPlusService } from '../../logger/logger-plus.service.js';
 import { LayoutChangeType } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { RenameConflict, RenamePayload } from '../../section/models/payloads/rename.payload.js';
@@ -17,6 +16,7 @@ import { CreateTableInput } from '../models/inputs/create-table.input.js';
 import { RenameTableInput } from '../models/inputs/rename-table.input.js';
 import { UpdateTableInput } from '../models/inputs/update-table.input.js';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { OmnixysLogger } from '@omnixys/logger';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
 @Injectable()
@@ -25,10 +25,10 @@ export class TableWriteService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly loggerService: LoggerPlusService,
+    private readonly omnixysLogger: OmnixysLogger,
     private readonly layoutWriteService: LayoutWriteService,
   ) {
-    this.logger = this.loggerService.getLogger(TableWriteService.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name);
   }
 
   // ---------------------------------------------------------------------------

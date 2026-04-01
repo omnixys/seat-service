@@ -20,7 +20,11 @@ import { LayoutWriteService } from '../services/layout-write.service.js';
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { CookieAuthGuard, CurrentUser, CurrentUserData } from '@omnixys/auth';
+import {
+  CookieAuthGuard,
+  CurrentUser,
+  CurrentUserData,
+} from '@omnixys/security';
 
 @Resolver()
 export class LayoutMutationResolver {

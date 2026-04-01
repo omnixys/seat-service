@@ -200,7 +200,7 @@ export type LayoutVersionGroupByOutputType = {
   _max: LayoutVersionMaxAggregateOutputType | null
 }
 
-type GetLayoutVersionGroupByPayload<T extends LayoutVersionGroupByArgs> = Prisma.PrismaPromise<
+export type GetLayoutVersionGroupByPayload<T extends LayoutVersionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<LayoutVersionGroupByOutputType, T['by']> &
       {

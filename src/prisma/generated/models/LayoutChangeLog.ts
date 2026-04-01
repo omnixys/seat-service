@@ -160,7 +160,7 @@ export type LayoutChangeLogGroupByOutputType = {
   _max: LayoutChangeLogMaxAggregateOutputType | null
 }
 
-type GetLayoutChangeLogGroupByPayload<T extends LayoutChangeLogGroupByArgs> = Prisma.PrismaPromise<
+export type GetLayoutChangeLogGroupByPayload<T extends LayoutChangeLogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<LayoutChangeLogGroupByOutputType, T['by']> &
       {

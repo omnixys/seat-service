@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonScalar } from '../../../core/scalars/json.scalar.js';
+import {
+  SeatShape,
+  SectionShape,
+  TableShape,
+} from '../../../prisma/generated/enums.js';
 import { Field, ID, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
@@ -7,8 +12,8 @@ export class SeatConfigInput {
   @Field(() => Int)
   count!: number;
 
-  @Field({ defaultValue: 'circle' })
-  shape!: string;
+  @Field({ defaultValue: SeatShape.CIRCLE })
+  shape!: SeatShape;
 
   @Field(() => JsonScalar, { nullable: true })
   meta?: any;
@@ -19,8 +24,8 @@ export class TableConfigInput {
   @Field({ nullable: true })
   name?: string;
 
-  @Field({ defaultValue: 'circle' })
-  shape!: string;
+  @Field({ defaultValue: TableShape.ROUND })
+  shape!: TableShape;
 
   @Field(() => SeatConfigInput)
   seats!: SeatConfigInput;
@@ -37,8 +42,8 @@ export class SectionInput {
   @Field()
   name!: string;
 
-  @Field({ defaultValue: 'circle' })
-  shape!: string;
+  @Field({ defaultValue: SectionShape.CIRCLE })
+  shape!: SectionShape;
 
   @Field(() => [TableConfigInput])
   tables!: TableConfigInput[];

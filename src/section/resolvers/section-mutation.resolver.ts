@@ -12,7 +12,11 @@ import {
 } from '../models/payloads/rename.payload.js';
 import { SectionPayload } from '../models/payloads/section.payload.js';
 import { SectionWriteService } from '../services/section-write.service.js';
-import { CookieAuthGuard, CurrentUser, CurrentUserData } from '@omnixys/auth';
+import {
+  CookieAuthGuard,
+  CurrentUser,
+  CurrentUserData,
+} from '@omnixys/security';
 // import { EventAdminGuard } from '../../auth/guards/event-admin.guard.js';
 // import { EventOwnerGuard } from '../../auth/guards/event-owner.guard.js';
 

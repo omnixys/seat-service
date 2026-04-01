@@ -174,7 +174,7 @@ export type SeatAssignmentLogGroupByOutputType = {
   _max: SeatAssignmentLogMaxAggregateOutputType | null
 }
 
-type GetSeatAssignmentLogGroupByPayload<T extends SeatAssignmentLogGroupByArgs> = Prisma.PrismaPromise<
+export type GetSeatAssignmentLogGroupByPayload<T extends SeatAssignmentLogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SeatAssignmentLogGroupByOutputType, T['by']> &
       {

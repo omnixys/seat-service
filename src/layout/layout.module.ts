@@ -19,7 +19,7 @@ import { LayoutReadService } from './services/layout-read.service.js';
 import { LayoutWriteService } from './services/layout-write.service.js';
 import { Module } from '@nestjs/common';
 import { registerEnumType } from '@nestjs/graphql';
-import { AuthModule } from '@omnixys/auth';
+import { AuthModule } from '@omnixys/security';
 
 registerEnumType(SectionShape, {
   name: 'SectionShape',

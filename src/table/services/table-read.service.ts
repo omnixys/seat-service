@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { LoggerPlusService } from '../../logger/logger-plus.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { TableMapper } from '../models/mappers/table.mapper.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { OmnixysLogger } from '@omnixys/logger';
 
 @Injectable()
 export class TableReadService {
@@ -11,9 +11,9 @@ export class TableReadService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly loggerService: LoggerPlusService,
+    private readonly omnixysLogger: OmnixysLogger,
   ) {
-    this.logger = this.loggerService.getLogger(TableReadService.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name);
   }
 
   /** Throws if table does not exist */

@@ -16,16 +16,16 @@
  */
 
 import { LayoutWriteService } from '../layout/services/layout-write.service.js';
-import { LoggerPlusService } from '../logger/logger-plus.service.js';
 import { Injectable } from '@nestjs/common';
-import { CreateSeatMessageDTO } from '@omnixys/contracts';
 import {
   KafkaEvent,
-  KafkaEventContext,
   KafkaEventHandler,
-  KafkaHandler,
+  IKafkaEventHandler,
   KafkaTopics,
+  IKafkaEventContext,
 } from '@omnixys/kafka';
+import { OmnixysLogger } from '@omnixys/logger';
+import { CreateSeatMessageDTO } from '@omnixys/shared';
 
 /**
  * Kafka event handler responsible for useristrative commands such as
@@ -35,9 +35,9 @@ import {
  * @category Messaging
  * @since 1.0.0
  */
-@KafkaHandler('event')
+@KafkaEventHandler('event')
 @Injectable()
-export class EventHandler implements KafkaEventHandler {
+export class EventHandler implements IKafkaEventHandler {
   private readonly logger;
 
   /**
@@ -47,10 +47,10 @@ export class EventHandler implements KafkaEventHandler {
    * @param userService - The service responsible for handling system-level user operations.
    */
   constructor(
-    private readonly loggerService: LoggerPlusService,
+    private readonly omnixysLogger: OmnixysLogger,
     private readonly layoutWriteService: LayoutWriteService,
   ) {
-    this.logger = this.loggerService.getLogger(EventHandler.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name);
   }
 
   /**
@@ -62,23 +62,23 @@ export class EventHandler implements KafkaEventHandler {
    *
    * @returns A Promise that resolves once the command has been processed.
    */
-  @KafkaEvent(KafkaTopics.seat.createSeats, KafkaTopics.seat.deleteSeats)
+  @KafkaEvent(KafkaTopics.seat.create, KafkaTopics.seat.delete)
   async handle(
     topic: string,
     data:
       | CreateSeatMessageDTO
       | { payload: { actorId: string; eventId: string } },
-    context: KafkaEventContext,
+    context: IKafkaEventContext,
   ): Promise<void> {
     this.logger.warn(`User command received: ${topic}`);
     this.logger.debug('Kafka context: %o', context);
 
     switch (topic) {
-      case KafkaTopics.seat.createSeats:
+      case KafkaTopics.seat.create:
         await this.createSeats(data as CreateSeatMessageDTO);
         break;
 
-      case KafkaTopics.seat.deleteSeats:
+      case KafkaTopics.seat.delete:
         await this.deleteSeats(data);
         break;
 

@@ -8,7 +8,7 @@ import { TableQueryResolver } from './resolvers/table-query.resolver.js';
 import { TableReadService } from './services/table-read.service.js';
 import { TableWriteService } from './services/table-write.service.js';
 import { Module } from '@nestjs/common';
-import { AuthModule } from '@omnixys/auth';
+import { AuthModule } from '@omnixys/security';
 
 @Module({
   imports: [PrismaModule, AuthModule, ScalarsModule, LayoutModule],

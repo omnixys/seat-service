@@ -7,9 +7,8 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { LoggerPlusService } from '../../logger/logger-plus.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { CreateSeatDTO } from '@omnixys/contracts';
+import { CreateSeatDTO } from '@omnixys/shared';
 
 import {
   AutoGenerateLayoutInput,
@@ -43,6 +42,7 @@ import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
 import { CloneSectionInput } from '../models/inputs/clone-section.input.js';
 import { DuplicateTableInput } from '../models/inputs/duplicate-Table-input.js';
+import { OmnixysLogger } from '@omnixys/logger';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 import jsonpatch from 'fast-json-patch';
 
@@ -54,9 +54,9 @@ export class LayoutWriteService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly loggerService: LoggerPlusService,
+    private readonly omnixysLogger: OmnixysLogger,
   ) {
-    this.logger = this.loggerService.getLogger(LayoutWriteService.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name);
     this.snapshot = new SnapshotSerializer(prisma);
   }
 
@@ -75,7 +75,7 @@ export class LayoutWriteService {
     const snapshot = await this.snapshot.serializeCurrentLayout(eventId);
 
     this.logger.debug(
-      'Snapshot generated (sections=%d tables=%d seats=%d)',
+      'Snapshot generated (sections=%s tables=%s seats=%s)',
       snapshot.sections?.length ?? 0,
       snapshot.tables?.length ?? 0,
       snapshot.seats?.length ?? 0,
@@ -97,7 +97,7 @@ export class LayoutWriteService {
       payload: { version: created.version, id: created.id },
     });
 
-    this.logger.debug('Layout version saved (event=%s version=%d)', eventId, created.version);
+    this.logger.debug('Layout version saved (event=%s version=%s)', eventId, created.version);
 
     return LayoutVersionMapper.toPayload(created);
   }
@@ -141,7 +141,7 @@ export class LayoutWriteService {
 
     await this.restoreVersion(eventId, previous);
 
-    this.logger.debug('Undo completed (event=%s restoredVersion=%d)', eventId, previous.version);
+    this.logger.debug('Undo completed (event=%s restoredVersion=%s)', eventId, previous.version);
 
     return true;
   }
@@ -170,13 +170,13 @@ export class LayoutWriteService {
 
     await this.restoreVersion(eventId, next);
 
-    this.logger.debug('Redo completed (event=%s restoredVersion=%d)', eventId, next.version);
+    this.logger.debug('Redo completed (event=%s restoredVersion=%s)', eventId, next.version);
 
     return true;
   }
 
   private async restoreVersion(eventId: string, version: LayoutVersion) {
-    this.logger.debug('Restoring layout version %d for event %s', version.version, eventId);
+    this.logger.debug('Restoring layout version %s for event %s', version.version, eventId);
 
     await this.prisma.$transaction(async (tx) => {
       await tx.seat.deleteMany({ where: { eventId } });
@@ -205,7 +205,7 @@ export class LayoutWriteService {
         sectionMap.set(sec.id, created.id);
       }
 
-      this.logger.debug('Sections restored: %d', sectionMap.size);
+      this.logger.debug('Sections restored: %s', sectionMap.size);
 
       /* Tables */
 
@@ -231,7 +231,7 @@ export class LayoutWriteService {
         tableMap.set(tbl.id, created.id);
       }
 
-      this.logger.debug('Tables restored: %d', tableMap.size);
+      this.logger.debug('Tables restored: %s', tableMap.size);
 
       /* Seats */
 
@@ -264,11 +264,11 @@ export class LayoutWriteService {
         await tx.seat.createMany({ data: seatRows });
       }
 
-      this.logger.debug('Seats restored: %d', seatRows.length);
+      this.logger.debug('Seats restored: %s', seatRows.length);
     });
 
     this.logger.debug(
-      'Layout restoration finished (event=%s version=%d)',
+      'Layout restoration finished (event=%s version=%s)',
       eventId,
       version.version,
     );
@@ -340,6 +340,18 @@ export class LayoutWriteService {
     const createdSections: any[] = [];
 
     for (const sec of geometry.sections) {
+      const existing = await this.prisma.section.findFirst({
+        where: {
+          eventId,
+          name: sec.name,
+        },
+      });
+
+      if (existing) {
+        this.logger.debug('Section exists → skip (%s)', sec.name);
+        continue;
+      }
+
       const created = await this.prisma.section.create({
         data: {
           eventId,
@@ -397,6 +409,7 @@ export class LayoutWriteService {
         x: seat.x,
         y: seat.y,
         rotation: seat.rotation ?? 0,
+        shape: seat.seatShape,
         seatType: seat.seatType ?? SeatType.STANDARD,
         status: seat.status ?? SeatStatus.AVAILABLE,
         meta: (seat.meta ?? {}) as InputJsonValue,

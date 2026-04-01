@@ -7,7 +7,7 @@ import { SeatQueryResolver } from './resolvers/seat-query.resolver.js';
 import { SeatReadService } from './services/seat-read.service.js';
 import { SeatWriteService } from './services/seat-write.service.js';
 import { Module } from '@nestjs/common';
-import { AuthModule } from '@omnixys/auth';
+import { AuthModule } from '@omnixys/security';
 
 @Module({
   imports: [PrismaModule, AuthModule, ScalarsModule, LayoutModule],

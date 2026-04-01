@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { LoggerPlusService } from '../../logger/logger-plus.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { SectionMapper } from '../../section/models/mappers/section.mapper.js';
 import { LayoutChangeLogMapper } from '../models/mappers/layout-change-log.mapper.js';
 import { LayoutVersionMapper } from '../models/mappers/layout-version.mapper.js';
 import { Injectable } from '@nestjs/common';
+import { OmnixysLogger } from '@omnixys/logger';
 
 @Injectable()
 export class LayoutReadService {
@@ -13,9 +13,9 @@ export class LayoutReadService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly loggerService: LoggerPlusService,
+    private readonly omnixysLogger: OmnixysLogger,
   ) {
-    this.logger = this.loggerService.getLogger(LayoutReadService.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name);
   }
 
   // ─────────────────────────────────────────────

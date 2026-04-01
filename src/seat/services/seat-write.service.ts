@@ -10,7 +10,6 @@
  * ------------------------------------------------------------------------- */
 
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
-import { LoggerPlusService } from '../../logger/logger-plus.service.js';
 import { LayoutChangeType, SeatStatus } from '../../prisma/generated/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
@@ -19,6 +18,7 @@ import { AssignSeatInput } from '../models/inputs/assign-seat.input.js';
 import { CreateSeatInput } from '../models/inputs/create-seat.input.js';
 import { UpdateSeatInput } from '../models/inputs/update-seat.input.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { OmnixysLogger } from '@omnixys/logger';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
 @Injectable()
@@ -27,10 +27,10 @@ export class SeatWriteService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly loggerService: LoggerPlusService,
+    private readonly omnixysLogger: OmnixysLogger,
     private readonly layoutWriteService: LayoutWriteService,
   ) {
-    this.logger = this.loggerService.getLogger(SeatWriteService.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name);
   }
 
   /* ---------------------------------------------------------------------------

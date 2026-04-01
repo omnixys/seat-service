@@ -6,6 +6,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
+import type { SeatShape } from '../../prisma/generated/client.js';
+import { SeatType } from '../../prisma/generated/client.js';
+
 /**
  * GeometryEngine v4 — SectionInput-driven
  * ---------------------------------------
@@ -43,7 +46,8 @@ export interface GeometrySeat {
   x: number;
   y: number;
   rotation: number;
-  seatType?: string;
+  seatType: SeatType;
+  seatShape: SeatShape;
   status?: string;
   meta?: any;
 }
@@ -386,7 +390,8 @@ export class GeometryEngine {
           x: p.x,
           y: p.y,
           rotation: p.rotation ?? 0,
-          seatType: seatShape,
+          seatShape,
+          seatType: SeatType.STANDARD,
           status: 'AVAILABLE',
           meta: { shape: seatShape },
         });
