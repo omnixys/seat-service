@@ -19,6 +19,7 @@ import { CreateSeatInput } from '../models/inputs/create-seat.input.js';
 import { UpdateSeatInput } from '../models/inputs/update-seat.input.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OmnixysLogger } from '@omnixys/logger';
+import { TraceRunner } from '@omnixys/observability';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
 @Injectable()
@@ -247,66 +248,74 @@ export class SeatWriteService {
   }
 
   async assignSeatToGuest(input: AssignSeatDTO) {
-    const { seatId, guestId, actorId, note } = input;
+    return TraceRunner.run('[SERVICE] assignSeatToGuest', async () => {
+      const { seatId, guestId, actorId, note, invitationId } = input;
 
-    let updated;
-    let seat;
+      let updated;
+      let seat;
 
-    if (!seatId) {
-      seat = await this.prisma.seat.findFirst({
-        where: { status: SeatStatus.AVAILABLE },
-        orderBy: { createdAt: 'asc' }, // oder irgendeine andere Logik
-      });
+      if (!seatId) {
+        seat = await this.prisma.seat.findFirst({
+          where: { status: SeatStatus.AVAILABLE },
+          orderBy: { createdAt: 'asc' }, // oder irgendeine andere Logik
+        });
 
-      if (!seat) {
-        throw new Error('No available seats found');
+        if (!seat) {
+          throw new Error('No available seats found');
+        }
+
+        updated = await this.prisma.seat.update({
+          where: {
+            id: seat?.id,
+            status: SeatStatus.AVAILABLE,
+          },
+          data: {
+            guestId,
+            invitationId,
+            status: 'ASSIGNED',
+            note,
+          },
+        });
+      } else {
+        seat = await this.prisma.seat.findUnique({
+          where: { id: seatId },
+        });
+
+        if (!seat) {
+          throw new NotFoundException('Seat not found.');
+        }
+
+        updated = await this.prisma.seat.update({
+          where: { id: input.seatId },
+          data: {
+            guestId: input.guestId,
+            invitationId,
+            status: 'ASSIGNED',
+            note,
+          },
+        });
       }
 
-      updated = await this.prisma.seat.update({
-        where: { id: seat?.id },
+      await this.prisma.seatAssignmentLog.create({
         data: {
+          eventId: seat.eventId,
+          seatId: seat.id,
+          invitationId,
           guestId,
-          status: 'ASSIGNED',
-          note,
+          action: 'ASSIGNED',
+          data: {},
         },
       });
-    } else {
-      seat = await this.prisma.seat.findUnique({
-        where: { id: seatId },
-      });
 
-      if (!seat) {
-        throw new NotFoundException('Seat not found.');
-      }
-
-      updated = await this.prisma.seat.update({
-        where: { id: input.seatId },
-        data: {
-          guestId: input.guestId,
-          status: 'ASSIGNED',
-          note,
-        },
-      });
-    }
-
-    await this.prisma.seatAssignmentLog.create({
-      data: {
+      await this.layoutWriteService.logChange({
         eventId: seat.eventId,
-        seatId: seat.id,
-        guestId,
-        action: 'ASSIGNED',
-        data: {},
-      },
-    });
+        actorId,
+        type: 'SEAT_ASSIGNED',
+        payload: input,
+      });
 
-    await this.layoutWriteService.logChange({
-      eventId: seat.eventId,
-      actorId,
-      type: 'SEAT_ASSIGNED',
-      payload: input,
+      return updated;
     });
-
-    return updated;
   }
 
   /* ---------------------------------------------------------------------------
@@ -321,7 +330,8 @@ export class SeatWriteService {
     });
 
     if (!seat) {
-      throw new NotFoundException('Seat not found.');
+        this.logger.warn('Already deleted → skipping');
+  return;
     }
 
     const updated = await this.prisma.seat.update({

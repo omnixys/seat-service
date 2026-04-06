@@ -20,12 +20,13 @@ import { Injectable } from '@nestjs/common';
 import {
   KafkaEvent,
   KafkaEventHandler,
-  IKafkaEventHandler,
   KafkaTopics,
   IKafkaEventContext,
+  KAFKA_HEADERS,
 } from '@omnixys/kafka';
 import { OmnixysLogger } from '@omnixys/logger';
-import { CreateSeatMessageDTO } from '@omnixys/shared';
+import { TraceRunner } from '@omnixys/observability';
+import { CreateSeatDTO, EventIdsDTO } from '@omnixys/shared';
 
 /**
  * Kafka event handler responsible for useristrative commands such as
@@ -37,7 +38,7 @@ import { CreateSeatMessageDTO } from '@omnixys/shared';
  */
 @KafkaEventHandler('event')
 @Injectable()
-export class EventHandler implements IKafkaEventHandler {
+export class EventHandler {
   private readonly logger;
 
   /**
@@ -53,51 +54,23 @@ export class EventHandler implements IKafkaEventHandler {
     this.logger = this.omnixysLogger.log(this.constructor.name);
   }
 
-  /**
-   * Handles incoming Kafka user events and executes the appropriate useristrative command.
-   *
-   * @param topic - The Kafka topic representing the user command (e.g. shutdown, restart).
-   * @param data - The payload associated with the Kafka message.
-   * @param context - The Kafka context metadata containing headers and partition info.
-   *
-   * @returns A Promise that resolves once the command has been processed.
-   */
-  @KafkaEvent(KafkaTopics.seat.create, KafkaTopics.seat.delete)
-  async handle(
-    topic: string,
-    data:
-      | CreateSeatMessageDTO
-      | { payload: { actorId: string; eventId: string } },
-    context: IKafkaEventContext,
-  ): Promise<void> {
-    this.logger.warn(`User command received: ${topic}`);
-    this.logger.debug('Kafka context: %o', context);
-
-    switch (topic) {
-      case KafkaTopics.seat.create:
-        await this.createSeats(data as CreateSeatMessageDTO);
-        break;
-
-      case KafkaTopics.seat.delete:
-        await this.deleteSeats(data);
-        break;
-
-      default:
-        this.logger.warn(`Unknown user topic: ${topic}`);
-    }
+  @KafkaEvent(KafkaTopics.seat.create)
+  async handleCreateSeat(payload: CreateSeatDTO, _context: IKafkaEventContext) {
+    return TraceRunner.run('[HANDLER] create Seats', async () => {
+      this.logger.debug('autoGenerateLayout %o', payload);
+      await this.layoutWriteService.autoGenerateFromMaxSeats(payload);
+    });
   }
 
-  private async createSeats(data: CreateSeatMessageDTO): Promise<void> {
-    this.logger.debug('autoGenerateLayout %o', data.payload);
+  @KafkaEvent(KafkaTopics.seat.delete)
+  async handleDeleteSeat(payload: EventIdsDTO, context: IKafkaEventContext) {
+    return TraceRunner.run('[HANDLER] Deletes Seats', async () => {
+      this.logger.debug('Delete Seats %o', payload);
+      
+            const headers = context.headers;
+            const actorId = headers[KAFKA_HEADERS.ACTOR_ID] ?? 'Unkown';
 
-    await this.layoutWriteService.autoGenerateFromMaxSeats(data.payload);
-  }
-
-  private async deleteSeats(data: {
-    payload: { actorId: string; eventId: string };
-  }): Promise<void> {
-    this.logger.debug('Delete Seats %o', data.payload);
-
-    await this.layoutWriteService.deleteSeats(data.payload);
+    await this.layoutWriteService.deleteSeats({eventIds: payload.eventIds, actorId});
+    });
   }
 }

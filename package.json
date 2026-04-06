@@ -1,6 +1,6 @@
 {
   "name": "seat-service",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "Omnixys Seat Service",
   "author": {
     "name": "Caleb Gyamfi",
@@ -46,9 +46,9 @@
     "test:seat": "pnpm test -- __tests__/e2e/seat/seat.seat.e2e-spec.ts",
     "test:admin": "pnpm test -- __tests__/e2e/seat/seat.admin.e2e-spec.ts",
     "prepare": "husky",
-    "prisma:gen": "prisma generate",
+    "generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:reset": "prisma migrate reset --force && prisma migrate dev && tsx prisma/seed.ts",
+    "reset": "prisma migrate reset --force && prisma migrate dev && tsx prisma/seed.ts",
     "prisma:studio": "prisma studio --schema prisma/schema.prisma",
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:push": "prisma db push",

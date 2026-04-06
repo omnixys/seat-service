@@ -11,9 +11,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 name: ✅ Task
-description: Create or track a technical task within the Event Service project
-title: '[Event Task] '
-labels: ['task', 'event']
+description: Create or track a technical task within the Seat Service project
+title: '[Seat Task] '
+labels: ['task', 'seat']
 
 body:
   - type: input

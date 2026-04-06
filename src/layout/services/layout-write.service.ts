@@ -43,6 +43,7 @@ import { prepareMeta } from '../../utils/meta-defaults.js';
 import { CloneSectionInput } from '../models/inputs/clone-section.input.js';
 import { DuplicateTableInput } from '../models/inputs/duplicate-Table-input.js';
 import { OmnixysLogger } from '@omnixys/logger';
+import { TraceRunner } from '@omnixys/observability';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 import jsonpatch from 'fast-json-patch';
 
@@ -97,7 +98,12 @@ export class LayoutWriteService {
       payload: { version: created.version, id: created.id },
     });
 
-    this.logger.debug('Layout version saved (event=%s version=%s)', eventId, created.version);
+    // TODO in @omnixs/shared
+    this.logger.debug(
+      'Layout version saved (event=%s version=%s)',
+      eventId,
+      safeJsonStringify(created.version),
+    );
 
     return LayoutVersionMapper.toPayload(created);
   }
@@ -692,19 +698,59 @@ export class LayoutWriteService {
     return secClone;
   }
 
-  async deleteSeats(input: { actorId: string; eventId: string }) {
-    const { eventId, actorId } = input;
+  async deleteSeats(input: { actorId: string; eventIds: string[] }): Promise<void> {
+    return TraceRunner.run('[SERVICE] delete Seats', async () => {
+      const { eventIds, actorId } = input;
 
-    this.logger.info('Delete Seats from Event: %s by Actor %s', eventId, actorId);
+      this.logger.warn('Delete Seats for events=%o by actor=%s', eventIds, actorId);
 
-    await this.prisma.seat.deleteMany({ where: { eventId } });
-    await this.prisma.table.deleteMany({ where: { eventId } });
-    await this.prisma.section.deleteMany({ where: { eventId } });
-    await this.prisma.seatAssignmentLog.deleteMany({ where: { eventId } });
-    await this.prisma.layoutVersion.deleteMany({ where: { eventId } });
-    await this.prisma.layoutChangeLog.deleteMany({ where: { eventId } });
+      if (!eventIds || eventIds.length === 0) {
+        this.logger.warn('No eventIds provided → skipping delete');
+        return;
+      }
 
-    this.logger.debug('Seats Deleted');
+      const seatCount = await this.prisma.$transaction(async (tx) => {
+        /**
+         * IMPORTANT:
+         * Delete order = bottom → top
+         * to avoid FK issues & ensure clean cascade behavior
+         */
+
+        // 1️⃣ Seat Assignment Logs (no FK but logically deepest)
+        await tx.seatAssignmentLog.deleteMany({
+          where: { eventId: { in: eventIds } },
+        });
+
+        // 2️⃣ Seats
+        const seatsCount = await tx.seat.deleteMany({
+          where: { eventId: { in: eventIds } },
+        });
+
+        // 3️⃣ Tables
+        await tx.table.deleteMany({
+          where: { eventId: { in: eventIds } },
+        });
+
+        // 4️⃣ Sections
+        await tx.section.deleteMany({
+          where: { eventId: { in: eventIds } },
+        });
+
+        // 5️⃣ Layout Logs
+        await tx.layoutChangeLog.deleteMany({
+          where: { eventId: { in: eventIds } },
+        });
+
+        // 6️⃣ Layout Versions
+        await tx.layoutVersion.deleteMany({
+          where: { eventId: { in: eventIds } },
+        });
+        return seatsCount;
+      });
+
+      this.logger.debug('Seat cleanup completed for events=%o by actor=%s', eventIds, actorId);
+      this.logger.debug('Seats deleted %s', seatCount.count);
+    });
   }
 
   /**
@@ -764,4 +810,15 @@ export class LayoutWriteService {
 
     return sections;
   }
+}
+
+  /**
+ * Safely serializes objects containing BigInt values.
+ *
+ * BigInt is converted to string to ensure JSON compatibility.
+ */
+export function safeJsonStringify(value: unknown): string {
+  return JSON.stringify(value, (_key, val) =>
+    typeof val === 'bigint' ? val.toString() : val,
+  );
 }
