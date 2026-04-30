@@ -41,6 +41,15 @@ import {
 
 const { SERVICE } = env;
 
+interface KafkaMetadata {
+  actorId: string;
+  tenantId: string;
+  service: string;
+  operation: string;
+  version: string;
+  type: EventType;
+}
+
 /**
  * Central Kafka Authentication Handler.
  *
@@ -84,7 +93,9 @@ export class AuthenticationHandler {
         ValkeyKey.guestVerificationSeat,
         seatKey,
       );
-      if (!raw) throw new Error('Invalid token');
+      if (!raw) {
+        throw new Error('Invalid token');
+      }
 
       const input = JSON.parse(raw) as GuestSeatKey;
 
@@ -158,7 +169,7 @@ export class AuthenticationHandler {
   /**
    * Standard Kafka metadata builder.
    */
-  private meta(actorId: string, operation: string) {
+  private meta(actorId: string, operation: string): KafkaMetadata {
     const type: EventType = 'EVENT';
     return {
       actorId,

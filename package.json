@@ -75,14 +75,14 @@
     "@nestjs/platform-express": "^11.1.17",
     "@nestjs/platform-fastify": "^11.1.17",
     "@nestjs/terminus": "^11.1.1",
-    "@omnixys/security": "file:../../packages/ts/security",
-    "@omnixys/cache": "file:../../packages/ts/cache",
-    "@omnixys/context": "file:../../packages/ts/context",
-    "@omnixys/graphql": "file:../../packages/ts/graphql",
-    "@omnixys/kafka": "file:../../packages/ts/kafka",
-    "@omnixys/logger": "file:../../packages/ts/logger",
-    "@omnixys/observability": "file:../../packages/ts/observability",
-    "@omnixys/shared": "file:../../packages/ts/shared",
+    "@omnixys/cache": "^1.0.0",
+    "@omnixys/context": "^1.0.0",
+    "@omnixys/graphql": "^1.0.0",
+    "@omnixys/kafka": "^1.0.0",
+    "@omnixys/logger": "^1.0.0",
+    "@omnixys/observability": "^1.0.0",
+    "@omnixys/security": "^1.0.0",
+    "@omnixys/shared": "^1.0.0",
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
@@ -92,14 +92,14 @@
     "class-validator": "^0.14.4",
     "dotenv": "^17.3.1",
     "fast-json-patch": "^3.1.1",
-    "fastify": "^5.8.2",
+    "fastify": "^5.8.5",
     "graphql": "^16.13.2",
     "kafkajs": "^2.2.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^20.5.0",
+    "@commitlint/config-conventional": "latest",
     "@eslint/js": "^10.0.1",
     "@nestjs/cli": "^11.0.16",
     "@nestjs/schematics": "latest",
@@ -135,5 +135,10 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "fastify": "5.8.5"
+    }
   }
 }

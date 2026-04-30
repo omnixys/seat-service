@@ -8,6 +8,7 @@
 
 import type { SeatShape } from '../../prisma/generated/client.js';
 import { SeatType } from '../../prisma/generated/client.js';
+import { TraceRunner } from '@omnixys/observability';
 
 /**
  * GeometryEngine v4 — SectionInput-driven
@@ -66,16 +67,18 @@ export class GeometryEngine {
     sections: any[];
     adaptiveRadius?: boolean;
   }): Promise<GeometryOutput> {
-    const sections = await this.generateSections(
-      settings.sections,
-      settings.adaptiveRadius,
-    );
+    return TraceRunner.run('[SERVICE] generate', async () => {
+      const sections = await this.generateSections(
+        settings.sections,
+        settings.adaptiveRadius,
+      );
 
-    const tables = await this.generateTables(settings.sections, sections);
+      const tables = await this.generateTables(settings.sections, sections);
 
-    const seats = await this.generateSeats(settings.sections, tables);
+      const seats = await this.generateSeats(settings.sections, tables);
 
-    return { sections, tables, seats };
+      return { sections, tables, seats };
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -114,35 +117,37 @@ export class GeometryEngine {
     sectionInputs: any[],
     adaptive: boolean | undefined,
   ): Promise<GeometrySection[]> {
-    const list: GeometrySection[] = [];
-    const count = sectionInputs.length;
+    return TraceRunner.run('[SERVICE] generateSections', async () => {
+      const list: GeometrySection[] = [];
+      const count = sectionInputs.length;
 
-    const baseRadius = 600;
+      const baseRadius = 600;
 
-    // Create Section Models
-    for (let i = 0; i < count; i++) {
-      const sec = sectionInputs[i];
-      const dynamicRadius = adaptive ? this.computeDynamicRadius(sec) : 500;
+      // Create Section Models
+      for (let i = 0; i < count; i++) {
+        const sec = sectionInputs[i];
+        const dynamicRadius = adaptive ? this.computeDynamicRadius(sec) : 500;
 
-      list.push({
-        id: `sec_${i}`,
-        name: sec.name,
-        x: 0,
-        y: 0,
-        radius: dynamicRadius,
-        order: i + 1,
-        meta: {
-          shape: sec.shape,
-          facing: this.getSectionFacing(sec.shape),
-          config: sec.meta ?? {},
-        },
-      });
-    }
+        list.push({
+          id: `sec_${i}`,
+          name: sec.name,
+          x: 0,
+          y: 0,
+          radius: dynamicRadius,
+          order: i + 1,
+          meta: {
+            shape: sec.shape,
+            facing: this.getSectionFacing(sec.shape),
+            config: sec.meta ?? {},
+          },
+        });
+      }
 
-    // Global default: ALL SECTIONS IN A CIRCLE
-    this.placeCircle(list, baseRadius);
+      // Global default: ALL SECTIONS IN A CIRCLE
+      this.placeCircle(list, baseRadius);
 
-    return list;
+      return list;
+    });
   }
 
   private placeCircle(sections: GeometrySection[], radius: number) {

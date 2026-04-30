@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
@@ -25,16 +23,18 @@ import { SaveLayoutVersionInput } from '../models/inputs/save-layout-version.inp
 import {
   LayoutChangeType,
   LayoutVersion,
+  Section,
   SeatShape,
   SeatStatus,
   SeatType,
+  Table,
   SectionShape,
   TableShape,
 } from '../../prisma/generated/client.js';
 import { LogChangeInput } from '../models/inputs/log-change.input.js';
 import { LayoutVersionMapper } from '../models/mappers/layout-version.mapper.js';
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
-import { GeometryEngine } from '../utils/geometry-engine.js';
+import { GeometryEngine, type GeometryOutput } from '../utils/geometry-engine.js';
 
 import { SeatSnapshot, SnapshotSerializer } from '../utils/snapshot-serializer.js';
 
@@ -294,34 +294,45 @@ export class LayoutWriteService {
   }
 
   async autoGenerate(input: AutoGenerateLayoutInput, actorId: string) {
-    this.logger.debug('generate Seat Layout automatically');
-    const { eventId } = input;
+    return TraceRunner.run('[SERVICE] autoGenerate', async () => {
+      this.logger.debug('Auto-generating layout for event %s', input.eventId);
+      const { eventId } = input;
 
-    // wipe
-    await this.prisma.seat.deleteMany({ where: { eventId } });
-    await this.prisma.table.deleteMany({ where: { eventId } });
-    await this.prisma.section.deleteMany({ where: { eventId } });
+      // wipe
+      this.logger.debug('Clearing existing layout for event %s', eventId);
+      await this.prisma.seat.deleteMany({ where: { eventId } });
+      await this.prisma.table.deleteMany({ where: { eventId } });
+      await this.prisma.section.deleteMany({ where: { eventId } });
 
-    const geometry = await this.geometry.generate({
-      sections: input.sections,
-      adaptiveRadius: input.adaptiveRadius,
+      this.logger.debug('Generating geometry for event %s', eventId);
+      const geometry = await this.geometry.generate({
+        sections: input.sections,
+        adaptiveRadius: input.adaptiveRadius,
+      });
+
+      this.logger.debug(
+        'Geometry generated (sections=%s tables=%s seats=%s)',
+        geometry.sections.length,
+        geometry.tables.length,
+        geometry.seats.length,
+      );
+      await this.writeGeometry(eventId, geometry);
+
+      await this.logChange({
+        actorId,
+        eventId,
+        type: LayoutChangeType.AUTO_GENERATE_GEOMETRY_V4,
+        payload: input,
+      });
+
+      this.logger.debug('Layout auto-generated for event %s', eventId);
+      await this.saveLayoutVersion(
+        { eventId, version: Date.now(), label: 'AutoLayout', data: undefined },
+        actorId,
+      );
+
+      return true;
     });
-
-    await this.writeGeometry(eventId, geometry);
-
-    await this.logChange({
-      actorId,
-      eventId,
-      type: LayoutChangeType.AUTO_GENERATE_GEOMETRY_V4,
-      payload: input,
-    });
-
-    await this.saveLayoutVersion(
-      { eventId, version: Date.now(), label: 'AutoLayout', data: undefined },
-      actorId,
-    );
-
-    return true;
   }
 
   async autoGenerateFromMaxSeats(input: CreateSeatDTO) {
@@ -342,89 +353,157 @@ export class LayoutWriteService {
   // WRITE GEOMETRY
   // -------------------------------------------------------
 
-  private async writeGeometry(eventId: string, geometry: any) {
-    const createdSections: any[] = [];
+  private async writeGeometry(eventId: string, geometry: GeometryOutput): Promise<void> {
+    return TraceRunner.run('[SERVICE] writeGeometry', async () => {
+      await this.prisma.$transaction(async (tx) => {
+        /**
+         * ---------------------------------------------------------
+         * 1. LOAD EXISTING SECTIONS
+         * ---------------------------------------------------------
+         */
+        const existingSections = await tx.section.findMany({
+          where: { eventId },
+        });
 
-    for (const sec of geometry.sections) {
-      const existing = await this.prisma.section.findFirst({
-        where: {
-          eventId,
-          name: sec.name,
-        },
+        const sectionByName = new Map(existingSections.map((s) => [s.name, s]));
+
+        /**
+         * ---------------------------------------------------------
+         * 2. CREATE NEW SECTIONS (BATCH)
+         * ---------------------------------------------------------
+         */
+        const newSectionsData = geometry.sections
+          .filter((sec) => !sectionByName.has(sec.name))
+          .map((sec) => ({
+            eventId,
+            name: sec.name,
+            order: sec.order ?? 1,
+            x: sec.x,
+            y: sec.y,
+            meta: (sec.meta ?? {}) as InputJsonValue,
+          }));
+
+        if (newSectionsData.length > 0) {
+          await tx.section.createMany({
+            data: newSectionsData,
+            skipDuplicates: true,
+          });
+        }
+
+        /**
+         * ---------------------------------------------------------
+         * 3. RELOAD ALL SECTIONS → BUILD MAP (inputId → db)
+         * ---------------------------------------------------------
+         */
+        const allSections = await tx.section.findMany({
+          where: { eventId },
+        });
+
+        const sectionByInputId = new Map<string, Section>();
+
+        for (const sec of geometry.sections) {
+          const db = allSections.find((s) => s.name === sec.name);
+          if (db) {
+            sectionByInputId.set(sec.id, db);
+          }
+        }
+
+        /**
+         * ---------------------------------------------------------
+         * 4. CREATE TABLES (BATCH)
+         * ---------------------------------------------------------
+         */
+        const tablesData = geometry.tables
+          .map((tbl) => {
+            const section = sectionByInputId.get(tbl.sectionId);
+            if (!section) {
+              return null;
+            }
+
+            return {
+              eventId,
+              sectionId: section.id,
+              name: tbl.name ?? 'Table',
+              order: tbl.order ?? 1,
+              x: tbl.x,
+              y: tbl.y,
+              capacity: tbl.capacity ?? undefined,
+              meta: (tbl.meta ?? {}) as InputJsonValue,
+            };
+          })
+          .filter((row): row is NonNullable<typeof row> => row !== null);
+
+        if (tablesData.length > 0) {
+          await tx.table.createMany({
+            data: tablesData,
+          });
+        }
+
+        /**
+         * ---------------------------------------------------------
+         * 5. RELOAD TABLES → BUILD MAP (inputId → db)
+         * ---------------------------------------------------------
+         */
+        const allTables = await tx.table.findMany({
+          where: { eventId },
+        });
+
+        const tableByInputId = new Map<string, Table>();
+
+        for (const tbl of geometry.tables) {
+          const db = allTables.find((t) => t.name === (tbl.name ?? 'Table'));
+          if (db) {
+            tableByInputId.set(tbl.id, db);
+          }
+        }
+
+        /**
+         * ---------------------------------------------------------
+         * 6. CREATE SEATS (BATCH)
+         * ---------------------------------------------------------
+         */
+        const seatRows = geometry.seats
+          .map((seat) => {
+            const table = tableByInputId.get(seat.tableId);
+            if (!table) {
+              return null;
+            }
+
+            const sourceTable = geometry.tables.find((t) => t.id === seat.tableId);
+            const section = sourceTable ? sectionByInputId.get(sourceTable.sectionId) : undefined;
+
+            return {
+              eventId,
+              sectionId: table.sectionId,
+              tableId: table.id,
+              number: seat.number ?? 1,
+              label: `${section?.name ?? ''} • ${table.name} • Seat ${seat.number}`,
+              x: seat.x,
+              y: seat.y,
+              rotation: seat.rotation ?? 0,
+              shape: seat.seatShape,
+              seatType: seat.seatType ?? SeatType.STANDARD,
+              status: this.toSeatStatus(seat.status),
+              meta: (seat.meta ?? {}) as InputJsonValue,
+            };
+          })
+          .filter((row): row is NonNullable<typeof row> => row !== null);
+
+        if (seatRows.length > 0) {
+          await tx.seat.createMany({
+            data: seatRows,
+          });
+        }
       });
+    });
+  }
 
-      if (existing) {
-        this.logger.debug('Section exists → skip (%s)', sec.name);
-        continue;
-      }
-
-      const created = await this.prisma.section.create({
-        data: {
-          eventId,
-          name: sec.name,
-          order: sec.order ?? 1,
-          x: sec.x,
-          y: sec.y,
-          meta: (sec.meta ?? {}) as InputJsonValue,
-        },
-      });
-
-      createdSections.push({ from: sec, db: created });
+  private toSeatStatus(status: string | undefined): SeatStatus {
+    if (status && Object.values(SeatStatus).includes(status as SeatStatus)) {
+      return status as SeatStatus;
     }
 
-    const createdTables: any[] = [];
-
-    for (const tbl of geometry.tables) {
-      const secMapping = createdSections.find((s) => s.from.id === tbl.sectionId);
-      if (!secMapping) {
-        continue;
-      }
-
-      const created = await this.prisma.table.create({
-        data: {
-          eventId,
-          sectionId: secMapping.db.id,
-          name: tbl.name ?? 'Table',
-          order: tbl.order ?? 1,
-          x: tbl.x,
-          y: tbl.y,
-          capacity: tbl.capacity ?? undefined,
-          meta: (tbl.meta ?? {}) as InputJsonValue,
-        },
-      });
-
-      createdTables.push({ from: tbl, db: created });
-    }
-
-    const seatRows = [];
-
-    for (const seat of geometry.seats) {
-      const tblMapping = createdTables.find((t) => t.from.id === seat.tableId);
-      if (!tblMapping) {
-        continue;
-      }
-
-      const secId = tblMapping.db.sectionId;
-
-      seatRows.push({
-        eventId,
-        sectionId: secId,
-        tableId: tblMapping.db.id,
-        number: seat.number ?? 1,
-        label: seat.label ?? null,
-        x: seat.x,
-        y: seat.y,
-        rotation: seat.rotation ?? 0,
-        shape: seat.seatShape,
-        seatType: seat.seatType ?? SeatType.STANDARD,
-        status: seat.status ?? SeatStatus.AVAILABLE,
-        meta: (seat.meta ?? {}) as InputJsonValue,
-      });
-    }
-
-    if (seatRows.length > 0) {
-      await this.prisma.seat.createMany({ data: seatRows });
-    }
+    return SeatStatus.AVAILABLE;
   }
 
   // -------------------------------------------------------
@@ -812,13 +891,15 @@ export class LayoutWriteService {
   }
 }
 
-  /**
+/**
  * Safely serializes objects containing BigInt values.
  *
  * BigInt is converted to string to ensure JSON compatibility.
  */
 export function safeJsonStringify(value: unknown): string {
-  return JSON.stringify(value, (_key, val) =>
-    typeof val === 'bigint' ? val.toString() : val,
+  return (
+    JSON.stringify(value, (_key: string, val: unknown) =>
+      typeof val === 'bigint' ? val.toString() : val,
+    ) ?? ''
   );
 }

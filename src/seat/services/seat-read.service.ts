@@ -137,8 +137,10 @@ export class SeatReadService {
       where: { eventId, guestId },
     });
 
+    this.logger.debug('Seat lookup by event and guest: %o', seat);
+
     if (!seat) {
-      throw new Error('getSeatById');
+      throw new Error('kein sitz gefunden');
     }
 
     return SeatMapper.toPayload(seat);

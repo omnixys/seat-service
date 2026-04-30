@@ -21,8 +21,8 @@ CREATE TYPE "LayoutChangeType" AS ENUM ('SECTION_CREATE', 'SECTION_UPDATE', 'SEC
 
 -- CreateTable
 CREATE TABLE "section" (
-    "id" TEXT NOT NULL,
-    "event_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "event_id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "order" INTEGER NOT NULL,
     "capacity" INTEGER,
@@ -41,9 +41,9 @@ CREATE TABLE "section" (
 
 -- CreateTable
 CREATE TABLE "table" (
-    "id" TEXT NOT NULL,
-    "event_id" TEXT NOT NULL,
-    "section_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "event_id" UUID NOT NULL,
+    "section_id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "order" INTEGER NOT NULL,
     "capacity" INTEGER,
@@ -60,11 +60,11 @@ CREATE TABLE "table" (
 
 -- CreateTable
 CREATE TABLE "seat" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "status" "SeatStatus" NOT NULL DEFAULT 'AVAILABLE',
-    "event_id" TEXT NOT NULL,
-    "section_id" TEXT NOT NULL,
-    "table_id" TEXT,
+    "event_id" UUID NOT NULL,
+    "section_id" UUID NOT NULL,
+    "table_id" UUID,
     "number" INTEGER,
     "label" TEXT,
     "note" TEXT,
@@ -79,8 +79,8 @@ CREATE TABLE "seat" (
     "zIndex" INTEGER DEFAULT 0,
     "locked" BOOLEAN NOT NULL DEFAULT false,
     "hidden" BOOLEAN NOT NULL DEFAULT false,
-    "guest_id" TEXT,
-    "invitation_id" TEXT,
+    "guest_id" UUID,
+    "invitation_id" UUID,
     "meta" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -90,11 +90,11 @@ CREATE TABLE "seat" (
 
 -- CreateTable
 CREATE TABLE "seat_assignment_log" (
-    "id" TEXT NOT NULL,
-    "event_id" TEXT NOT NULL,
-    "seat_id" TEXT NOT NULL,
-    "guest_id" TEXT,
-    "invitation_id" TEXT,
+    "id" UUID NOT NULL,
+    "event_id" UUID NOT NULL,
+    "seat_id" UUID NOT NULL,
+    "guest_id" UUID,
+    "invitation_id" UUID,
     "action" "SeatAssignmentAction" NOT NULL,
     "data" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -104,8 +104,8 @@ CREATE TABLE "seat_assignment_log" (
 
 -- CreateTable
 CREATE TABLE "layout_version" (
-    "id" TEXT NOT NULL,
-    "event_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "event_id" UUID NOT NULL,
     "version" BIGINT NOT NULL,
     "label" TEXT,
     "data" JSONB NOT NULL,
@@ -118,9 +118,9 @@ CREATE TABLE "layout_version" (
 
 -- CreateTable
 CREATE TABLE "layout_change_log" (
-    "id" TEXT NOT NULL,
-    "event_id" TEXT NOT NULL,
-    "actor_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "event_id" UUID NOT NULL,
+    "actor_id" UUID NOT NULL,
     "type" "LayoutChangeType" NOT NULL,
     "payload" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

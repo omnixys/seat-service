@@ -25,7 +25,7 @@ const prisma = new PrismaClient({ adapter });
    CONFIG
 ============================================================ */
 
-const EVENT_ID = 'cmnkom96a000bgjijcyk02mpf';
+const EVENT_ID = 'cbe6b0be-8469-4fe2-a3bf-49eef3e01787';
 
 const SECTIONS = 6;
 const TABLES_PER_SECTION = 5;
@@ -129,7 +129,6 @@ async function main() {
   /* -------------------------------------------------------
      Sections
   ------------------------------------------------------- */
-
   for (let i = 0; i < SECTIONS; i++) {
     const angle = (2 * Math.PI * i) / SECTIONS;
 

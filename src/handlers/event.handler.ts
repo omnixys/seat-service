@@ -55,7 +55,10 @@ export class EventHandler {
   }
 
   @KafkaEvent(KafkaTopics.seat.create)
-  async handleCreateSeat(payload: CreateSeatDTO, _context: IKafkaEventContext) {
+  async handleCreateSeat(
+    payload: CreateSeatDTO,
+    _context: IKafkaEventContext,
+  ): Promise<void> {
     return TraceRunner.run('[HANDLER] create Seats', async () => {
       this.logger.debug('autoGenerateLayout %o', payload);
       await this.layoutWriteService.autoGenerateFromMaxSeats(payload);
@@ -63,14 +66,20 @@ export class EventHandler {
   }
 
   @KafkaEvent(KafkaTopics.seat.delete)
-  async handleDeleteSeat(payload: EventIdsDTO, context: IKafkaEventContext) {
+  async handleDeleteSeat(
+    payload: EventIdsDTO,
+    context: IKafkaEventContext,
+  ): Promise<void> {
     return TraceRunner.run('[HANDLER] Deletes Seats', async () => {
       this.logger.debug('Delete Seats %o', payload);
-      
-            const headers = context.headers;
-            const actorId = headers[KAFKA_HEADERS.ACTOR_ID] ?? 'Unkown';
 
-    await this.layoutWriteService.deleteSeats({eventIds: payload.eventIds, actorId});
+      const headers = context.headers;
+      const actorId = headers[KAFKA_HEADERS.ACTOR_ID] ?? 'Unkown';
+
+      await this.layoutWriteService.deleteSeats({
+        eventIds: payload.eventIds,
+        actorId,
+      });
     });
   }
 }

@@ -7,5 +7,5 @@ export function safeJson(value: unknown): Prisma.InputJsonValue {
     return Prisma.JsonNull as unknown as Prisma.InputJsonValue;
   }
 
-  return value as Prisma.InputJsonValue;
+  return value;
 }

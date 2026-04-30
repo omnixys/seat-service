@@ -330,8 +330,8 @@ export class SeatWriteService {
     });
 
     if (!seat) {
-        this.logger.warn('Already deleted → skipping');
-  return;
+      this.logger.warn('Already deleted → skipping');
+      return;
     }
 
     const updated = await this.prisma.seat.update({
