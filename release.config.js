@@ -176,7 +176,7 @@ export default {
 ---
 
 🏢 **Organization:** Omnixys
-📦 **Service:** Seat
+📦 **Service:** Seat Service
 🔗 **Repository:** Repository: <%= options.repositoryUrl %>
 🧭 **Docs:** https://omnixys.com/docs
 `,
