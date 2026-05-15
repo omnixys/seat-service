@@ -21,7 +21,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["seat"]
 }
 
 //
@@ -52,13 +51,12 @@ model Section {
   tables Table[]
   seats  Seat[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@unique([eventId, name])
   @@index([eventId])
   @@map("section")
-  @@schema("seat")
 }
 
 //
@@ -88,15 +86,14 @@ model Table {
 
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@unique([sectionId, name])
   @@index([eventId])
   @@index([sectionId])
   @@index([eventId, sectionId])
   @@map("table")
-  @@schema("seat")
 }
 
 //
@@ -128,7 +125,7 @@ model Seat {
 
   rotation Float?
 
-  zIndex Int?    @default(0)
+  zIndex Int?    @default(0) @map("z_index")
   locked Boolean @default(false)
   hidden Boolean @default(false)
 
@@ -140,8 +137,8 @@ model Seat {
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   table   Table?  @relation(fields: [tableId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@unique([eventId, invitationId])
   @@unique([eventId, guestId])
@@ -152,7 +149,6 @@ model Seat {
   @@index([eventId, sectionId])
   @@index([eventId, tableId])
   @@map("seat")
-  @@schema("seat")
 }
 
 //
@@ -175,7 +171,6 @@ model SeatAssignmentLog {
   @@index([eventId])
   @@index([seatId])
   @@map("seat_assignment_log")
-  @@schema("seat")
 }
 
 //
@@ -199,7 +194,6 @@ model LayoutVersion {
   @@unique([eventId, version])
   @@index([eventId])
   @@map("layout_version")
-  @@schema("seat")
 }
 
 //
@@ -220,7 +214,6 @@ model LayoutChangeLog {
 
   @@index([eventId])
   @@map("layout_change_log")
-  @@schema("seat")
 }
 
 //
@@ -233,7 +226,7 @@ enum SeatStatus {
   ASSIGNED
   BLOCKED
 
-  @@schema("seat")
+  @@map("seat_status")
 }
 
 enum SeatType {
@@ -244,7 +237,7 @@ enum SeatType {
   CHILD
   RESERVED
 
-  @@schema("seat")
+  @@map("seat_type")
 }
 
 enum SeatShape {
@@ -252,7 +245,7 @@ enum SeatShape {
   SQUARE
   RECTANGLE
 
-  @@schema("seat")
+  @@map("seat_shape")
 }
 
 enum TableShape {
@@ -261,7 +254,7 @@ enum TableShape {
   OVAL
   ROW
 
-  @@schema("seat")
+  @@map("table_shape")
 }
 
 enum SectionShape {
@@ -269,7 +262,7 @@ enum SectionShape {
   CIRCLE
   POLYGON
 
-  @@schema("seat")
+  @@map("section_shape")
 }
 
 enum SeatAssignmentAction {
@@ -277,7 +270,7 @@ enum SeatAssignmentAction {
   UNASSIGNED
   MOVED
 
-  @@schema("seat")
+  @@map("seat_assignment_action")
 }
 
 enum LayoutChangeType {
@@ -307,5 +300,5 @@ enum LayoutChangeType {
   AUTO_GENERATE_GEOMETRY_V4
   LAYOUT_VERSION_SAVED
 
-  @@schema("seat")
+  @@map("layout_change_type")
 }

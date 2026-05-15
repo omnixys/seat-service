@@ -1,23 +1,23 @@
 -- CreateEnum
-CREATE TYPE "SeatStatus" AS ENUM ('AVAILABLE', 'RESERVED', 'ASSIGNED', 'BLOCKED');
+CREATE TYPE "seat_status" AS ENUM ('AVAILABLE', 'RESERVED', 'ASSIGNED', 'BLOCKED');
 
 -- CreateEnum
-CREATE TYPE "SeatType" AS ENUM ('STANDARD', 'VIP', 'STAFF', 'STANDING', 'CHILD', 'RESERVED');
+CREATE TYPE "seat_type" AS ENUM ('STANDARD', 'VIP', 'STAFF', 'STANDING', 'CHILD', 'RESERVED');
 
 -- CreateEnum
-CREATE TYPE "SeatShape" AS ENUM ('CIRCLE', 'SQUARE', 'RECTANGLE');
+CREATE TYPE "seat_shape" AS ENUM ('CIRCLE', 'SQUARE', 'RECTANGLE');
 
 -- CreateEnum
-CREATE TYPE "TableShape" AS ENUM ('ROUND', 'RECTANGLE', 'OVAL', 'ROW');
+CREATE TYPE "table_shape" AS ENUM ('ROUND', 'RECTANGLE', 'OVAL', 'ROW');
 
 -- CreateEnum
-CREATE TYPE "SectionShape" AS ENUM ('RECTANGLE', 'CIRCLE', 'POLYGON');
+CREATE TYPE "section_shape" AS ENUM ('RECTANGLE', 'CIRCLE', 'POLYGON');
 
 -- CreateEnum
-CREATE TYPE "SeatAssignmentAction" AS ENUM ('ASSIGNED', 'UNASSIGNED', 'MOVED');
+CREATE TYPE "seat_assignment_action" AS ENUM ('ASSIGNED', 'UNASSIGNED', 'MOVED');
 
 -- CreateEnum
-CREATE TYPE "LayoutChangeType" AS ENUM ('SECTION_CREATE', 'SECTION_UPDATE', 'SECTION_DELETE', 'SECTION_MOVED', 'SECTION_RENAME', 'SECTION_CLONED', 'TABLE_CREATE', 'TABLE_UPDATE', 'TABLE_DELETE', 'TABLE_MOVED', 'TABLE_RENAME', 'TABLE_DUPLICATED', 'SEAT_CREATE', 'SEAT_UPDATE', 'SEAT_DELETE', 'SEAT_ASSIGNED', 'SEAT_UNASSIGNED', 'SEAT_MOVED', 'SEAT_ASSIGN', 'AUTO_GENERATE_GEOMETRY_V4', 'LAYOUT_VERSION_SAVED');
+CREATE TYPE "layout_change_type" AS ENUM ('SECTION_CREATE', 'SECTION_UPDATE', 'SECTION_DELETE', 'SECTION_MOVED', 'SECTION_RENAME', 'SECTION_CLONED', 'TABLE_CREATE', 'TABLE_UPDATE', 'TABLE_DELETE', 'TABLE_MOVED', 'TABLE_RENAME', 'TABLE_DUPLICATED', 'SEAT_CREATE', 'SEAT_UPDATE', 'SEAT_DELETE', 'SEAT_ASSIGNED', 'SEAT_UNASSIGNED', 'SEAT_MOVED', 'SEAT_ASSIGN', 'AUTO_GENERATE_GEOMETRY_V4', 'LAYOUT_VERSION_SAVED');
 
 -- CreateTable
 CREATE TABLE "section" (
@@ -26,7 +26,7 @@ CREATE TABLE "section" (
     "name" TEXT NOT NULL,
     "order" INTEGER NOT NULL,
     "capacity" INTEGER,
-    "shape" "SectionShape" NOT NULL DEFAULT 'RECTANGLE',
+    "shape" "section_shape" NOT NULL DEFAULT 'RECTANGLE',
     "x" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "y" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "width" DOUBLE PRECISION,
@@ -47,7 +47,7 @@ CREATE TABLE "table" (
     "name" TEXT NOT NULL,
     "order" INTEGER NOT NULL,
     "capacity" INTEGER,
-    "shape" "TableShape" NOT NULL DEFAULT 'ROUND',
+    "shape" "table_shape" NOT NULL DEFAULT 'ROUND',
     "x" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "y" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "rotation" DOUBLE PRECISION DEFAULT 0,
@@ -61,29 +61,29 @@ CREATE TABLE "table" (
 -- CreateTable
 CREATE TABLE "seat" (
     "id" UUID NOT NULL,
-    "status" "SeatStatus" NOT NULL DEFAULT 'AVAILABLE',
+    "status" "seat_status" NOT NULL DEFAULT 'AVAILABLE',
     "event_id" UUID NOT NULL,
     "section_id" UUID NOT NULL,
     "table_id" UUID,
     "number" INTEGER,
     "label" TEXT,
     "note" TEXT,
-    "seatType" "SeatType",
-    "shape" "SeatShape" NOT NULL DEFAULT 'CIRCLE',
+    "seatType" "seat_type",
+    "shape" "seat_shape" NOT NULL DEFAULT 'CIRCLE',
     "x" DOUBLE PRECISION,
     "y" DOUBLE PRECISION,
     "width" DOUBLE PRECISION,
     "height" DOUBLE PRECISION,
     "radius" DOUBLE PRECISION,
     "rotation" DOUBLE PRECISION,
-    "zIndex" INTEGER DEFAULT 0,
+    "z_index" INTEGER DEFAULT 0,
     "locked" BOOLEAN NOT NULL DEFAULT false,
     "hidden" BOOLEAN NOT NULL DEFAULT false,
     "guest_id" UUID,
     "invitation_id" UUID,
     "meta" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "seat_pkey" PRIMARY KEY ("id")
 );
@@ -95,7 +95,7 @@ CREATE TABLE "seat_assignment_log" (
     "seat_id" UUID NOT NULL,
     "guest_id" UUID,
     "invitation_id" UUID,
-    "action" "SeatAssignmentAction" NOT NULL,
+    "action" "seat_assignment_action" NOT NULL,
     "data" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -121,7 +121,7 @@ CREATE TABLE "layout_change_log" (
     "id" UUID NOT NULL,
     "event_id" UUID NOT NULL,
     "actor_id" UUID NOT NULL,
-    "type" "LayoutChangeType" NOT NULL,
+    "type" "layout_change_type" NOT NULL,
     "payload" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
