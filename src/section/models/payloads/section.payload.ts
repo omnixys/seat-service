@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonScalar } from '../../../core/scalars/json.scalar.js';
 import { SectionShape } from '../../../prisma/generated/client.js';
-import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
+import { Field, Float, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class SectionPayload {
@@ -41,9 +41,11 @@ export class SectionPayload {
   @Field(() => JsonScalar)
   meta!: any;
 
-  @Field()
+  @Field(() => GraphQLISODateTime)
   createdAt!: Date;
 
-  @Field()
+  @Field(() => GraphQLISODateTime, {
+    nullable: true,
+  })
   updatedAt?: Date | undefined;
 }
