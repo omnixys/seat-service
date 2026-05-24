@@ -22,7 +22,7 @@ export class TableMapper {
       meta: table.meta,
 
       createdAt: table.createdAt,
-      updatedAt: table.updatedAt,
+      updatedAt: n2u(table.updatedAt),
     };
   }
 

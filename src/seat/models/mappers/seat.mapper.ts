@@ -37,7 +37,7 @@ export class SeatMapper {
 
       meta: seat.meta,
       createdAt: seat.createdAt,
-      updatedAt: seat.updatedAt,
+      updatedAt: n2u(seat.updatedAt),
     };
   }
 

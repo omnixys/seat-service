@@ -42,5 +42,5 @@ export class TablePayload {
   createdAt!: Date;
 
   @Field()
-  updatedAt!: Date;
+  updatedAt?: Date | undefined;
 }

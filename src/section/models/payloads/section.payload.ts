@@ -45,5 +45,5 @@ export class SectionPayload {
   createdAt!: Date;
 
   @Field()
-  updatedAt!: Date;
+  updatedAt?: Date | undefined;
 }

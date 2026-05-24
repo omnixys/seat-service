@@ -23,7 +23,7 @@ export class SectionMapper {
 
       meta: section.meta,
       createdAt: section.createdAt,
-      updatedAt: section.updatedAt,
+      updatedAt: n2u(section.updatedAt),
     };
   }
 
