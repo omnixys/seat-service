@@ -3,6 +3,16 @@
 All notable changes in this project will be documented in this file.
 
 
+## [1.0.2](https://github.com/omnixys/seat-service/compare/v1.0.1...v1.0.2) (2026-05-24)
+
+### Dockerfile
+
+* **Dockerfile:** update pnpm version ([](https://github.com/omnixys/seat-service/commit/90dbf4f2224c45adacec526f0181d3eb92e453de))
+
+### Other
+
+* **Other:** Merge branch 'main' of https://github.com/omnixys/seat-service ([](https://github.com/omnixys/seat-service/commit/efb815e605e2d11a9d929c7671ce61ef653c771b))
+
 ## [1.0.1](https://github.com/omnixys/seat-service/compare/v1.0.0...v1.0.1) (2026-05-24)
 
 ### Docker
