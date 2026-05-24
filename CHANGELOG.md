@@ -3,6 +3,20 @@
 All notable changes in this project will be documented in this file.
 
 
+## [1.0.1](https://github.com/omnixys/seat-service/compare/v1.0.0...v1.0.1) (2026-05-24)
+
+### Docker
+
+* **Docker:** update pnpm version ([](https://github.com/omnixys/seat-service/commit/a318ea516bdd6e802fbc809db25ab3ce6a80217c))
+
+### Other
+
+* **Other:** Merge branch 'main' of https://github.com/omnixys/seat-service ([](https://github.com/omnixys/seat-service/commit/906c00cf1c18436a8104b729e632e252dbfd1211))
+
+### Prisma
+
+* **Prisma:** update prisma schema ([](https://github.com/omnixys/seat-service/commit/b450c4c3c21e262fdf00a3945d87c90557e8fc33))
+
 ## 1.0.0 (2026-05-01)
 
 ### 1.0.0
