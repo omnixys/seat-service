@@ -3,6 +3,12 @@
 All notable changes in this project will be documented in this file.
 
 
+## [1.0.3](https://github.com/omnixys/seat-service/compare/v1.0.2...v1.0.3) (2026-05-24)
+
+### Graphql
+
+* **Graphql:** add explicit type for the "updatedAt" ([](https://github.com/omnixys/seat-service/commit/4c8d62f1a711d037caf20e4872e8939d3a380436))
+
 ## [1.0.2](https://github.com/omnixys/seat-service/compare/v1.0.1...v1.0.2) (2026-05-24)
 
 ### Dockerfile
