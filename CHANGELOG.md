@@ -3,6 +3,16 @@
 All notable changes in this project will be documented in this file.
 
 
+## [1.0.4](https://github.com/omnixys/seat-service/compare/v1.0.3...v1.0.4) (2026-05-25)
+
+### Docker
+
+* **Docker:** Dockerfile ([](https://github.com/omnixys/seat-service/commit/e63d27a9108f9976231cbb6f8711b2406aad5f19))
+
+### Other
+
+* **Other:** Merge branch 'main' of https://github.com/omnixys/seat-service ([](https://github.com/omnixys/seat-service/commit/5d6a422fdde373bba9cf67055b311c14153a2f1a))
+
 ## [1.0.3](https://github.com/omnixys/seat-service/compare/v1.0.2...v1.0.3) (2026-05-24)
 
 ### Graphql
