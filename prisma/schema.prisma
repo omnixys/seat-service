@@ -112,7 +112,7 @@ model Seat {
   label  String?
   note   String?
 
-  seatType SeatType?
+  seatType SeatType? @map("seat_type")
 
   shape SeatShape @default(CIRCLE)
 
