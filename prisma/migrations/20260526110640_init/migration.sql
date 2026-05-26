@@ -34,7 +34,7 @@ CREATE TABLE "section" (
     "rotation" DOUBLE PRECISION DEFAULT 0,
     "meta" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "section_pkey" PRIMARY KEY ("id")
 );
@@ -53,7 +53,7 @@ CREATE TABLE "table" (
     "rotation" DOUBLE PRECISION DEFAULT 0,
     "meta" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "table_pkey" PRIMARY KEY ("id")
 );
@@ -68,7 +68,7 @@ CREATE TABLE "seat" (
     "number" INTEGER,
     "label" TEXT,
     "note" TEXT,
-    "seatType" "seat_type",
+    "seat_type" "seat_type",
     "shape" "seat_shape" NOT NULL DEFAULT 'CIRCLE',
     "x" DOUBLE PRECISION,
     "y" DOUBLE PRECISION,
