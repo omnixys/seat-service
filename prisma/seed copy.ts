@@ -2,7 +2,7 @@
  * @license GPL-3.0-or-later
  * Omnixys Seat Service Seed
  *
- * Multi Event Adaptive Seat Layout Generator
+ * Adaptive Seat Layout Generator
  */
 
 import {
@@ -22,50 +22,14 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 /* ============================================================
-   EVENTS CONFIG
+   CONFIG
 ============================================================ */
 
-const LAYOUTS = [
-  {
-    eventId: '11111111-1111-1111-1111-111111111111',
-    label: 'The Future Experience',
+const EVENT_ID = 'ceff1b31-e813-41f0-8bc5-a334c5b50161';
 
-    sections: 5,
-    tablesPerSection: 2,
-    maxSeats: 50,
-  },
-
-  {
-    eventId: '22222222-2222-2222-2222-222222222222',
-    label: 'Wedding Root',
-
-    sections: 6,
-    tablesPerSection: 5,
-    maxSeats: 300,
-  },
-
-  {
-    eventId: '33333333-3333-3333-3333-333333333333',
-    label: 'Wedding Ceremony',
-
-    sections: 1,
-    tablesPerSection: 1,
-    maxSeats: 10,
-  },
-
-  {
-    eventId: '44444444-4444-4444-4444-444444444444',
-    label: 'Wedding Reception',
-
-    sections: 6,
-    tablesPerSection: 5,
-    maxSeats: 300,
-  },
-];
-
-/* ============================================================
-   GEOMETRY CONFIG
-============================================================ */
+const SECTIONS = 6;
+const TABLES_PER_SECTION = 5;
+const MAX_SEATS = 400;
 
 const SEAT_RADIUS = 18;
 const SEAT_PADDING = 10;
@@ -86,10 +50,7 @@ function computeSeatRingRadius(seatCount: number): number {
   );
 }
 
-function computeTableRingRadius(
-  tableCount: number,
-  seatRing: number,
-): number {
+function computeTableRingRadius(tableCount: number, seatRing: number): number {
   const tableDiameter = TABLE_RADIUS * 2 + TABLE_PADDING;
 
   const minimalRing = tableDiameter * 1.2;
@@ -98,14 +59,8 @@ function computeTableRingRadius(
   return Math.max(minimalRing, packedRing, seatRing + TABLE_RADIUS + 20);
 }
 
-function computeSectionRadius(
-  tableRing: number,
-  seatRing: number,
-): number {
-  return Math.max(
-    300,
-    tableRing + TABLE_RADIUS + seatRing + 70,
-  );
+function computeSectionRadius(tableRing: number, seatRing: number): number {
+  return Math.max(300, tableRing + TABLE_RADIUS + seatRing + 70);
 }
 
 function computeSectionDistance(sectionRadius: number): number {
@@ -118,14 +73,12 @@ function computeSectionDistance(sectionRadius: number): number {
 
 function generateCircleSeats(table: Table, count: number) {
   const seatRing = computeSeatRingRadius(count);
-
   const step = (2 * Math.PI) / count;
 
   const seats = [];
 
   for (let i = 0; i < count; i++) {
     const angle = i * step;
-
     const deg = (angle * 180) / Math.PI;
 
     seats.push({
@@ -134,7 +87,6 @@ function generateCircleSeats(table: Table, count: number) {
       tableId: table.id,
 
       number: i + 1,
-
       label: `S-${table.name}-${i + 1}`,
 
       x: table.x + Math.cos(angle) * seatRing,
@@ -156,55 +108,34 @@ function generateCircleSeats(table: Table, count: number) {
 }
 
 /* ============================================================
-   EVENT LAYOUT GENERATOR
+   MAIN SEED
 ============================================================ */
 
-async function generateEventLayout(layout: {
-  eventId: string;
-  label: string;
+async function main() {
+  console.log('🌱 Omnixys Seat Layout Seed');
 
-  sections: number;
-  tablesPerSection: number;
-  maxSeats: number;
-}) {
-  console.log(`\n🌱 Generating layout for ${layout.label}`);
-
-  const seatsPerTable = Math.ceil(
-    layout.maxSeats /
-      (layout.sections * layout.tablesPerSection),
-  );
+  const seatsPerTable = Math.ceil(MAX_SEATS / (SECTIONS * TABLES_PER_SECTION));
 
   const seatRing = computeSeatRingRadius(seatsPerTable);
 
-  const tableRing = computeTableRingRadius(
-    layout.tablesPerSection,
-    seatRing,
-  );
+  const tableRing = computeTableRingRadius(TABLES_PER_SECTION, seatRing);
 
-  const sectionRadius = computeSectionRadius(
-    tableRing,
-    seatRing,
-  );
+  const sectionRadius = computeSectionRadius(tableRing, seatRing);
 
-  const sectionDistance =
-    computeSectionDistance(sectionRadius);
+  const sectionDistance = computeSectionDistance(sectionRadius);
 
   const sections = [];
 
   /* -------------------------------------------------------
      Sections
   ------------------------------------------------------- */
-
-  for (let i = 0; i < layout.sections; i++) {
-    const angle =
-      (2 * Math.PI * i) / layout.sections;
+  for (let i = 0; i < SECTIONS; i++) {
+    const angle = (2 * Math.PI * i) / SECTIONS;
 
     const section = await prisma.section.create({
       data: {
-        eventId: layout.eventId,
-
+        eventId: EVENT_ID,
         name: `Section ${i + 1}`,
-
         order: i + 1,
 
         x: Math.cos(angle) * sectionDistance,
@@ -220,7 +151,7 @@ async function generateEventLayout(layout: {
     sections.push(section);
   }
 
-  console.log(`✓ Sections: ${sections.length}`);
+  console.log('✓ Sections:', sections.length);
 
   /* -------------------------------------------------------
      Tables
@@ -229,32 +160,18 @@ async function generateEventLayout(layout: {
   const tables: Table[] = [];
 
   for (const section of sections) {
-    for (
-      let t = 0;
-      t < layout.tablesPerSection;
-      t++
-    ) {
-      const angle =
-        (2 * Math.PI * t) /
-        layout.tablesPerSection;
+    for (let t = 0; t < TABLES_PER_SECTION; t++) {
+      const angle = (2 * Math.PI * t) / TABLES_PER_SECTION;
 
       const table = await prisma.table.create({
         data: {
-          eventId: layout.eventId,
-
+          eventId: EVENT_ID,
           sectionId: section.id,
-
           name: `${section.name}-T${t + 1}`,
-
           order: t + 1,
 
-          x:
-            section.x +
-            Math.cos(angle) * tableRing,
-
-          y:
-            section.y +
-            Math.sin(angle) * tableRing,
+          x: section.x + Math.cos(angle) * tableRing,
+          y: section.y + Math.sin(angle) * tableRing,
 
           meta: {
             radius: TABLE_RADIUS,
@@ -267,7 +184,7 @@ async function generateEventLayout(layout: {
     }
   }
 
-  console.log(`✓ Tables: ${tables.length}`);
+  console.log('✓ Tables:', tables.length);
 
   /* -------------------------------------------------------
      Seats
@@ -276,10 +193,7 @@ async function generateEventLayout(layout: {
   let seatTotal = 0;
 
   for (const table of tables) {
-    const seats = generateCircleSeats(
-      table,
-      seatsPerTable,
-    );
+    const seats = generateCircleSeats(table, seatsPerTable);
 
     await prisma.seat.createMany({
       data: seats,
@@ -288,19 +202,17 @@ async function generateEventLayout(layout: {
     seatTotal += seats.length;
   }
 
-  console.log(`✓ Seats: ${seatTotal}`);
+  console.log('✓ Seats:', seatTotal);
 
   /* -------------------------------------------------------
-     Layout Version
+     Layout Versions
   ------------------------------------------------------- */
 
   await prisma.layoutVersion.create({
     data: {
-      eventId: layout.eventId,
-
+      eventId: EVENT_ID,
       version: 1,
-
-      label: `${layout.label} Auto Generated Layout`,
+      label: 'Auto Generated Layout',
 
       data: {
         sections: sections.length,
@@ -311,20 +223,7 @@ async function generateEventLayout(layout: {
   });
 
   console.log('✓ LayoutVersion created');
-}
-
-/* ============================================================
-   MAIN
-============================================================ */
-
-async function main() {
-  console.log('🌱 Omnixys Multi Event Seat Seed');
-
-  for (const layout of LAYOUTS) {
-    await generateEventLayout(layout);
-  }
-
-  console.log('\n🎉 All layouts generated');
+  console.log('🎉 Seed completed');
 }
 
 /* ============================================================
@@ -334,7 +233,6 @@ async function main() {
 main()
   .catch((e) => {
     console.error('❌ Seed failed', e);
-
     process.exit(1);
   })
   .finally(async () => {
