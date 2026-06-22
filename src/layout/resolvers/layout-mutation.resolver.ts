@@ -20,13 +20,18 @@ import { LayoutWriteService } from '../services/layout-write.service.js';
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { RealmRoleType } from '@omnixys/contracts';
 import {
   CookieAuthGuard,
   CurrentUser,
   CurrentUserData,
+  RoleGuard,
+  Roles,
 } from '@omnixys/security';
 
 @Resolver()
+@UseGuards(CookieAuthGuard, RoleGuard)
+@Roles(RealmRoleType.ADMIN)
 export class LayoutMutationResolver {
   constructor(private readonly layoutWrite: LayoutWriteService) {}
 

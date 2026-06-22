@@ -1,8 +1,11 @@
 import { TablePayload } from '../models/payloads/table.payload.js';
 import { TableReadService } from '../services/table-read.service.js';
+import { UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
+import { CookieAuthGuard } from '@omnixys/security';
 
 @Resolver()
+@UseGuards(CookieAuthGuard)
 export class TableQueryResolver {
   constructor(private readonly tableReadService: TableReadService) {}
 

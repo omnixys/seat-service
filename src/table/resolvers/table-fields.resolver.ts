@@ -1,4 +1,5 @@
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { SeatingEntityNotFoundException } from '../../seat/errors/seat-domain.error.js';
 import { SeatMapper } from '../../seat/models/mappers/seat.mapper.js';
 import { SeatPayload } from '../../seat/models/payloads/seat.payload.js';
 import { SectionMapper } from '../../section/models/mappers/section.mapper.js';
@@ -20,9 +21,7 @@ export class TableFieldsResolver {
     });
 
     if (!sec) {
-      throw new Error(
-        `Section ${table.sectionId} not found for table ${table.id}`,
-      );
+      throw new SeatingEntityNotFoundException('section', table.sectionId);
     }
 
     return SectionMapper.toPayload(sec);

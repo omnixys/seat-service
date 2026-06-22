@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { SeatingEntityNotFoundException } from '../../seat/errors/seat-domain.error.js';
 import { SectionMapper } from '../models/mappers/section.mapper.js';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OmnixysLogger } from '@omnixys/logger';
 
 @Injectable()
@@ -23,7 +24,7 @@ export class SectionReadService {
       where: { id: sectionId },
     });
     if (!sec) {
-      throw new NotFoundException('Section not found.');
+      throw new SeatingEntityNotFoundException('section', sectionId);
     }
     return SectionMapper.toPayload(sec);
   }
@@ -55,7 +56,7 @@ export class SectionReadService {
     });
 
     if (!section) {
-      throw new Error('getSectionById: Error Section!');
+      throw new SeatingEntityNotFoundException('section', id);
     }
 
     return SectionMapper.toPayload(section);

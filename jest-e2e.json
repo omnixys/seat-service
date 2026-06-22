@@ -7,14 +7,8 @@
       "ts-jest",
       {
         "useESM": true,
-        "tsconfig": "__tests__/tsconfig.test.json"
-      },
-      "babel-jest",
-      {
-        "presets": [
-          ["@babel/preset-env", { "targets": { "node": "current" } }]
-        ],
-        "plugins": ["babel-plugin-istanbul"]
+        "tsconfig": "__tests__/tsconfig.test.json",
+        "diagnostics": { "warnOnly": true }
       }
     ]
   },
@@ -30,13 +24,6 @@
   "verbose": true,
   "maxWorkers": 1,
   "testTimeout": 60000,
-  "globals": {
-    "ts-jest": {
-      "diagnostics": {
-        "warnOnly": true
-      }
-    }
-  },
   "setupFilesAfterEnv": ["<rootDir>/__tests__/e2e/setup-e2e.ts"],
   "testEnvironmentOptions": {
     "url": "http://localhost/"
@@ -60,7 +47,7 @@
       {
         "outputDirectory": "__tests__/reports/e2e/junit",
         "outputName": "junit-results.xml",
-        "suiteName": "E2E Event Tests"
+        "suiteName": "E2E Seat Tests"
       }
     ]
   ]

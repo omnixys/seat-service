@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { PrismaService } from '../../prisma/prisma.service.js';
+import {
+  SeatAssignmentNotFoundException,
+  SeatNotFoundException,
+} from '../errors/seat-domain.error.js';
 import { GuestEventSeatInput } from '../models/inputs/guest-event-seat.input.js';
 import { SeatAssignmentLogMapper } from '../models/mappers/seat-assignment-log.mapper.js';
 import { SeatMapper } from '../models/mappers/seat.mapper.js';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OmnixysLogger } from '@omnixys/logger';
 
 @Injectable()
@@ -35,7 +39,7 @@ export class SeatReadService {
       where: { id: seatId },
     });
     if (!seat) {
-      throw new NotFoundException('Seat not found.');
+      throw new SeatNotFoundException(seatId);
     }
     return seat;
   }
@@ -52,7 +56,7 @@ export class SeatReadService {
     });
 
     if (!seat) {
-      throw new Error('getSeatById');
+      throw new SeatNotFoundException(id);
     }
 
     return SeatMapper.toPayload(seat);
@@ -140,7 +144,7 @@ export class SeatReadService {
     this.logger.debug('Seat lookup by event and guest: %o', seat);
 
     if (!seat) {
-      throw new Error('kein sitz gefunden');
+      throw new SeatAssignmentNotFoundException(eventId, guestId);
     }
 
     return SeatMapper.toPayload(seat);

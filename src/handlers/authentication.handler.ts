@@ -16,9 +16,18 @@
  */
 
 import { env } from '../config/env.js';
+import { SeatVerificationTokenException } from '../seat/errors/seat-domain.error.js';
 import { SeatWriteService } from '../seat/services/seat-write.service.js';
 import { Injectable } from '@nestjs/common';
 import { ValkeyKey, ValkeyService } from '@omnixys/cache';
+import { ContextAccessor } from '@omnixys/context';
+import type {
+  CreateUserWithInvitationIdDTO,
+  GuestSeatKey,
+  GuestSignUpTokenPayload,
+  GuestTicketKey,
+  UserIdDTO,
+} from '@omnixys/contracts';
 import {
   KafkaEvent,
   KafkaEventHandler,
@@ -26,18 +35,11 @@ import {
   IKafkaEventContext,
   KafkaProducerService,
   KAFKA_HEADERS,
-  EventType,
+  type EventType,
 } from '@omnixys/kafka';
 import { OmnixysLogger } from '@omnixys/logger';
 import { TraceRunner } from '@omnixys/observability';
 import { EncryptionService } from '@omnixys/security';
-import {
-  GuestSignUpTokenPayload,
-  GuestSeatKey,
-  GuestTicketKey,
-  UserIdDTO,
-  CreateUserWithInvitationIdDTO,
-} from '@omnixys/shared';
 
 const { SERVICE } = env;
 
@@ -87,17 +89,17 @@ export class AuthenticationHandler {
       const { userId, token, invitationId } = payload;
 
       const decrypted = this.encryptionServie.decrypt(token, true);
-      const { seatKey } = JSON.parse(decrypted) as GuestSignUpTokenPayload;
+      const { seatKey } = this.parseSignUpToken(decrypted);
 
       const raw = await this.cache.get(
         ValkeyKey.guestVerificationSeat,
         seatKey,
       );
       if (!raw) {
-        throw new Error('Invalid token');
+        throw new SeatVerificationTokenException('invalid-token');
       }
 
-      const input = JSON.parse(raw) as GuestSeatKey;
+      const input = this.parseSeatKey(raw);
 
       /**
        * 🔥 find correct assignment
@@ -107,7 +109,7 @@ export class AuthenticationHandler {
       );
 
       if (!assignment) {
-        throw new Error('Seat assignment not found');
+        throw new SeatVerificationTokenException('assignment-not-found');
       }
 
       const seat = await this.seatWriteService.assignSeatToGuest({
@@ -146,7 +148,7 @@ export class AuthenticationHandler {
           invitationId,
           userId,
         },
-        meta: this.meta(userId, 'create ticket'),
+        meta: this.meta(input.actorId, 'Create ticket'),
       });
     });
   }
@@ -161,8 +163,8 @@ export class AuthenticationHandler {
       const { userId } = payload;
 
       const headers = context.headers;
-      const actorId = headers[KAFKA_HEADERS.ACTOR_ID] ?? 'Unkown';
-      await this.seatWriteService.unassignSeat(userId, actorId);
+      const actorId = headers[KAFKA_HEADERS.ACTOR_ID] ?? 'unknown';
+      await this.seatWriteService.unassignSeatsByGuestId(userId, actorId);
     });
   }
 
@@ -170,14 +172,47 @@ export class AuthenticationHandler {
    * Standard Kafka metadata builder.
    */
   private meta(actorId: string, operation: string): KafkaMetadata {
+    const context = ContextAccessor.get();
     const type: EventType = 'EVENT';
     return {
-      actorId,
-      tenantId: 'omnixys',
+      actorId: context?.principal?.actorId ?? actorId,
+      tenantId:
+        context?.tenant?.tenantId ?? context?.principal?.tenantId ?? 'omnixys',
       service: SERVICE,
       operation,
       version: '1',
       type,
     };
+  }
+
+  private parseSignUpToken(raw: string): GuestSignUpTokenPayload {
+    try {
+      const value = JSON.parse(raw) as Partial<GuestSignUpTokenPayload>;
+      if (typeof value.seatKey !== 'string') {
+        throw new TypeError('Missing seat key');
+      }
+      return value as GuestSignUpTokenPayload;
+    } catch (cause) {
+      throw new SeatVerificationTokenException('invalid-token', { cause });
+    }
+  }
+
+  private parseSeatKey(raw: string): GuestSeatKey {
+    try {
+      const value = JSON.parse(raw) as Partial<GuestSeatKey>;
+      if (
+        typeof value.eventId !== 'string' ||
+        typeof value.actorId !== 'string' ||
+        !Array.isArray(value.assignments) ||
+        value.assignments.some(
+          (assignment) => typeof assignment?.invitationId !== 'string',
+        )
+      ) {
+        throw new TypeError('Invalid seat assignment payload');
+      }
+      return value as GuestSeatKey;
+    } catch (cause) {
+      throw new SeatVerificationTokenException('invalid-token', { cause });
+    }
   }
 }

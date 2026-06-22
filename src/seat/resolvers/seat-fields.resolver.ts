@@ -3,6 +3,7 @@ import { SectionMapper } from '../../section/models/mappers/section.mapper.js';
 import { SectionPayload } from '../../section/models/payloads/section.payload.js';
 import { TableMapper } from '../../table/models/mappers/table.mapper.js';
 import { TablePayload } from '../../table/models/payloads/table.payload.js';
+import { SeatingEntityNotFoundException } from '../errors/seat-domain.error.js';
 import { SeatPayload } from '../models/payloads/seat.payload.js';
 import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
 
@@ -21,9 +22,7 @@ export class SeatFieldsResolver {
 
     // Prisma return is guaranteed (onDelete Cascade), but type safety:
     if (!sec) {
-      throw new Error(
-        `Section ${seat.sectionId} not found for seat ${seat.id}`,
-      );
+      throw new SeatingEntityNotFoundException('section', seat.sectionId);
     }
 
     return SectionMapper.toPayload(sec);

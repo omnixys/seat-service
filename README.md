@@ -1,98 +1,135 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Omnixys Seat Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The Seat Service owns venue sections, tables, seats, layout geometry, assignment history, and layout versions. It exposes a federated GraphQL API and connects verified guests to the Ticket workflow through Kafka.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Ownership boundaries
 
-## Description
+This service owns:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- sections, tables, and seats for an event reference;
+- seat availability, reservation, and assignment state;
+- guest and invitation assignment references;
+- layout geometry, metadata, change logs, undo/redo patches, and snapshots;
+- deterministic grid, circle, gala, horseshoe, scatter, spiral, U, and VIP layout generation.
 
-## Project setup
+It does not own events, invitations, user identities, or tickets. `eventId`, `invitationId`, and `guestId` are foreign identifiers only. Ticket creation remains owned by the Ticket service.
 
-```bash
-$ pnpm install
+## Architecture
+
+```text
+HTTP / GraphQL
+      |
+      v
+Context + Security + Validation
+      |
+      v
+Layout / Section / Table / Seat services ---> PostgreSQL
+                    |
+                    `------------------------> Valkey verification state
+                                               |
+                                               v
+Kafka: Authentication -> Seat -> Ticket
 ```
 
-## Compile and run the project
+The service consumes canonical request metadata from `@omnixys/context`. Structured logs, errors, traces, and Kafka headers therefore share request, correlation, actor, tenant, and trace identifiers.
+
+## Guest assignment flow
+
+1. Authentication publishes `seat.addGuestId` after guest verification.
+2. The handler decrypts and validates the short-lived seat key.
+3. The service finds the assignment for the invitation.
+4. An explicit reserved seat is claimed for that invitation, or the first available seat in the same event is selected.
+5. A database compare-and-set prevents concurrent handlers from claiming the same seat.
+6. Assignment and audit records are persisted.
+7. A short-lived ticket mapping is written to Valkey and `ticket.create` is published.
+
+Redelivery is safe: an existing matching event/guest/invitation assignment is returned. A conflicting or concurrently claimed seat produces `SEAT_UNAVAILABLE`, allowing the Kafka package to apply retry and dead-letter policy.
+
+Removing a user consumes `seat.removeGuestId` and unassigns every seat owned by that guest. The previous implementation treated the user ID as a seat ID; this service now resolves the guest's seats explicitly.
+
+## GraphQL security
+
+- all queries require authentication;
+- all layout, section, table, seat, and assignment mutations require the `ADMIN` realm role;
+- guest/event lookup permits the owner or an administrator;
+- administrative process endpoints require the `ADMIN` role.
+
+Event-specific authorization can later be refined with a canonical event-role policy. Until then, platform administration is intentionally stricter than accepting any authenticated user.
+
+## Layout model
+
+Sections contain tables and/or seats. Tables contain seats. Geometry is stored as coordinates, dimensions, rotation, shape, z-index, and JSON metadata. Cascades remove child layout objects when their parent is deleted.
+
+Layout versioning is already implemented through `LayoutVersion`, forward/inverse JSON patches, and change logs. The previous TODO for layout versioning is therefore complete. “Smart seating” is represented by deterministic, auditable generation strategies; opaque AI placement is not introduced into this transactional service. A Next.js Auto-Seating Wizard belongs to the frontend repository and should consume the GraphQL layout APIs.
+
+## Interfaces
+
+### GraphQL
+
+The API provides section, table, seat, and full-layout queries; assignment history and event statistics; CRUD operations; assignment mutations; layout generation, movement, duplication, versioning, undo, and redo.
+
+### HTTP health
+
+- `GET /health/liveness` checks the process.
+- `GET /health/readiness` checks Kafka, Valkey, and configured external dependencies.
+
+### Kafka
+
+Consumed:
+
+| Topic registry key   | Responsibility                         |
+| -------------------- | -------------------------------------- |
+| `seat.create`        | Generate an initial event layout       |
+| `seat.delete`        | Delete layouts for removed events      |
+| `seat.addGuestId`    | Resolve and assign a verified guest    |
+| `seat.removeGuestId` | Remove assignments for a deleted guest |
+
+Produced:
+
+| Topic registry key | Responsibility                                      |
+| ------------------ | --------------------------------------------------- |
+| `ticket.create`    | Trigger idempotent ticket creation after assignment |
+
+Handlers await all work so retry and dead-letter behavior can observe failures.
+
+## Persistence and migrations
+
+PostgreSQL stores layout and assignment state. Database columns remain snake_case; `seatType` maps to the existing `seat_type` column. Do not deploy a migration that drops and recreates this column because it would destroy seat-type data.
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm prisma migrate deploy
 ```
 
-## Run tests
+## Local development
+
+Requirements: Node.js 24.10+, pnpm 11.1+, PostgreSQL, Kafka, Valkey, and a compatible JWT issuer.
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+cp .env.example .env
+pnpm install
+pnpm prisma migrate dev
+pnpm dev
 ```
 
-## Deployment
+Production requires database, cookie, Keycloak client, Valkey, pending-contact, and service encryption secrets.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Validation
 
 ```bash
-$ pnpm install -g mau
-$ mau deploy
+pnpm prisma validate
+pnpm build
+pnpm test:unit
+pnpm test:e2e
+pnpm lint
+pnpm pack --dry-run
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Unit tests cover event-scoped automatic assignment, compare-and-set races, verification-state validation, and canonical Kafka metadata. Resolver integration tests cover layout, section, table, and seat query/mutation delegation without external infrastructure.
 
-## Resources
+## Operations
 
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Nest shutdown hooks close Kafka, Valkey, telemetry, logging, and Prisma. Optional external readiness URLs are disabled when empty. Framework exceptions expose stable codes and canonical diagnostic identifiers.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+GPL-3.0-or-later. See [.github/LICENSE](.github/LICENSE).

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { SeatingEntityNotFoundException } from '../../seat/errors/seat-domain.error.js';
 import { SectionMapper } from '../../section/models/mappers/section.mapper.js';
 import { LayoutChangeLogMapper } from '../models/mappers/layout-change-log.mapper.js';
 import { LayoutVersionMapper } from '../models/mappers/layout-version.mapper.js';
@@ -59,7 +60,7 @@ export class LayoutReadService {
     });
 
     if (!layoutVersion) {
-      throw new Error('getLatestLayoutVersion: error');
+      throw new SeatingEntityNotFoundException('layout-version', eventId);
     }
 
     return LayoutVersionMapper.toPayload(layoutVersion);

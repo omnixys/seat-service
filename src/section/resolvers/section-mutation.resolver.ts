@@ -2,6 +2,7 @@
 
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { RealmRoleType } from '@omnixys/contracts';
 
 import { CreateSectionInput } from '../models/inputs/create-section.input.js';
 import { RenameSectionInput } from '../models/inputs/rename-section.input.js';
@@ -16,11 +17,15 @@ import {
   CookieAuthGuard,
   CurrentUser,
   CurrentUserData,
+  RoleGuard,
+  Roles,
 } from '@omnixys/security';
 // import { EventAdminGuard } from '../../auth/guards/event-admin.guard.js';
 // import { EventOwnerGuard } from '../../auth/guards/event-owner.guard.js';
 
 @Resolver()
+@UseGuards(CookieAuthGuard, RoleGuard)
+@Roles(RealmRoleType.ADMIN)
 export class SectionMutationResolver {
   constructor(private readonly sectionWriteService: SectionWriteService) {}
 

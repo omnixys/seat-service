@@ -1,11 +1,14 @@
 import { LayoutReadService } from '../services/layout-read.service.js';
+import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Query, Resolver } from '@nestjs/graphql';
+import { CookieAuthGuard } from '@omnixys/security';
 
 import { SectionPayload } from '../../section/models/payloads/section.payload.js';
 import { LayoutChangeLogPayload } from '../models/payloads/layout-change-log.payload.js';
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
 
 @Resolver()
+@UseGuards(CookieAuthGuard)
 export class LayoutQueryResolver {
   constructor(private readonly layoutReadService: LayoutReadService) {}
 

@@ -9,13 +9,17 @@
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
 import { LayoutChangeType } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import {
+  SeatingConflictException,
+  SeatingEntityNotFoundException,
+} from '../../seat/errors/seat-domain.error.js';
 import { RenameConflict, RenamePayload } from '../../section/models/payloads/rename.payload.js';
 import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
 import { CreateTableInput } from '../models/inputs/create-table.input.js';
 import { RenameTableInput } from '../models/inputs/rename-table.input.js';
 import { UpdateTableInput } from '../models/inputs/update-table.input.js';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OmnixysLogger } from '@omnixys/logger';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
@@ -89,7 +93,7 @@ export class TableWriteService {
     });
 
     if (!exists) {
-      throw new NotFoundException('Table not found.');
+      throw new SeatingEntityNotFoundException('table', input.id);
     }
 
     const updated = await this.prisma.table.update({
@@ -125,7 +129,7 @@ export class TableWriteService {
     });
 
     if (!exists) {
-      throw new NotFoundException('Table not found.');
+      throw new SeatingEntityNotFoundException('table', tableId);
     }
 
     await this.prisma.table.delete({
@@ -150,7 +154,7 @@ export class TableWriteService {
     });
 
     if (!exists) {
-      throw new NotFoundException('Table not found.');
+      throw new SeatingEntityNotFoundException('table', tableId);
     }
 
     const conflict = await this.prisma.table.findFirst({
@@ -161,7 +165,7 @@ export class TableWriteService {
     });
 
     if (conflict) {
-      throw new ConflictException(`Table "${newName}" already exists`);
+      throw new SeatingConflictException('table', `Table "${newName}" already exists`);
     }
 
     // ✅ NO-OP CHECK

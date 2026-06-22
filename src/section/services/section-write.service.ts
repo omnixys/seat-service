@@ -9,13 +9,17 @@
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
 import { LayoutChangeType } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import {
+  SeatingConflictException,
+  SeatingEntityNotFoundException,
+} from '../../seat/errors/seat-domain.error.js';
 import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
 import { CreateSectionInput } from '../models/inputs/create-section.input.js';
 import { RenameSectionInput } from '../models/inputs/rename-section.input.js';
 import { UpdateSectionInput } from '../models/inputs/update-section.input.js';
 import { RenameConflict, RenamePayload } from '../models/payloads/rename.payload.js';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OmnixysLogger } from '@omnixys/logger';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
@@ -79,7 +83,7 @@ export class SectionWriteService {
     });
 
     if (!exists) {
-      throw new NotFoundException('Section not found.');
+      throw new SeatingEntityNotFoundException('section', input.id);
     }
 
     const updated = await this.prisma.section.update({
@@ -115,7 +119,7 @@ export class SectionWriteService {
     });
 
     if (!exists) {
-      throw new NotFoundException('Section not found.');
+      throw new SeatingEntityNotFoundException('section', sectionId);
     }
 
     await this.prisma.section.delete({
@@ -140,7 +144,7 @@ export class SectionWriteService {
     });
 
     if (!exists) {
-      throw new NotFoundException('Section not found.');
+      throw new SeatingEntityNotFoundException('section', sectionId);
     }
 
     const conflict = await this.prisma.section.findFirst({
@@ -151,7 +155,7 @@ export class SectionWriteService {
     });
 
     if (conflict) {
-      throw new ConflictException(`Section "${newName}" already exists`);
+      throw new SeatingConflictException('section', `Section "${newName}" already exists`);
     }
 
     // ✅ NO-OP CHECK

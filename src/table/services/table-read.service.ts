@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { SeatingEntityNotFoundException } from '../../seat/errors/seat-domain.error.js';
 import { TableMapper } from '../models/mappers/table.mapper.js';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OmnixysLogger } from '@omnixys/logger';
 
 @Injectable()
@@ -23,7 +24,7 @@ export class TableReadService {
       where: { id: tableId },
     });
     if (!table) {
-      throw new NotFoundException('Table not found.');
+      throw new SeatingEntityNotFoundException('table', tableId);
     }
     return table;
   }
@@ -56,7 +57,7 @@ export class TableReadService {
     });
 
     if (!table) {
-      throw new Error('getTableById: Error Table!');
+      throw new SeatingEntityNotFoundException('table', id);
     }
 
     return TableMapper.toPayload(table);

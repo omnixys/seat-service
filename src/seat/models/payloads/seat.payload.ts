@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonScalar } from '../../../core/scalars/json.scalar.js';
 import { SeatShape, SeatType } from '../../../prisma/generated/client.js';
-import { Field, Float, GraphQLISODateTime, ID, Int, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  Float,
+  GraphQLISODateTime,
+  ID,
+  Int,
+  ObjectType,
+} from '@nestjs/graphql';
 
 @ObjectType()
 export class SeatPayload {

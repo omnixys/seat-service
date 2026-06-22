@@ -7,13 +7,18 @@ import { SeatPayload } from '../models/payloads/seat.payload.js';
 import { SeatWriteService } from '../services/seat-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { RealmRoleType } from '@omnixys/contracts';
 import {
   CookieAuthGuard,
   CurrentUser,
   CurrentUserData,
+  RoleGuard,
+  Roles,
 } from '@omnixys/security';
 
 @Resolver()
+@UseGuards(CookieAuthGuard, RoleGuard)
+@Roles(RealmRoleType.ADMIN)
 export class SeatMutationResolver {
   constructor(private readonly write: SeatWriteService) {}
 
@@ -22,7 +27,6 @@ export class SeatMutationResolver {
   // ---------------------------------------------------------------------------
 
   @Mutation(() => SeatPayload)
-  @UseGuards(CookieAuthGuard)
   async createSeat(
     @Args('input') input: CreateSeatInput,
     @CurrentUser() user: CurrentUserData,
@@ -31,7 +35,6 @@ export class SeatMutationResolver {
   }
 
   @Mutation(() => SeatPayload)
-  @UseGuards(CookieAuthGuard)
   async updateSeat(
     @Args('input') input: UpdateSeatInput,
     @CurrentUser() user: CurrentUserData,
@@ -40,7 +43,6 @@ export class SeatMutationResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseGuards(CookieAuthGuard)
   async deleteSeat(
     @Args('seatId') seatId: string,
     @CurrentUser() user: CurrentUserData,
@@ -49,7 +51,6 @@ export class SeatMutationResolver {
   }
 
   @Mutation(() => SeatPayload)
-  @UseGuards(CookieAuthGuard)
   async assignSeat(
     @Args('input') input: AssignSeatInput,
     @CurrentUser() user: CurrentUserData,
@@ -58,7 +59,6 @@ export class SeatMutationResolver {
   }
 
   @Mutation(() => SeatPayload)
-  @UseGuards(CookieAuthGuard)
   async unassignSeat(
     @Args('seatId') seatId: string,
     @CurrentUser() user: CurrentUserData,

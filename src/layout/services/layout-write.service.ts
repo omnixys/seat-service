@@ -3,10 +3,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { CreateSeatDTO } from '@omnixys/shared';
+import {
+  SeatNotFoundException,
+  SeatingEntityNotFoundException,
+} from '../../seat/errors/seat-domain.error.js';
+import type { CreateSeatDTO } from '@omnixys/contracts';
 
 import {
   AutoGenerateLayoutInput,
@@ -98,7 +102,6 @@ export class LayoutWriteService {
       payload: { version: created.version, id: created.id },
     });
 
-    // TODO in @omnixs/shared
     this.logger.debug(
       'Layout version saved (event=%s version=%s)',
       eventId,
@@ -513,7 +516,7 @@ export class LayoutWriteService {
   async moveSeat(input: MoveSeatInput, actorId: string) {
     const seat = await this.prisma.seat.findUnique({ where: { id: input.id } });
     if (!seat) {
-      throw new NotFoundException('Seat not found.');
+      throw new SeatNotFoundException(input.id);
     }
 
     const before = await this.loadCurrentLayout(seat.eventId);
@@ -546,7 +549,7 @@ export class LayoutWriteService {
   async moveSection(input: MoveSectionInput, actorId: string) {
     const section = await this.prisma.section.findUnique({ where: { id: input.id } });
     if (!section) {
-      throw new NotFoundException('Seat not found.');
+      throw new SeatingEntityNotFoundException('section', input.id);
     }
 
     const before = await this.loadCurrentLayout(section.eventId);
@@ -578,7 +581,7 @@ export class LayoutWriteService {
   async moveTable(input: MoveTableInput, actorId: string) {
     const table = await this.prisma.table.findUnique({ where: { id: input.id } });
     if (!table) {
-      throw new NotFoundException('Seat not found.');
+      throw new SeatingEntityNotFoundException('table', input.id);
     }
 
     const before = await this.loadCurrentLayout(table.eventId);
@@ -646,7 +649,7 @@ export class LayoutWriteService {
     });
 
     if (!table) {
-      throw new NotFoundException('Table not found.');
+      throw new SeatingEntityNotFoundException('table', input.tableId);
     }
 
     const autoOrder = await nextOrder(this.prisma.table, {
@@ -708,7 +711,7 @@ export class LayoutWriteService {
     });
 
     if (!section) {
-      throw new NotFoundException('Section not found.');
+      throw new SeatingEntityNotFoundException('section', input.sectionId);
     }
 
     const autoOrder = await nextOrder(this.prisma.section, {
