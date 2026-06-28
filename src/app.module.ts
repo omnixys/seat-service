@@ -138,8 +138,6 @@ const {
     HealthModule,
   ],
   controllers: [],
-  providers: [
-    BannerService,
-  ],
+  providers: [BannerService],
 })
 export class AppModule {}
