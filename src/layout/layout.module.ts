@@ -1,4 +1,5 @@
 import { ScalarsModule } from '../core/scalars/scalar.module.js';
+import { EventAuthModule } from '../event-auth/event-auth.module.js';
 import {
   LayoutChangeType,
   SeatAssignmentAction,
@@ -19,8 +20,6 @@ import { LayoutReadService } from './services/layout-read.service.js';
 import { LayoutWriteService } from './services/layout-write.service.js';
 import { Module } from '@nestjs/common';
 import { registerEnumType } from '@nestjs/graphql';
-import { AuthModule } from '@omnixys/security';
-
 registerEnumType(SectionShape, {
   name: 'SectionShape',
 });
@@ -50,7 +49,7 @@ registerEnumType(LayoutChangeType, {
 });
 
 @Module({
-  imports: [PrismaModule, AuthModule, ScalarsModule],
+  imports: [PrismaModule, ScalarsModule, EventAuthModule],
   providers: [
     // Business resolvers
     LayoutQueryResolver,

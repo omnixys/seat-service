@@ -7,18 +7,21 @@ import { SeatPayload } from '../models/payloads/seat.payload.js';
 import { SeatWriteService } from '../services/seat-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { RealmRoleType } from '@omnixys/contracts';
+import { EventRoleType, RealmRoleType } from '@omnixys/contracts';
 import {
   CookieAuthGuard,
   CurrentUser,
   CurrentUserData,
+  EventRoleGuard,
+  EventRoles,
   RoleGuard,
   Roles,
 } from '@omnixys/security';
 
 @Resolver()
-@UseGuards(CookieAuthGuard, RoleGuard)
-@Roles(RealmRoleType.ADMIN)
+@UseGuards(CookieAuthGuard, RoleGuard, EventRoleGuard)
+@Roles(RealmRoleType.USER)
+@EventRoles(EventRoleType.ADMIN)
 export class SeatMutationResolver {
   constructor(private readonly write: SeatWriteService) {}
 

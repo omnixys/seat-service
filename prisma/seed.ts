@@ -36,7 +36,7 @@ const LAYOUTS = [
   },
 
   {
-    eventId: '6d650ee6-8ed0-4694-afd4-71871c37683a',
+    eventId: '959b8321-0c2d-496c-b2a4-4d1ab45c1d67',
     label: 'Wedding Root',
 
     sections: 6,
@@ -45,7 +45,7 @@ const LAYOUTS = [
   },
 
   {
-    eventId: '2ec786da-49d9-4ec8-af32-0a3f8f2022a5',
+    eventId: '8becb1a6-5f98-48f7-841b-e8a3a6cf2ec1',
     label: 'Wedding Ceremony',
 
     sections: 1,
@@ -54,7 +54,7 @@ const LAYOUTS = [
   },
 
   {
-    eventId: 'cad672ce-7ece-4dfc-a5c9-95ae91589452',
+    eventId: '0ebf1946-5dae-474a-a1e2-cd7ea5046d07',
     label: 'Wedding Reception',
 
     sections: 6,

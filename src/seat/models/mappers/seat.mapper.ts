@@ -1,6 +1,6 @@
 import type { Seat } from '../../../prisma/generated/client.js';
 import type { SeatPayload } from '../payloads/seat.payload.js';
-import { n2u } from '@omnixys/shared';
+import { n2u } from '@omnixys/contracts';
 
 export class SeatMapper {
   static toPayload(seat: Seat): SeatPayload {

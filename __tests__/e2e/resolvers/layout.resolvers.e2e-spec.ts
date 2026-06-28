@@ -36,8 +36,18 @@ await mockSecurity.unstable_mockModule('@omnixys/security', () => ({
   },
   CurrentUser: () => (): undefined => undefined,
   CurrentUserData: class CurrentUserData {},
+  EventAccessDeniedException: class EventAccessDeniedException extends Error {},
+  EventRoleGuard: class EventRoleGuard {
+    canActivate(): boolean {
+      return true;
+    }
+  },
+  EventRoleResolver: class EventRoleResolver {},
+  EventRoles: () => () => undefined,
   RoleGuard: class RoleGuard {},
   Roles: () => () => undefined,
+  extractEventId: () => undefined,
+  isOwnerOrEventAdmin: () => true,
 }));
 
 const { LayoutMutationResolver } =

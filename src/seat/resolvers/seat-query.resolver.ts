@@ -5,7 +5,7 @@ import { SeatPayload } from '../models/payloads/seat.payload.js';
 import { SeatReadService } from '../services/seat-read.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-import { RealmRoleType } from '@omnixys/contracts';
+import { EventRoleResolver, isOwnerOrEventAdmin } from '@omnixys/security';
 import {
   CookieAuthGuard,
   CurrentUser,
@@ -15,7 +15,10 @@ import {
 @Resolver()
 @UseGuards(CookieAuthGuard)
 export class SeatQueryResolver {
-  constructor(private readonly read: SeatReadService) {}
+  constructor(
+    private readonly read: SeatReadService,
+    private readonly eventRoleResolver: EventRoleResolver,
+  ) {}
 
   @Query(() => [SeatPayload])
   async seatsBySection(
@@ -63,7 +66,11 @@ export class SeatQueryResolver {
     input: GuestEventSeatInput,
     @CurrentUser() user: CurrentUserData,
   ): Promise<SeatPayload> {
-    if (input.guestId !== user.id && user.role !== RealmRoleType.ADMIN) {
+    const eventRole = await this.eventRoleResolver.getRoleForUser(
+      user.id,
+      input.eventId,
+    );
+    if (!isOwnerOrEventAdmin(input.guestId, user.id, eventRole)) {
       throw new SeatAccessDeniedException('guest-owner-mismatch');
     }
     return this.read.getSeatByEventAndGuest(input);

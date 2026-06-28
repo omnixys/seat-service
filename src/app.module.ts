@@ -23,6 +23,7 @@ import { HandlerModule } from './handlers/handler.module.js';
 import { HealthModule } from './health/health.module.js';
 import { LayoutModule } from './layout/layout.module.js';
 import { SeatModule } from './seat/seat.module.js';
+
 import { SectionModule } from './section/section.module.js';
 import { TableModule } from './table/table.module.js';
 import { Module } from '@nestjs/common';
@@ -137,6 +138,8 @@ const {
     HealthModule,
   ],
   controllers: [],
-  providers: [BannerService],
+  providers: [
+    BannerService,
+  ],
 })
 export class AppModule {}

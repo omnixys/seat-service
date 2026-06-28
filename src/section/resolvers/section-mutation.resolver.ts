@@ -2,7 +2,7 @@
 
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { RealmRoleType } from '@omnixys/contracts';
+import { EventRoleType, RealmRoleType } from '@omnixys/contracts';
 
 import { CreateSectionInput } from '../models/inputs/create-section.input.js';
 import { RenameSectionInput } from '../models/inputs/rename-section.input.js';
@@ -17,15 +17,16 @@ import {
   CookieAuthGuard,
   CurrentUser,
   CurrentUserData,
+  EventRoleGuard,
+  EventRoles,
   RoleGuard,
   Roles,
 } from '@omnixys/security';
-// import { EventAdminGuard } from '../../auth/guards/event-admin.guard.js';
-// import { EventOwnerGuard } from '../../auth/guards/event-owner.guard.js';
 
 @Resolver()
-@UseGuards(CookieAuthGuard, RoleGuard)
-@Roles(RealmRoleType.ADMIN)
+@UseGuards(CookieAuthGuard, RoleGuard, EventRoleGuard)
+@Roles(RealmRoleType.USER)
+@EventRoles(EventRoleType.ADMIN)
 export class SectionMutationResolver {
   constructor(private readonly sectionWriteService: SectionWriteService) {}
 
@@ -34,7 +35,6 @@ export class SectionMutationResolver {
   // ---------------------------------------------------------------------------
 
   @Mutation(() => SectionPayload)
-  @UseGuards(CookieAuthGuard)
   async createSection(
     @Args('input') input: CreateSectionInput,
     @CurrentUser() user: CurrentUserData,
@@ -43,7 +43,6 @@ export class SectionMutationResolver {
   }
 
   @Mutation(() => SectionPayload)
-  @UseGuards(CookieAuthGuard)
   async updateSection(
     @Args('input') input: UpdateSectionInput,
     @CurrentUser() user: CurrentUserData,
@@ -52,7 +51,6 @@ export class SectionMutationResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseGuards(CookieAuthGuard)
   async deleteSection(
     @Args('sectionId') sectionId: string,
     @CurrentUser() user: CurrentUserData,
@@ -61,7 +59,6 @@ export class SectionMutationResolver {
   }
 
   @Mutation(() => RenamePayload)
-  @UseGuards(CookieAuthGuard)
   async renameSection(
     @Args('input') input: RenameSectionInput,
     @CurrentUser() user: CurrentUserData,
@@ -70,16 +67,14 @@ export class SectionMutationResolver {
   }
 
   @Mutation(() => BulkRenamePayload)
-  @UseGuards(CookieAuthGuard)
   async bulkRenameSections(
     @Args('inputs', { type: () => [RenameSectionInput] })
-    @CurrentUser()
     inputs: RenameSectionInput[],
     @CurrentUser() user: CurrentUserData,
   ): Promise<BulkRenamePayload> {
     const result = await this.sectionWriteService.bulkRenameSections(
       inputs,
-      user?.id,
+      user.id,
     );
 
     return {

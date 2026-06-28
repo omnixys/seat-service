@@ -47,3 +47,8 @@ export type LayoutVersion = Prisma.LayoutVersionModel
  * 
  */
 export type LayoutChangeLog = Prisma.LayoutChangeLogModel
+/**
+ * Model EventRoleProjection
+ * 
+ */
+export type EventRoleProjection = Prisma.EventRoleProjectionModel

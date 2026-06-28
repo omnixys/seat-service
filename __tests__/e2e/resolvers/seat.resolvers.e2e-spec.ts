@@ -28,6 +28,8 @@ const mockSecurity = jest as unknown as {
   ) => Promise<void>;
 };
 
+const MockEventRoleResolver = class EventRoleResolver {};
+
 await mockSecurity.unstable_mockModule('@omnixys/security', () => ({
   CookieAuthGuard: class CookieAuthGuard {
     canActivate(): boolean {
@@ -36,8 +38,18 @@ await mockSecurity.unstable_mockModule('@omnixys/security', () => ({
   },
   CurrentUser: () => (): undefined => undefined,
   CurrentUserData: class CurrentUserData {},
+  EventAccessDeniedException: class EventAccessDeniedException extends Error {},
+  EventRoleGuard: class EventRoleGuard {
+    canActivate(): boolean {
+      return true;
+    }
+  },
+  EventRoleResolver: MockEventRoleResolver,
+  EventRoles: () => () => undefined,
   RoleGuard: class RoleGuard {},
   Roles: () => () => undefined,
+  extractEventId: () => undefined,
+  isOwnerOrEventAdmin: () => true,
 }));
 
 const { SeatMutationResolver } =
@@ -82,6 +94,7 @@ describe('Seat resolvers integration', () => {
         { provide: SeatReadService, useValue: read },
         { provide: SeatWriteService, useValue: write },
         { provide: PrismaService, useValue: prisma },
+        { provide: MockEventRoleResolver, useValue: { getRoleForUser: jest.fn().mockResolvedValue('ADMIN') } },
       ],
     }).compile();
 

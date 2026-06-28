@@ -56,7 +56,8 @@ export const ModelName = {
   Seat: 'Seat',
   SeatAssignmentLog: 'SeatAssignmentLog',
   LayoutVersion: 'LayoutVersion',
-  LayoutChangeLog: 'LayoutChangeLog'
+  LayoutChangeLog: 'LayoutChangeLog',
+  EventRoleProjection: 'EventRoleProjection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -182,6 +183,17 @@ export const LayoutChangeLogScalarFieldEnum = {
 } as const
 
 export type LayoutChangeLogScalarFieldEnum = (typeof LayoutChangeLogScalarFieldEnum)[keyof typeof LayoutChangeLogScalarFieldEnum]
+
+
+export const EventRoleProjectionScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  userId: 'userId',
+  role: 'role',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventRoleProjectionScalarFieldEnum = (typeof EventRoleProjectionScalarFieldEnum)[keyof typeof EventRoleProjectionScalarFieldEnum]
 
 
 export const SortOrder = {

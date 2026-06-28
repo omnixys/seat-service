@@ -389,7 +389,8 @@ export const ModelName = {
   Seat: 'Seat',
   SeatAssignmentLog: 'SeatAssignmentLog',
   LayoutVersion: 'LayoutVersion',
-  LayoutChangeLog: 'LayoutChangeLog'
+  LayoutChangeLog: 'LayoutChangeLog',
+  EventRoleProjection: 'EventRoleProjection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "section" | "table" | "seat" | "seatAssignmentLog" | "layoutVersion" | "layoutChangeLog"
+    modelProps: "section" | "table" | "seat" | "seatAssignmentLog" | "layoutVersion" | "layoutChangeLog" | "eventRoleProjection"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -853,6 +854,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EventRoleProjection: {
+      payload: Prisma.$EventRoleProjectionPayload<ExtArgs>
+      fields: Prisma.EventRoleProjectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EventRoleProjectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EventRoleProjectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>
+        }
+        findFirst: {
+          args: Prisma.EventRoleProjectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EventRoleProjectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>
+        }
+        findMany: {
+          args: Prisma.EventRoleProjectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>[]
+        }
+        create: {
+          args: Prisma.EventRoleProjectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>
+        }
+        createMany: {
+          args: Prisma.EventRoleProjectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EventRoleProjectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>[]
+        }
+        delete: {
+          args: Prisma.EventRoleProjectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>
+        }
+        update: {
+          args: Prisma.EventRoleProjectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.EventRoleProjectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EventRoleProjectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EventRoleProjectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.EventRoleProjectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventRoleProjectionPayload>
+        }
+        aggregate: {
+          args: Prisma.EventRoleProjectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEventRoleProjection>
+        }
+        groupBy: {
+          args: Prisma.EventRoleProjectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventRoleProjectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EventRoleProjectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventRoleProjectionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -999,6 +1074,17 @@ export const LayoutChangeLogScalarFieldEnum = {
 } as const
 
 export type LayoutChangeLogScalarFieldEnum = (typeof LayoutChangeLogScalarFieldEnum)[keyof typeof LayoutChangeLogScalarFieldEnum]
+
+
+export const EventRoleProjectionScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  userId: 'userId',
+  role: 'role',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventRoleProjectionScalarFieldEnum = (typeof EventRoleProjectionScalarFieldEnum)[keyof typeof EventRoleProjectionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1243,6 +1329,20 @@ export type EnumLayoutChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type ListEnumLayoutChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LayoutChangeType[]'>
     
 
+
+/**
+ * Reference to a field of type 'EventRoleType'
+ */
+export type EnumEventRoleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventRoleType'>
+    
+
+
+/**
+ * Reference to a field of type 'EventRoleType[]'
+ */
+export type ListEnumEventRoleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventRoleType[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1359,6 +1459,7 @@ export type GlobalOmitConfig = {
   seatAssignmentLog?: Prisma.SeatAssignmentLogOmit
   layoutVersion?: Prisma.LayoutVersionOmit
   layoutChangeLog?: Prisma.LayoutChangeLogOmit
+  eventRoleProjection?: Prisma.EventRoleProjectionOmit
 }
 
 /* Types for Logging */
