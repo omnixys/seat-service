@@ -3,6 +3,23 @@
 All notable changes in this project will be documented in this file.
 
 
+## [2.0.0](https://github.com/omnixys/seat-service/compare/v1.0.4...v2.0.0) (2026-06-28)
+
+### Dependencies
+
+* **Dependencies:** update Dependecies ([](https://github.com/omnixys/seat-service/commit/5ff938f791432747d1beba91a4fbf8b7b47fb3ae))
+* **Dependencies:** update Dependecies ([](https://github.com/omnixys/seat-service/commit/564306da6e8a7e1653800e8721c3bee007d51650))
+
+### Prisma
+
+* **Prisma:** changes seatTypes to seat_types ([](https://github.com/omnixys/seat-service/commit/163d6cfacde308f010a596fb4df945a487582a4a))
+* **Prisma:** mapp seatType to seat_type ([](https://github.com/omnixys/seat-service/commit/33687526ca70b8cd96733c74bd229b36c87077fe))
+* **Prisma:** update seed.ts ([](https://github.com/omnixys/seat-service/commit/469b15408a6145da6b155a61972eeacc2de57ea3))
+
+### Seat
+
+* **Seat:** harden assignment context and layout lifecycle ([](https://github.com/omnixys/seat-service/commit/cace45b02dd6f6dbe9c5b39440a1c0f6c0e5ef60))
+
 ## [1.0.4](https://github.com/omnixys/seat-service/compare/v1.0.3...v1.0.4) (2026-05-25)
 
 ### Docker
