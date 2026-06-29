@@ -3,6 +3,16 @@
 All notable changes in this project will be documented in this file.
 
 
+## [2.0.1](https://github.com/omnixys/seat-service/compare/v2.0.0...v2.0.1) (2026-06-29)
+
+### Kafka
+
+* **Kafka:** update kafka dependency ([](https://github.com/omnixys/seat-service/commit/2b1902a3a6e0070086884695bd0e6a9bd7202200))
+
+### Other
+
+* **Other:** Merge branch 'main' of https://github.com/omnixys/seat-service ([](https://github.com/omnixys/seat-service/commit/d637065271c856b5b9d22f424062a19953eca6b7))
+
 ## [2.0.0](https://github.com/omnixys/seat-service/compare/v1.0.4...v2.0.0) (2026-06-28)
 
 ### Dependencies
