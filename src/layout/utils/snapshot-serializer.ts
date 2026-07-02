@@ -17,6 +17,8 @@ export interface SectionSnapshot {
   order: number;
   x: number;
   y: number;
+  width?: number | null;
+  height?: number | null;
   meta: any;
 }
 
@@ -68,6 +70,8 @@ export class SnapshotSerializer {
       order: s.order,
       x: s.x,
       y: s.y,
+      width: s.width,
+      height: s.height,
       meta: s.meta ?? {},
     }));
 
@@ -118,6 +122,8 @@ export class SnapshotSerializer {
       order: s.order,
       x: s.x,
       y: s.y,
+      width: s.width ?? null,
+      height: s.height ?? null,
       meta: s.meta ?? {},
     }));
 

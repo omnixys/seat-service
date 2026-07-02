@@ -24,4 +24,10 @@ export class CreateSectionInput {
 
   @Field(() => Float, { nullable: true })
   y?: number;
+
+  @Field(() => Float, { nullable: true })
+  width?: number;
+
+  @Field(() => Float, { nullable: true })
+  height?: number;
 }

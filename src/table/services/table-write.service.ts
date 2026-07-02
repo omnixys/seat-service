@@ -7,7 +7,7 @@
  * ------------------------------------------------------------------------- */
 
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
-import { LayoutChangeType } from '../../prisma/generated/enums.js';
+import { LayoutChangeType, TableShape } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import {
   SeatingConflictException,
@@ -57,6 +57,12 @@ export class TableWriteService {
         name: input.name,
         order: input.order ?? autoOrder,
         capacity: input.capacity ?? null,
+        shape: input.shape ?? TableShape.ROUND,
+        x: input.x ?? 0,
+        y: input.y ?? 0,
+        width: input.width ?? null,
+        height: input.height ?? null,
+        rotation: input.rotation ?? 0,
         meta: prepareMeta(input.meta) as InputJsonValue,
       },
     });
@@ -102,6 +108,12 @@ export class TableWriteService {
         name: input.name ?? undefined,
         order: input.order ?? undefined,
         capacity: input.capacity ?? undefined,
+        shape: input.shape ?? undefined,
+        x: input.x ?? undefined,
+        y: input.y ?? undefined,
+        width: input.width ?? undefined,
+        height: input.height ?? undefined,
+        rotation: input.rotation ?? undefined,
         meta: input.meta ? (prepareMeta(input.meta) as InputJsonValue) : undefined,
       },
     });

@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const PresenceState = {
+  INSIDE: 'INSIDE',
+  OUTSIDE: 'OUTSIDE'
+} as const
+
+export type PresenceState = (typeof PresenceState)[keyof typeof PresenceState]
+
+
 export const EventRoleType = {
   ADMIN: 'ADMIN',
   SECURITY: 'SECURITY',

@@ -57,7 +57,9 @@ export const ModelName = {
   SeatAssignmentLog: 'SeatAssignmentLog',
   LayoutVersion: 'LayoutVersion',
   LayoutChangeLog: 'LayoutChangeLog',
-  EventRoleProjection: 'EventRoleProjection'
+  EventRoleProjection: 'EventRoleProjection',
+  EventSettingsProjection: 'EventSettingsProjection',
+  SeatPresenceProjection: 'SeatPresenceProjection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -106,6 +108,8 @@ export const TableScalarFieldEnum = {
   shape: 'shape',
   x: 'x',
   y: 'y',
+  width: 'width',
+  height: 'height',
   rotation: 'rotation',
   meta: 'meta',
   createdAt: 'createdAt',
@@ -194,6 +198,33 @@ export const EventRoleProjectionScalarFieldEnum = {
 } as const
 
 export type EventRoleProjectionScalarFieldEnum = (typeof EventRoleProjectionScalarFieldEnum)[keyof typeof EventRoleProjectionScalarFieldEnum]
+
+
+export const EventSettingsProjectionScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  name: 'name',
+  endsAt: 'endsAt',
+  maxSeats: 'maxSeats',
+  allowGuestSeatSelection: 'allowGuestSeatSelection',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventSettingsProjectionScalarFieldEnum = (typeof EventSettingsProjectionScalarFieldEnum)[keyof typeof EventSettingsProjectionScalarFieldEnum]
+
+
+export const SeatPresenceProjectionScalarFieldEnum = {
+  id: 'id',
+  seatId: 'seatId',
+  eventId: 'eventId',
+  presenceState: 'presenceState',
+  checkedInAt: 'checkedInAt',
+  revoked: 'revoked',
+  revokedAt: 'revokedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SeatPresenceProjectionScalarFieldEnum = (typeof SeatPresenceProjectionScalarFieldEnum)[keyof typeof SeatPresenceProjectionScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -12,6 +12,7 @@ import {
 } from '../../seat/errors/seat-domain.error.js';
 import type { CreateSeatDTO } from '@omnixys/contracts';
 
+import { AutoGenerateSeatMapInput } from '../models/inputs/auto-generate-seat-map.input.js';
 import {
   AutoGenerateLayoutInput,
   SectionInput,
@@ -207,6 +208,8 @@ export class LayoutWriteService {
             order: sec.order,
             x: sec.x,
             y: sec.y,
+            width: sec.width ?? null,
+            height: sec.height ?? null,
             meta: (sec.meta ?? {}) as InputJsonValue,
           },
         });
@@ -352,6 +355,33 @@ export class LayoutWriteService {
     );
   }
 
+  async autoGenerateSeatMap(input: AutoGenerateSeatMapInput, actorId: string) {
+    const seatsPerTable = Math.ceil(input.seatCount / input.tableCount);
+
+    const config: AutoGenerateLayoutInput = {
+      eventId: input.eventId,
+      adaptiveRadius: true,
+      sections: [
+        {
+          name: input.sectionName,
+          shape: input.sectionLayout,
+          tables: Array.from({ length: input.tableCount }, (_, i) => ({
+            name: `Table ${i + 1}`,
+            shape: input.tableShape,
+            seats: {
+              count: seatsPerTable,
+              shape: 'CIRCLE' as any,
+            },
+            order: i + 1,
+          })),
+          order: 1,
+        },
+      ],
+    };
+
+    return this.autoGenerate(config, actorId);
+  }
+
   // -------------------------------------------------------
   // WRITE GEOMETRY
   // -------------------------------------------------------
@@ -383,6 +413,8 @@ export class LayoutWriteService {
             order: sec.order ?? 1,
             x: sec.x,
             y: sec.y,
+            width: sec.width,
+            height: sec.height,
             meta: (sec.meta ?? {}) as InputJsonValue,
           }));
 

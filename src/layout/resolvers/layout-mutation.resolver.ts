@@ -5,6 +5,7 @@ import { SeatPayload } from '../../seat/models/payloads/seat.payload.js';
 import { SectionPayload } from '../../section/models/payloads/section.payload.js';
 import { TablePayload } from '../../table/models/payloads/table.payload.js';
 
+import { AutoGenerateSeatMapInput } from '../models/inputs/auto-generate-seat-map.input.js';
 import { AutoGenerateLayoutInput } from '../models/inputs/auto-generate.input.js';
 import { CloneSectionInput } from '../models/inputs/clone-section.input.js';
 import { DuplicateTableInput } from '../models/inputs/duplicate-Table-input.js';
@@ -33,7 +34,7 @@ import {
 
 @Resolver()
 @UseGuards(CookieAuthGuard, RoleGuard, EventRoleGuard)
-@Roles(RealmRoleType.USER)
+@Roles(RealmRoleType.USER, RealmRoleType.ADMIN)
 @EventRoles(EventRoleType.ADMIN)
 export class LayoutMutationResolver {
   constructor(private readonly layoutWrite: LayoutWriteService) {}
@@ -74,6 +75,15 @@ export class LayoutMutationResolver {
     @CurrentUser() user: CurrentUserData,
   ) {
     return this.layoutWrite.autoGenerate(input, user.id);
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(CookieAuthGuard)
+  async autoGenerateSeatMap(
+    @Args('input') input: AutoGenerateSeatMapInput,
+    @CurrentUser() user: CurrentUserData,
+  ) {
+    return this.layoutWrite.autoGenerateSeatMap(input, user.id);
   }
 
   // ---------------------------------------------------------------------------

@@ -27,7 +27,7 @@ const prisma = new PrismaClient({ adapter });
 
 const LAYOUTS = [
   {
-    eventId: '51c845d9-3671-4552-8b16-9ad7b84e4778',
+    eventId: 'a01b6ab8-4d80-4f70-ba3d-a223359f56d9',
     label: 'The Future Experience',
 
     sections: 5,
@@ -36,7 +36,7 @@ const LAYOUTS = [
   },
 
   {
-    eventId: '959b8321-0c2d-496c-b2a4-4d1ab45c1d67',
+    eventId: '01a0f47a-cc4e-4d70-9ecc-a5cd60c37521',
     label: 'Wedding Root',
 
     sections: 6,
@@ -45,7 +45,7 @@ const LAYOUTS = [
   },
 
   {
-    eventId: '8becb1a6-5f98-48f7-841b-e8a3a6cf2ec1',
+    eventId: '70911c35-5ea8-4ce2-bf95-ebcc5c61db26',
     label: 'Wedding Ceremony',
 
     sections: 1,
@@ -54,7 +54,7 @@ const LAYOUTS = [
   },
 
   {
-    eventId: '0ebf1946-5dae-474a-a1e2-cd7ea5046d07',
+    eventId: '393a2932-63ca-4170-aaae-56dfe5c40e9e',
     label: 'Wedding Reception',
 
     sections: 6,

@@ -31,6 +31,8 @@ export type TableAvgAggregateOutputType = {
   capacity: number | null
   x: number | null
   y: number | null
+  width: number | null
+  height: number | null
   rotation: number | null
 }
 
@@ -39,6 +41,8 @@ export type TableSumAggregateOutputType = {
   capacity: number | null
   x: number | null
   y: number | null
+  width: number | null
+  height: number | null
   rotation: number | null
 }
 
@@ -52,6 +56,8 @@ export type TableMinAggregateOutputType = {
   shape: $Enums.TableShape | null
   x: number | null
   y: number | null
+  width: number | null
+  height: number | null
   rotation: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,6 +73,8 @@ export type TableMaxAggregateOutputType = {
   shape: $Enums.TableShape | null
   x: number | null
   y: number | null
+  width: number | null
+  height: number | null
   rotation: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -82,6 +90,8 @@ export type TableCountAggregateOutputType = {
   shape: number
   x: number
   y: number
+  width: number
+  height: number
   rotation: number
   meta: number
   createdAt: number
@@ -95,6 +105,8 @@ export type TableAvgAggregateInputType = {
   capacity?: true
   x?: true
   y?: true
+  width?: true
+  height?: true
   rotation?: true
 }
 
@@ -103,6 +115,8 @@ export type TableSumAggregateInputType = {
   capacity?: true
   x?: true
   y?: true
+  width?: true
+  height?: true
   rotation?: true
 }
 
@@ -116,6 +130,8 @@ export type TableMinAggregateInputType = {
   shape?: true
   x?: true
   y?: true
+  width?: true
+  height?: true
   rotation?: true
   createdAt?: true
   updatedAt?: true
@@ -131,6 +147,8 @@ export type TableMaxAggregateInputType = {
   shape?: true
   x?: true
   y?: true
+  width?: true
+  height?: true
   rotation?: true
   createdAt?: true
   updatedAt?: true
@@ -146,6 +164,8 @@ export type TableCountAggregateInputType = {
   shape?: true
   x?: true
   y?: true
+  width?: true
+  height?: true
   rotation?: true
   meta?: true
   createdAt?: true
@@ -249,6 +269,8 @@ export type TableGroupByOutputType = {
   shape: $Enums.TableShape
   x: number
   y: number
+  width: number | null
+  height: number | null
   rotation: number | null
   meta: runtime.JsonValue | null
   createdAt: Date
@@ -288,6 +310,8 @@ export type TableWhereInput = {
   shape?: Prisma.EnumTableShapeFilter<"Table"> | $Enums.TableShape
   x?: Prisma.FloatFilter<"Table"> | number
   y?: Prisma.FloatFilter<"Table"> | number
+  width?: Prisma.FloatNullableFilter<"Table"> | number | null
+  height?: Prisma.FloatNullableFilter<"Table"> | number | null
   rotation?: Prisma.FloatNullableFilter<"Table"> | number | null
   meta?: Prisma.JsonNullableFilter<"Table">
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
@@ -306,6 +330,8 @@ export type TableOrderByWithRelationInput = {
   shape?: Prisma.SortOrder
   x?: Prisma.SortOrder
   y?: Prisma.SortOrder
+  width?: Prisma.SortOrderInput | Prisma.SortOrder
+  height?: Prisma.SortOrderInput | Prisma.SortOrder
   rotation?: Prisma.SortOrderInput | Prisma.SortOrder
   meta?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -328,6 +354,8 @@ export type TableWhereUniqueInput = Prisma.AtLeast<{
   shape?: Prisma.EnumTableShapeFilter<"Table"> | $Enums.TableShape
   x?: Prisma.FloatFilter<"Table"> | number
   y?: Prisma.FloatFilter<"Table"> | number
+  width?: Prisma.FloatNullableFilter<"Table"> | number | null
+  height?: Prisma.FloatNullableFilter<"Table"> | number | null
   rotation?: Prisma.FloatNullableFilter<"Table"> | number | null
   meta?: Prisma.JsonNullableFilter<"Table">
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
@@ -346,6 +374,8 @@ export type TableOrderByWithAggregationInput = {
   shape?: Prisma.SortOrder
   x?: Prisma.SortOrder
   y?: Prisma.SortOrder
+  width?: Prisma.SortOrderInput | Prisma.SortOrder
+  height?: Prisma.SortOrderInput | Prisma.SortOrder
   rotation?: Prisma.SortOrderInput | Prisma.SortOrder
   meta?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -370,6 +400,8 @@ export type TableScalarWhereWithAggregatesInput = {
   shape?: Prisma.EnumTableShapeWithAggregatesFilter<"Table"> | $Enums.TableShape
   x?: Prisma.FloatWithAggregatesFilter<"Table"> | number
   y?: Prisma.FloatWithAggregatesFilter<"Table"> | number
+  width?: Prisma.FloatNullableWithAggregatesFilter<"Table"> | number | null
+  height?: Prisma.FloatNullableWithAggregatesFilter<"Table"> | number | null
   rotation?: Prisma.FloatNullableWithAggregatesFilter<"Table"> | number | null
   meta?: Prisma.JsonNullableWithAggregatesFilter<"Table">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Table"> | Date | string
@@ -385,6 +417,8 @@ export type TableCreateInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -403,6 +437,8 @@ export type TableUncheckedCreateInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -419,6 +455,8 @@ export type TableUpdateInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -437,6 +475,8 @@ export type TableUncheckedUpdateInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -454,6 +494,8 @@ export type TableCreateManyInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -469,6 +511,8 @@ export type TableUpdateManyMutationInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -485,6 +529,8 @@ export type TableUncheckedUpdateManyInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -516,6 +562,8 @@ export type TableCountOrderByAggregateInput = {
   shape?: Prisma.SortOrder
   x?: Prisma.SortOrder
   y?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
   meta?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -527,6 +575,8 @@ export type TableAvgOrderByAggregateInput = {
   capacity?: Prisma.SortOrder
   x?: Prisma.SortOrder
   y?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
 }
 
@@ -540,6 +590,8 @@ export type TableMaxOrderByAggregateInput = {
   shape?: Prisma.SortOrder
   x?: Prisma.SortOrder
   y?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -555,6 +607,8 @@ export type TableMinOrderByAggregateInput = {
   shape?: Prisma.SortOrder
   x?: Prisma.SortOrder
   y?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -565,6 +619,8 @@ export type TableSumOrderByAggregateInput = {
   capacity?: Prisma.SortOrder
   x?: Prisma.SortOrder
   y?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   rotation?: Prisma.SortOrder
 }
 
@@ -644,6 +700,8 @@ export type TableCreateWithoutSectionInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -660,6 +718,8 @@ export type TableUncheckedCreateWithoutSectionInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -706,6 +766,8 @@ export type TableScalarWhereInput = {
   shape?: Prisma.EnumTableShapeFilter<"Table"> | $Enums.TableShape
   x?: Prisma.FloatFilter<"Table"> | number
   y?: Prisma.FloatFilter<"Table"> | number
+  width?: Prisma.FloatNullableFilter<"Table"> | number | null
+  height?: Prisma.FloatNullableFilter<"Table"> | number | null
   rotation?: Prisma.FloatNullableFilter<"Table"> | number | null
   meta?: Prisma.JsonNullableFilter<"Table">
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
@@ -721,6 +783,8 @@ export type TableCreateWithoutSeatsInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -738,6 +802,8 @@ export type TableUncheckedCreateWithoutSeatsInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -769,6 +835,8 @@ export type TableUpdateWithoutSeatsInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -786,6 +854,8 @@ export type TableUncheckedUpdateWithoutSeatsInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -801,6 +871,8 @@ export type TableCreateManySectionInput = {
   shape?: $Enums.TableShape
   x?: number
   y?: number
+  width?: number | null
+  height?: number | null
   rotation?: number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -816,6 +888,8 @@ export type TableUpdateWithoutSectionInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -832,6 +906,8 @@ export type TableUncheckedUpdateWithoutSectionInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -848,6 +924,8 @@ export type TableUncheckedUpdateManyWithoutSectionInput = {
   shape?: Prisma.EnumTableShapeFieldUpdateOperationsInput | $Enums.TableShape
   x?: Prisma.FloatFieldUpdateOperationsInput | number
   y?: Prisma.FloatFieldUpdateOperationsInput | number
+  width?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rotation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -895,6 +973,8 @@ export type TableSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   shape?: boolean
   x?: boolean
   y?: boolean
+  width?: boolean
+  height?: boolean
   rotation?: boolean
   meta?: boolean
   createdAt?: boolean
@@ -914,6 +994,8 @@ export type TableSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   shape?: boolean
   x?: boolean
   y?: boolean
+  width?: boolean
+  height?: boolean
   rotation?: boolean
   meta?: boolean
   createdAt?: boolean
@@ -931,6 +1013,8 @@ export type TableSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   shape?: boolean
   x?: boolean
   y?: boolean
+  width?: boolean
+  height?: boolean
   rotation?: boolean
   meta?: boolean
   createdAt?: boolean
@@ -948,13 +1032,15 @@ export type TableSelectScalar = {
   shape?: boolean
   x?: boolean
   y?: boolean
+  width?: boolean
+  height?: boolean
   rotation?: boolean
   meta?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "sectionId" | "name" | "order" | "capacity" | "shape" | "x" | "y" | "rotation" | "meta" | "createdAt" | "updatedAt", ExtArgs["result"]["table"]>
+export type TableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "sectionId" | "name" | "order" | "capacity" | "shape" | "x" | "y" | "width" | "height" | "rotation" | "meta" | "createdAt" | "updatedAt", ExtArgs["result"]["table"]>
 export type TableInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   seats?: boolean | Prisma.Table$seatsArgs<ExtArgs>
   section?: boolean | Prisma.SectionDefaultArgs<ExtArgs>
@@ -983,6 +1069,8 @@ export type $TablePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     shape: $Enums.TableShape
     x: number
     y: number
+    width: number | null
+    height: number | null
     rotation: number | null
     meta: runtime.JsonValue | null
     createdAt: Date
@@ -1421,6 +1509,8 @@ export interface TableFieldRefs {
   readonly shape: Prisma.FieldRef<"Table", 'TableShape'>
   readonly x: Prisma.FieldRef<"Table", 'Float'>
   readonly y: Prisma.FieldRef<"Table", 'Float'>
+  readonly width: Prisma.FieldRef<"Table", 'Float'>
+  readonly height: Prisma.FieldRef<"Table", 'Float'>
   readonly rotation: Prisma.FieldRef<"Table", 'Float'>
   readonly meta: Prisma.FieldRef<"Table", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Table", 'DateTime'>

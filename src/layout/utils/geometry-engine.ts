@@ -11,11 +11,18 @@ import { SeatType } from '../../prisma/generated/client.js';
 import { TraceRunner } from '@omnixys/observability';
 
 /**
- * GeometryEngine v4 — SectionInput-driven
- * ---------------------------------------
- * - Sections werden IMMER im Kreis angeordnet (default)
- * - section.shape beeinflusst NICHT die globale Position,
- *   sondern NUR das interne Table-Layout innerhalb der Section!
+ * GeometryEngine v5 — Hierarchical Coordinate System
+ * --------------------------------------------------
+ * - Sections are placed at absolute canvas positions (x, y = center)
+ * - Table coordinates are RELATIVE to section center
+ * - Seat coordinates are RELATIVE to table center
+ * - Section width/height is computed from table extents
+ *
+ * Coordinate system:
+ *   Canvas (0,0)
+ *    └── Section (abs x, y = center)
+ *         └── Table (rel x, y from section center)
+ *              └── Seat (rel x, y from table center)
  */
 
 export interface GeometrySection {
@@ -23,6 +30,8 @@ export interface GeometrySection {
   name: string;
   x: number;
   y: number;
+  width: number;
+  height: number;
   radius: number;
   order: number;
   meta?: any;
@@ -59,10 +68,10 @@ export interface GeometryOutput {
   seats: GeometrySeat[];
 }
 
+const DEFAULT_TABLE_SIZE = 100;
+const SECTION_PADDING = 80;
+
 export class GeometryEngine {
-  /**
-   * Entry point — erstellt Sections → Tables → Seats
-   */
   async generate(settings: {
     sections: any[];
     adaptiveRadius?: boolean;
@@ -74,6 +83,14 @@ export class GeometryEngine {
       );
 
       const tables = await this.generateTables(settings.sections, sections);
+
+      // Compute section bounds from relative table positions
+      for (const sec of sections) {
+        const sectionTables = tables.filter((t) => t.sectionId === sec.id);
+        const bounds = this.computeSectionBounds(sectionTables);
+        sec.width = bounds.width;
+        sec.height = bounds.height;
+      }
 
       const seats = await this.generateSeats(settings.sections, tables);
 
@@ -123,7 +140,6 @@ export class GeometryEngine {
 
       const baseRadius = 600;
 
-      // Create Section Models
       for (let i = 0; i < count; i++) {
         const sec = sectionInputs[i];
         const dynamicRadius = adaptive ? this.computeDynamicRadius(sec) : 500;
@@ -133,6 +149,8 @@ export class GeometryEngine {
           name: sec.name,
           x: 0,
           y: 0,
+          width: 400,
+          height: 300,
           radius: dynamicRadius,
           order: i + 1,
           meta: {
@@ -143,7 +161,6 @@ export class GeometryEngine {
         });
       }
 
-      // Global default: ALL SECTIONS IN A CIRCLE
       this.placeCircle(list, baseRadius);
 
       return list;
@@ -163,7 +180,39 @@ export class GeometryEngine {
   }
 
   // ---------------------------------------------------------------------------
-  // TABLE GENERATION — FORM-BASED
+  // SECTION BOUNDS COMPUTATION
+  // ---------------------------------------------------------------------------
+
+  private computeSectionBounds(tables: GeometryTable[]): {
+    width: number;
+    height: number;
+  } {
+    if (tables.length === 0) {
+      return { width: 400, height: 300 };
+    }
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (const tbl of tables) {
+      const tw = tbl.meta?.width ?? DEFAULT_TABLE_SIZE;
+      const th = tbl.meta?.height ?? DEFAULT_TABLE_SIZE;
+      minX = Math.min(minX, tbl.x - tw / 2);
+      minY = Math.min(minY, tbl.y - th / 2);
+      maxX = Math.max(maxX, tbl.x + tw / 2);
+      maxY = Math.max(maxY, tbl.y + th / 2);
+    }
+
+    return {
+      width: maxX - minX + SECTION_PADDING,
+      height: maxY - minY + SECTION_PADDING,
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // TABLE GENERATION — positions relative to section center
   // ---------------------------------------------------------------------------
 
   private computeTableRing(tables: any[]): number {
@@ -186,8 +235,7 @@ export class GeometryEngine {
       const secCfg = sectionInputs[i];
       const tables = secCfg.tables;
 
-      // Table Placement depends on section.shape
-      const positions = this.getTablePositions(sec, tables, sec.meta.shape);
+      const positions = this.getTablePositions(tables, sec.meta.shape);
 
       for (let t = 0; t < tables.length; t++) {
         const tblCfg = tables[t];
@@ -196,7 +244,6 @@ export class GeometryEngine {
           continue;
         }
 
-        // ROW tables: table must be in front of the seats
         if (tblCfg.shape === 'row') {
           pos = this.offsetRowTable(sec, pos, tblCfg.seats.count * 44);
         }
@@ -221,49 +268,45 @@ export class GeometryEngine {
     return list;
   }
 
-  private getTablePositions(
-    sec: GeometrySection,
-    tables: any[],
-    shape: string,
-  ) {
+  private getTablePositions(tables: any[], shape: string) {
     switch (shape) {
       case 'grid':
-        return this.placeTablesGrid(sec, tables);
+        return this.placeTablesGrid(tables);
       case 'u':
-        return this.placeTablesU(sec, tables);
+        return this.placeTablesU(tables);
       case 'horseshoe':
-        return this.placeTablesHorseshoe(sec, tables);
+        return this.placeTablesHorseshoe(tables);
       case 'vip':
-        return this.placeTablesVIP(sec, tables);
+        return this.placeTablesVIP(tables);
       case 'circle':
       default:
-        return this.placeTablesCircle(sec, tables);
+        return this.placeTablesCircle(tables);
     }
   }
 
-  private placeTablesCircle(sec: GeometrySection, tables: any[]) {
+  private placeTablesCircle(tables: any[]) {
     const ring = this.computeTableRing(tables);
 
     return tables.map((_, t) => {
       const angle = (2 * Math.PI * t) / tables.length;
       return {
-        x: sec.x + Math.cos(angle) * ring,
-        y: sec.y + Math.sin(angle) * ring,
+        x: Math.cos(angle) * ring,
+        y: Math.sin(angle) * ring,
       };
     });
   }
 
-  private placeTablesGrid(sec: GeometrySection, tables: any[]) {
+  private placeTablesGrid(tables: any[]) {
     const cols = Math.ceil(Math.sqrt(tables.length));
     const size = 180;
 
     return tables.map((_, i) => ({
-      x: sec.x + (i % cols) * size - (cols * size) / 2,
-      y: sec.y + Math.floor(i / cols) * size - size,
+      x: (i % cols) * size - (cols * size) / 2,
+      y: Math.floor(i / cols) * size - size,
     }));
   }
 
-  private placeTablesU(sec: GeometrySection, tables: any[]) {
+  private placeTablesU(tables: any[]) {
     const spacing = 200;
     const half = Math.ceil(tables.length / 2);
 
@@ -271,22 +314,22 @@ export class GeometryEngine {
 
     for (let i = 0; i < half; i++) {
       positions.push({
-        x: sec.x + i * spacing,
-        y: sec.y - spacing,
+        x: i * spacing,
+        y: -spacing,
       });
     }
 
     for (let j = half; j < tables.length; j++) {
       positions.push({
-        x: sec.x + (j - half) * spacing,
-        y: sec.y + spacing,
+        x: (j - half) * spacing,
+        y: spacing,
       });
     }
 
     return positions;
   }
 
-  private placeTablesHorseshoe(sec: GeometrySection, tables: any[]) {
+  private placeTablesHorseshoe(tables: any[]) {
     const spacing = 200;
     const top = Math.ceil(tables.length * 0.6);
     const bottom = tables.length - top;
@@ -295,39 +338,36 @@ export class GeometryEngine {
 
     for (let i = 0; i < top; i++) {
       positions.push({
-        x: sec.x + i * spacing,
-        y: sec.y,
+        x: i * spacing,
+        y: 0,
       });
     }
 
     for (let j = 0; j < bottom; j++) {
       positions.push({
-        x: sec.x + (j + 0.5) * spacing,
-        y: sec.y + spacing,
+        x: (j + 0.5) * spacing,
+        y: spacing,
       });
     }
 
     return positions;
   }
 
-  private placeTablesVIP(sec: GeometrySection, tables: any[]) {
+  private placeTablesVIP(tables: any[]) {
     const radius = 200;
 
     return tables.map((_, t) => {
       const angle = (2 * Math.PI * t) / tables.length;
       return {
-        x: sec.x + Math.cos(angle) * radius,
-        y: sec.y + Math.sin(angle) * radius,
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
       };
     });
   }
 
   private offsetRowTable(
     sec: GeometrySection,
-    pos: {
-      x: number;
-      y: number;
-    },
+    pos: { x: number; y: number },
     tableWidth: number,
   ) {
     const d = tableWidth / 2 + 70;
@@ -346,7 +386,7 @@ export class GeometryEngine {
   }
 
   // ---------------------------------------------------------------------------
-  // SEAT GENERATION — stays the same (circle around each table)
+  // SEAT GENERATION — positions relative to table center
   // ---------------------------------------------------------------------------
 
   private computeSeatRing(count: number): number {
@@ -406,40 +446,38 @@ export class GeometryEngine {
     return list;
   }
 
-  private placeSeatsCircle(table: GeometryTable, count: number) {
+  private placeSeatsCircle(_table: GeometryTable, count: number) {
     const ring = this.computeSeatRing(count);
 
     return Array.from({ length: count }).map((_, s) => {
       const angle = (2 * Math.PI * s) / count;
       return {
-        x: table.x + Math.cos(angle) * ring,
-        y: table.y + Math.sin(angle) * ring,
+        x: Math.cos(angle) * ring,
+        y: Math.sin(angle) * ring,
         rotation: (angle * 180) / Math.PI + 90,
       };
     });
   }
 
-  private placeSeatsGridBankStyle(table: GeometryTable, count: number) {
+  private placeSeatsGridBankStyle(_table: GeometryTable, count: number) {
     const half = Math.ceil(count / 2);
     const spacing = 44;
 
     const seats = [];
 
-    // obere Reihe
     for (let i = 0; i < half; i++) {
       seats.push({
-        x: table.x + (i - half / 2) * spacing,
-        y: table.y - 60,
+        x: (i - half / 2) * spacing,
+        y: -60,
         rotation: 180,
       });
     }
 
-    // untere Reihe
     for (let i = half; i < count; i++) {
       const idx = i - half;
       seats.push({
-        x: table.x + (idx - (count - half) / 2) * spacing,
-        y: table.y + 60,
+        x: (idx - (count - half) / 2) * spacing,
+        y: 60,
         rotation: 0,
       });
     }
@@ -447,33 +485,7 @@ export class GeometryEngine {
     return seats;
   }
 
-  // private placeSeatsGrid(table: GeometryTable, count: number) {
-  //   const cols = Math.ceil(Math.sqrt(count));
-  //   const rows = Math.ceil(count / cols);
-  //   const spacing = 38;
-
-  //   const offsetX = (cols - 1) * spacing * 0.5;
-  //   const offsetY = (rows - 1) * spacing * 0.5;
-
-  //   const seats = [];
-  //   for (let r = 0; r < rows; r++) {
-  //     for (let c = 0; c < cols; c++) {
-  //       const idx = r * cols + c;
-  //       if (idx >= count) {
-  //         break;
-  //       }
-
-  //       seats.push({
-  //         x: table.x + c * spacing - offsetX,
-  //         y: table.y + r * spacing - offsetY,
-  //         rotation: 0,
-  //       });
-  //     }
-  //   }
-  //   return seats;
-  // }
-
-  private placeSeatsRow(table: GeometryTable, count: number, facing: string) {
+  private placeSeatsRow(_table: GeometryTable, count: number, facing: string) {
     const spacing = 44;
     const yOffset =
       facing === 'south'
@@ -485,8 +497,8 @@ export class GeometryEngine {
             : 50;
 
     return Array.from({ length: count }).map((_, i) => ({
-      x: table.x + (i - count / 2) * spacing,
-      y: table.y + yOffset,
+      x: (i - count / 2) * spacing,
+      y: yOffset,
       rotation: 0,
     }));
   }

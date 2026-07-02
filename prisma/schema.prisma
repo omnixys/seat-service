@@ -78,6 +78,9 @@ model Table {
   x Float @default(0)
   y Float @default(0)
 
+  width  Float?
+  height Float?
+
   rotation Float? @default(0)
 
   meta Json?
@@ -221,15 +224,57 @@ model LayoutChangeLog {
 //
 
 model EventRoleProjection {
-  id      String         @id @default(uuid()) @map("id") @db.Uuid
-  eventId String         @map("event_id") @db.Uuid
-  userId  String         @map("user_id") @db.Uuid
-  role    EventRoleType  @map("role")
-  updatedAt DateTime?    @updatedAt @map("updated_at")
+  id        String        @id @default(uuid()) @map("id") @db.Uuid
+  eventId   String        @map("event_id") @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  role      EventRoleType @map("role")
+  updatedAt DateTime?     @updatedAt @map("updated_at")
 
   @@unique([eventId, userId], name: "uq_event_role_projection")
   @@index([eventId], name: "idx_event_role_projection_event")
   @@map("event_role_projection")
+}
+
+/// ----------------------------------------------------------------------
+/// EventSettingsProjection – local cache of event settings synced via Kafka
+/// ----------------------------------------------------------------------
+model EventSettingsProjection {
+  id                      String    @id @default(uuid()) @map("id") @db.Uuid
+  eventId                 String    @unique @map("event_id") @db.Uuid
+  name                    String?   @map("name")
+  endsAt                  DateTime? @map("ends_at")
+  maxSeats                Int?      @map("max_seats")
+  allowGuestSeatSelection Boolean   @default(false) @map("allow_guest_seat_selection")
+  updatedAt               DateTime? @updatedAt @map("updated_at")
+
+  @@map("event_settings_projection")
+}
+
+/// ----------------------------------------------------------------------
+/// SeatPresenceProjection – local cache of ticket/presence state synced
+/// from the Ticket Service via event.milestone.recorded Kafka events.
+/// ----------------------------------------------------------------------
+model SeatPresenceProjection {
+  id            String        @id @default(uuid()) @map("id") @db.Uuid
+  seatId        String        @unique @map("seat_id") @db.Uuid
+  eventId       String        @map("event_id") @db.Uuid
+
+  presenceState PresenceState @default(OUTSIDE) @map("presence_state")
+  checkedInAt   DateTime?     @map("checked_in_at")
+  revoked       Boolean       @default(false) @map("revoked")
+  revokedAt     DateTime?     @map("revoked_at")
+
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@index([eventId])
+  @@map("seat_presence_projection")
+}
+
+enum PresenceState {
+  INSIDE
+  OUTSIDE
+
+  @@map("presence_state")
 }
 
 enum EventRoleType {

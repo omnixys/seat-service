@@ -157,4 +157,10 @@ export class SeatReadService {
 
     return SeatMapper.toPayloadList(seats);
   }
+
+  async getSeatPresencesByEvent(eventId: string) {
+    return this.prisma.seatPresenceProjection.findMany({
+      where: { eventId },
+    });
+  }
 }

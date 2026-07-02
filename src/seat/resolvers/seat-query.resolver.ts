@@ -1,11 +1,20 @@
 import { SeatAccessDeniedException } from '../errors/seat-domain.error.js';
 import { GuestEventSeatInput } from '../models/inputs/guest-event-seat.input.js';
 import { SeatAssignmentLogPayload } from '../models/payloads/seat-assignment-log.payload.js';
+import { SeatPresencePayload } from '../models/payloads/seat-presence.payload.js';
 import { SeatPayload } from '../models/payloads/seat.payload.js';
 import { SeatReadService } from '../services/seat-read.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-import { EventRoleResolver, isOwnerOrEventAdmin } from '@omnixys/security';
+import { EventRoleType, RealmRoleType } from '@omnixys/contracts';
+import {
+  EventRoleResolver,
+  isOwnerOrEventAdmin,
+  EventRoles,
+  RoleGuard,
+  Roles,
+  EventRoleGuard,
+} from '@omnixys/security';
 import {
   CookieAuthGuard,
   CurrentUser,
@@ -58,6 +67,16 @@ export class SeatQueryResolver {
     @Args('seatIds', { type: () => [ID] }) seatIds: string[],
   ): Promise<SeatPayload[]> {
     return this.read.getSeatsByIds(seatIds);
+  }
+
+  @Query(() => [SeatPresencePayload])
+  @UseGuards(CookieAuthGuard, RoleGuard, EventRoleGuard)
+  @Roles(RealmRoleType.USER)
+  @EventRoles(EventRoleType.ADMIN, EventRoleType.SECURITY)
+  async seatPresencesByEvent(
+    @Args('eventId', { type: () => ID }) eventId: string,
+  ): Promise<SeatPresencePayload[]> {
+    return this.read.getSeatPresencesByEvent(eventId);
   }
 
   @Query(() => SeatPayload)

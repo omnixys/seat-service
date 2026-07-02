@@ -38,6 +38,12 @@ export class TablePayload {
   @Field(() => Float)
   y!: number;
 
+  @Field(() => Float, { nullable: true })
+  width?: number;
+
+  @Field(() => Float, { nullable: true })
+  height?: number;
+
   @Field(() => Float, { nullable: true, defaultValue: 0 })
   rotation?: number;
 

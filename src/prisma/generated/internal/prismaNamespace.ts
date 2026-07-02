@@ -390,7 +390,9 @@ export const ModelName = {
   SeatAssignmentLog: 'SeatAssignmentLog',
   LayoutVersion: 'LayoutVersion',
   LayoutChangeLog: 'LayoutChangeLog',
-  EventRoleProjection: 'EventRoleProjection'
+  EventRoleProjection: 'EventRoleProjection',
+  EventSettingsProjection: 'EventSettingsProjection',
+  SeatPresenceProjection: 'SeatPresenceProjection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "section" | "table" | "seat" | "seatAssignmentLog" | "layoutVersion" | "layoutChangeLog" | "eventRoleProjection"
+    modelProps: "section" | "table" | "seat" | "seatAssignmentLog" | "layoutVersion" | "layoutChangeLog" | "eventRoleProjection" | "eventSettingsProjection" | "seatPresenceProjection"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -928,6 +930,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EventSettingsProjection: {
+      payload: Prisma.$EventSettingsProjectionPayload<ExtArgs>
+      fields: Prisma.EventSettingsProjectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EventSettingsProjectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EventSettingsProjectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>
+        }
+        findFirst: {
+          args: Prisma.EventSettingsProjectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EventSettingsProjectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>
+        }
+        findMany: {
+          args: Prisma.EventSettingsProjectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>[]
+        }
+        create: {
+          args: Prisma.EventSettingsProjectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>
+        }
+        createMany: {
+          args: Prisma.EventSettingsProjectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EventSettingsProjectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>[]
+        }
+        delete: {
+          args: Prisma.EventSettingsProjectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>
+        }
+        update: {
+          args: Prisma.EventSettingsProjectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.EventSettingsProjectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EventSettingsProjectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EventSettingsProjectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.EventSettingsProjectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventSettingsProjectionPayload>
+        }
+        aggregate: {
+          args: Prisma.EventSettingsProjectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEventSettingsProjection>
+        }
+        groupBy: {
+          args: Prisma.EventSettingsProjectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventSettingsProjectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EventSettingsProjectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventSettingsProjectionCountAggregateOutputType> | number
+        }
+      }
+    }
+    SeatPresenceProjection: {
+      payload: Prisma.$SeatPresenceProjectionPayload<ExtArgs>
+      fields: Prisma.SeatPresenceProjectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SeatPresenceProjectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SeatPresenceProjectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>
+        }
+        findFirst: {
+          args: Prisma.SeatPresenceProjectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SeatPresenceProjectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>
+        }
+        findMany: {
+          args: Prisma.SeatPresenceProjectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>[]
+        }
+        create: {
+          args: Prisma.SeatPresenceProjectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>
+        }
+        createMany: {
+          args: Prisma.SeatPresenceProjectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SeatPresenceProjectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>[]
+        }
+        delete: {
+          args: Prisma.SeatPresenceProjectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>
+        }
+        update: {
+          args: Prisma.SeatPresenceProjectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.SeatPresenceProjectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SeatPresenceProjectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SeatPresenceProjectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.SeatPresenceProjectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeatPresenceProjectionPayload>
+        }
+        aggregate: {
+          args: Prisma.SeatPresenceProjectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSeatPresenceProjection>
+        }
+        groupBy: {
+          args: Prisma.SeatPresenceProjectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SeatPresenceProjectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SeatPresenceProjectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SeatPresenceProjectionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -997,6 +1147,8 @@ export const TableScalarFieldEnum = {
   shape: 'shape',
   x: 'x',
   y: 'y',
+  width: 'width',
+  height: 'height',
   rotation: 'rotation',
   meta: 'meta',
   createdAt: 'createdAt',
@@ -1085,6 +1237,33 @@ export const EventRoleProjectionScalarFieldEnum = {
 } as const
 
 export type EventRoleProjectionScalarFieldEnum = (typeof EventRoleProjectionScalarFieldEnum)[keyof typeof EventRoleProjectionScalarFieldEnum]
+
+
+export const EventSettingsProjectionScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  name: 'name',
+  endsAt: 'endsAt',
+  maxSeats: 'maxSeats',
+  allowGuestSeatSelection: 'allowGuestSeatSelection',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventSettingsProjectionScalarFieldEnum = (typeof EventSettingsProjectionScalarFieldEnum)[keyof typeof EventSettingsProjectionScalarFieldEnum]
+
+
+export const SeatPresenceProjectionScalarFieldEnum = {
+  id: 'id',
+  seatId: 'seatId',
+  eventId: 'eventId',
+  presenceState: 'presenceState',
+  checkedInAt: 'checkedInAt',
+  revoked: 'revoked',
+  revokedAt: 'revokedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SeatPresenceProjectionScalarFieldEnum = (typeof SeatPresenceProjectionScalarFieldEnum)[keyof typeof SeatPresenceProjectionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1343,6 +1522,20 @@ export type EnumEventRoleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 export type ListEnumEventRoleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventRoleType[]'>
     
 
+
+/**
+ * Reference to a field of type 'PresenceState'
+ */
+export type EnumPresenceStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PresenceState'>
+    
+
+
+/**
+ * Reference to a field of type 'PresenceState[]'
+ */
+export type ListEnumPresenceStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PresenceState[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1460,6 +1653,8 @@ export type GlobalOmitConfig = {
   layoutVersion?: Prisma.LayoutVersionOmit
   layoutChangeLog?: Prisma.LayoutChangeLogOmit
   eventRoleProjection?: Prisma.EventRoleProjectionOmit
+  eventSettingsProjection?: Prisma.EventSettingsProjectionOmit
+  seatPresenceProjection?: Prisma.SeatPresenceProjectionOmit
 }
 
 /* Types for Logging */
