@@ -1,0 +1,52 @@
+import { PrismaService } from '../prisma/prisma.service.js';
+import { Injectable } from '@nestjs/common';
+import type { InvitationSeatingInfoUpdatedDTO } from '@omnixys/contracts';
+import {
+  KafkaEvent,
+  KafkaEventHandler,
+  KafkaTopics,
+  type IKafkaEventContext,
+} from '@omnixys/kafka';
+import { OmnixysLogger } from '@omnixys/logger';
+import { TraceRunner } from '@omnixys/observability';
+
+@KafkaEventHandler('invitation')
+@Injectable()
+export class InvitationSeatingHandler {
+  private readonly logger;
+
+  constructor(
+    private readonly omnixysLogger: OmnixysLogger,
+    private readonly prisma: PrismaService,
+  ) {
+    this.logger = this.omnixysLogger.log(this.constructor.name);
+  }
+
+  @KafkaEvent(KafkaTopics.invitation.seatingInfoUpdated)
+  async handleSeatingInfoUpdated(
+    payload: InvitationSeatingInfoUpdatedDTO,
+    _context: IKafkaEventContext,
+  ): Promise<void> {
+    return TraceRunner.run(
+      '[HANDLER] invitation.seating.info.updated',
+      async () => {
+        const { invitationId, guestId, selectedInvitedBy } = payload;
+
+        await this.prisma.invitationProjection.upsert({
+          where: { invitationId },
+          create: {
+            invitationId,
+            guestId: guestId || null,
+            selectedInvitedBy,
+          } satisfies Record<string, unknown>,
+          update: {
+            guestId: guestId || null,
+            selectedInvitedBy,
+          } satisfies Record<string, unknown>,
+        });
+
+        this.logger.debug('Invitation projection updated', { invitationId });
+      },
+    );
+  }
+}

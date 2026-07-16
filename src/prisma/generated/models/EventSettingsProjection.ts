@@ -63,6 +63,7 @@ export type EventSettingsProjectionCountAggregateOutputType = {
   endsAt: number
   maxSeats: number
   allowGuestSeatSelection: number
+  seatColorGroups: number
   updatedAt: number
   _all: number
 }
@@ -103,6 +104,7 @@ export type EventSettingsProjectionCountAggregateInputType = {
   endsAt?: true
   maxSeats?: true
   allowGuestSeatSelection?: true
+  seatColorGroups?: true
   updatedAt?: true
   _all?: true
 }
@@ -200,6 +202,7 @@ export type EventSettingsProjectionGroupByOutputType = {
   endsAt: Date | null
   maxSeats: number | null
   allowGuestSeatSelection: boolean
+  seatColorGroups: runtime.JsonValue | null
   updatedAt: Date | null
   _count: EventSettingsProjectionCountAggregateOutputType | null
   _avg: EventSettingsProjectionAvgAggregateOutputType | null
@@ -233,6 +236,7 @@ export type EventSettingsProjectionWhereInput = {
   endsAt?: Prisma.DateTimeNullableFilter<"EventSettingsProjection"> | Date | string | null
   maxSeats?: Prisma.IntNullableFilter<"EventSettingsProjection"> | number | null
   allowGuestSeatSelection?: Prisma.BoolFilter<"EventSettingsProjection"> | boolean
+  seatColorGroups?: Prisma.JsonNullableFilter<"EventSettingsProjection">
   updatedAt?: Prisma.DateTimeNullableFilter<"EventSettingsProjection"> | Date | string | null
 }
 
@@ -243,6 +247,7 @@ export type EventSettingsProjectionOrderByWithRelationInput = {
   endsAt?: Prisma.SortOrderInput | Prisma.SortOrder
   maxSeats?: Prisma.SortOrderInput | Prisma.SortOrder
   allowGuestSeatSelection?: Prisma.SortOrder
+  seatColorGroups?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
@@ -256,6 +261,7 @@ export type EventSettingsProjectionWhereUniqueInput = Prisma.AtLeast<{
   endsAt?: Prisma.DateTimeNullableFilter<"EventSettingsProjection"> | Date | string | null
   maxSeats?: Prisma.IntNullableFilter<"EventSettingsProjection"> | number | null
   allowGuestSeatSelection?: Prisma.BoolFilter<"EventSettingsProjection"> | boolean
+  seatColorGroups?: Prisma.JsonNullableFilter<"EventSettingsProjection">
   updatedAt?: Prisma.DateTimeNullableFilter<"EventSettingsProjection"> | Date | string | null
 }, "id" | "eventId">
 
@@ -266,6 +272,7 @@ export type EventSettingsProjectionOrderByWithAggregationInput = {
   endsAt?: Prisma.SortOrderInput | Prisma.SortOrder
   maxSeats?: Prisma.SortOrderInput | Prisma.SortOrder
   allowGuestSeatSelection?: Prisma.SortOrder
+  seatColorGroups?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EventSettingsProjectionCountOrderByAggregateInput
   _avg?: Prisma.EventSettingsProjectionAvgOrderByAggregateInput
@@ -284,6 +291,7 @@ export type EventSettingsProjectionScalarWhereWithAggregatesInput = {
   endsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EventSettingsProjection"> | Date | string | null
   maxSeats?: Prisma.IntNullableWithAggregatesFilter<"EventSettingsProjection"> | number | null
   allowGuestSeatSelection?: Prisma.BoolWithAggregatesFilter<"EventSettingsProjection"> | boolean
+  seatColorGroups?: Prisma.JsonNullableWithAggregatesFilter<"EventSettingsProjection">
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EventSettingsProjection"> | Date | string | null
 }
 
@@ -294,6 +302,7 @@ export type EventSettingsProjectionCreateInput = {
   endsAt?: Date | string | null
   maxSeats?: number | null
   allowGuestSeatSelection?: boolean
+  seatColorGroups?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string | null
 }
 
@@ -304,6 +313,7 @@ export type EventSettingsProjectionUncheckedCreateInput = {
   endsAt?: Date | string | null
   maxSeats?: number | null
   allowGuestSeatSelection?: boolean
+  seatColorGroups?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string | null
 }
 
@@ -314,6 +324,7 @@ export type EventSettingsProjectionUpdateInput = {
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   maxSeats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   allowGuestSeatSelection?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seatColorGroups?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -324,6 +335,7 @@ export type EventSettingsProjectionUncheckedUpdateInput = {
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   maxSeats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   allowGuestSeatSelection?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seatColorGroups?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -334,6 +346,7 @@ export type EventSettingsProjectionCreateManyInput = {
   endsAt?: Date | string | null
   maxSeats?: number | null
   allowGuestSeatSelection?: boolean
+  seatColorGroups?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string | null
 }
 
@@ -344,6 +357,7 @@ export type EventSettingsProjectionUpdateManyMutationInput = {
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   maxSeats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   allowGuestSeatSelection?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seatColorGroups?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -354,6 +368,7 @@ export type EventSettingsProjectionUncheckedUpdateManyInput = {
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   maxSeats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   allowGuestSeatSelection?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seatColorGroups?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -364,6 +379,7 @@ export type EventSettingsProjectionCountOrderByAggregateInput = {
   endsAt?: Prisma.SortOrder
   maxSeats?: Prisma.SortOrder
   allowGuestSeatSelection?: Prisma.SortOrder
+  seatColorGroups?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -404,6 +420,7 @@ export type EventSettingsProjectionSelect<ExtArgs extends runtime.Types.Extensio
   endsAt?: boolean
   maxSeats?: boolean
   allowGuestSeatSelection?: boolean
+  seatColorGroups?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["eventSettingsProjection"]>
 
@@ -414,6 +431,7 @@ export type EventSettingsProjectionSelectCreateManyAndReturn<ExtArgs extends run
   endsAt?: boolean
   maxSeats?: boolean
   allowGuestSeatSelection?: boolean
+  seatColorGroups?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["eventSettingsProjection"]>
 
@@ -424,6 +442,7 @@ export type EventSettingsProjectionSelectUpdateManyAndReturn<ExtArgs extends run
   endsAt?: boolean
   maxSeats?: boolean
   allowGuestSeatSelection?: boolean
+  seatColorGroups?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["eventSettingsProjection"]>
 
@@ -434,10 +453,11 @@ export type EventSettingsProjectionSelectScalar = {
   endsAt?: boolean
   maxSeats?: boolean
   allowGuestSeatSelection?: boolean
+  seatColorGroups?: boolean
   updatedAt?: boolean
 }
 
-export type EventSettingsProjectionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "name" | "endsAt" | "maxSeats" | "allowGuestSeatSelection" | "updatedAt", ExtArgs["result"]["eventSettingsProjection"]>
+export type EventSettingsProjectionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventId" | "name" | "endsAt" | "maxSeats" | "allowGuestSeatSelection" | "seatColorGroups" | "updatedAt", ExtArgs["result"]["eventSettingsProjection"]>
 
 export type $EventSettingsProjectionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EventSettingsProjection"
@@ -449,6 +469,7 @@ export type $EventSettingsProjectionPayload<ExtArgs extends runtime.Types.Extens
     endsAt: Date | null
     maxSeats: number | null
     allowGuestSeatSelection: boolean
+    seatColorGroups: runtime.JsonValue | null
     updatedAt: Date | null
   }, ExtArgs["result"]["eventSettingsProjection"]>
   composites: {}
@@ -879,6 +900,7 @@ export interface EventSettingsProjectionFieldRefs {
   readonly endsAt: Prisma.FieldRef<"EventSettingsProjection", 'DateTime'>
   readonly maxSeats: Prisma.FieldRef<"EventSettingsProjection", 'Int'>
   readonly allowGuestSeatSelection: Prisma.FieldRef<"EventSettingsProjection", 'Boolean'>
+  readonly seatColorGroups: Prisma.FieldRef<"EventSettingsProjection", 'Json'>
   readonly updatedAt: Prisma.FieldRef<"EventSettingsProjection", 'DateTime'>
 }
     

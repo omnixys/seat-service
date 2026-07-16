@@ -1,7 +1,14 @@
 import { LayoutReadService } from '../services/layout-read.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Query, Resolver } from '@nestjs/graphql';
-import { CookieAuthGuard } from '@omnixys/security';
+import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
+import {
+  CookieAuthGuard,
+  EventPermissionGuard,
+  EventPermissions,
+  RoleGuard,
+  Roles,
+} from '@omnixys/security';
 
 import { SectionPayload } from '../../section/models/payloads/section.payload.js';
 import { LayoutChangeLogPayload } from '../models/payloads/layout-change-log.payload.js';
@@ -18,6 +25,9 @@ export class LayoutQueryResolver {
 
   /** Returns entire seating layout for a given event */
   @Query(() => [SectionPayload])
+  @UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
+  @Roles(RealmRoleType.USER)
+  @EventPermissions(EventPermissionKey.ViewSeats)
   async seatLayout(
     @Args('eventId', { type: () => ID }) eventId: string,
   ): Promise<SectionPayload[]> {
@@ -25,6 +35,9 @@ export class LayoutQueryResolver {
   }
 
   @Query(() => [LayoutVersionPayload])
+  @UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
+  @Roles(RealmRoleType.USER)
+  @EventPermissions(EventPermissionKey.ViewSeats)
   async layoutVersions(
     @Args('eventId', { type: () => ID }) eventId: string,
   ): Promise<LayoutVersionPayload[]> {
@@ -32,6 +45,9 @@ export class LayoutQueryResolver {
   }
 
   @Query(() => LayoutVersionPayload, { nullable: true })
+  @UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
+  @Roles(RealmRoleType.USER)
+  @EventPermissions(EventPermissionKey.ViewSeats)
   async latestLayoutVersion(
     @Args('eventId', { type: () => ID }) eventId: string,
   ): Promise<LayoutVersionPayload | null> {
@@ -39,6 +55,9 @@ export class LayoutQueryResolver {
   }
 
   @Query(() => [LayoutChangeLogPayload])
+  @UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
+  @Roles(RealmRoleType.USER)
+  @EventPermissions(EventPermissionKey.ViewSeats)
   async layoutChangeLog(
     @Args('eventId', { type: () => ID }) eventId: string,
     @Args('limit', { type: () => Int, nullable: true }) limit = 200,

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonScalar } from '../../../core/scalars/json.scalar.js';
 import { SeatShape, SeatType } from '../../../prisma/generated/client.js';
+import { SeatColorGroupPayload } from './seat-color-group.payload.js';
 import {
   Field,
   Float,
@@ -74,6 +75,9 @@ export class SeatPayload {
 
   @Field(() => ID, { nullable: true })
   invitationId?: string;
+
+  @Field(() => SeatColorGroupPayload, { nullable: true })
+  colorGroup?: SeatColorGroupPayload;
 
   @Field(() => JsonScalar, { nullable: true })
   meta?: any;

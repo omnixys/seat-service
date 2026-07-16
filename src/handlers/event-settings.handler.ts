@@ -26,6 +26,7 @@ import {
 } from '@omnixys/kafka';
 import { OmnixysLogger } from '@omnixys/logger';
 import { TraceRunner } from '@omnixys/observability';
+import type { InputJsonValue } from '@prisma/client/runtime/client';
 
 @KafkaEventHandler('event')
 @Injectable()
@@ -45,8 +46,14 @@ export class EventSettingsHandler {
     _context: IKafkaEventContext,
   ): Promise<void> {
     return TraceRunner.run('[HANDLER] event.created', async () => {
-      const { eventId, name, endsAt, maxSeats, allowGuestSeatSelection } =
-        payload;
+      const {
+        eventId,
+        name,
+        endsAt,
+        maxSeats,
+        allowGuestSeatSelection,
+        seatColorGroups,
+      } = payload;
 
       await this.prisma.eventSettingsProjection.upsert({
         where: { eventId },
@@ -56,12 +63,16 @@ export class EventSettingsHandler {
           endsAt: endsAt ? new Date(endsAt) : null,
           maxSeats,
           allowGuestSeatSelection,
+          seatColorGroups: (seatColorGroups ?? undefined) as
+            InputJsonValue | undefined,
         },
         update: {
           name,
           endsAt: endsAt ? new Date(endsAt) : null,
           maxSeats,
           allowGuestSeatSelection,
+          seatColorGroups: (seatColorGroups ?? undefined) as
+            InputJsonValue | undefined,
         },
       });
     });
@@ -79,6 +90,7 @@ export class EventSettingsHandler {
         endsAt,
         maxSeats,
         allowGuestSeatSelection,
+        seatColorGroups,
         occurredAt,
       } = payload;
 
@@ -95,6 +107,18 @@ export class EventSettingsHandler {
         return;
       }
 
+      const updateData: Record<string, unknown> = {
+        name: name ?? undefined,
+        endsAt:
+          endsAt !== undefined ? (endsAt ? new Date(endsAt) : null) : undefined,
+        maxSeats: maxSeats ?? undefined,
+        allowGuestSeatSelection: allowGuestSeatSelection ?? undefined,
+      };
+
+      if (seatColorGroups !== undefined) {
+        updateData.seatColorGroups = seatColorGroups;
+      }
+
       await this.prisma.eventSettingsProjection.upsert({
         where: { eventId },
         create: {
@@ -103,18 +127,10 @@ export class EventSettingsHandler {
           endsAt: endsAt ? new Date(endsAt) : null,
           maxSeats: maxSeats ?? null,
           allowGuestSeatSelection: allowGuestSeatSelection ?? false,
+          seatColorGroups: (seatColorGroups ?? undefined) as
+            InputJsonValue | undefined,
         },
-        update: {
-          name: name ?? undefined,
-          endsAt:
-            endsAt !== undefined
-              ? endsAt
-                ? new Date(endsAt)
-                : null
-              : undefined,
-          maxSeats: maxSeats ?? undefined,
-          allowGuestSeatSelection: allowGuestSeatSelection ?? undefined,
-        },
+        update: updateData,
       });
     });
   }

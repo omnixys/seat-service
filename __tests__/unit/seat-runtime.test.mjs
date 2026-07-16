@@ -5,7 +5,9 @@ import {
   SeatVerificationTokenException,
 } from '../../dist/seat/errors/seat-domain.error.js';
 import { SeatWriteService } from '../../dist/seat/services/seat-write.service.js';
+import { SeatEventRoleResolver } from '../../dist/seat/services/seat-event-role-resolver.service.js';
 import { ContextAccessor } from '@omnixys/context';
+import { EventPermissionKey, EventRoleType } from '@omnixys/contracts';
 import { KafkaTopics } from '@omnixys/kafka';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -124,6 +126,63 @@ test('assignment races fail with canonical diagnostics', async () => {
   });
 });
 
+test('seat permission resolver prefers access projection over legacy roles', async () => {
+  const resolver = new SeatEventRoleResolver({
+    eventAccessProjection: {
+      async findUnique() {
+        return {
+          permissions: [EventPermissionKey.ViewSeats, 'unknown.permission'],
+        };
+      },
+    },
+    eventRoleProjection: {
+      async findUnique() {
+        throw new Error('legacy fallback must not be used when access projection exists');
+      },
+    },
+  });
+
+  assert.deepEqual(await resolver.getPermissionsForUser('user-1', 'event-1'), [
+    EventPermissionKey.ViewSeats,
+  ]);
+});
+
+test('seat permission resolver treats empty access projection as immediate access removal', async () => {
+  const resolver = new SeatEventRoleResolver({
+    eventAccessProjection: {
+      async findUnique() {
+        return { permissions: [] };
+      },
+    },
+    eventRoleProjection: {
+      async findUnique() {
+        return { role: EventRoleType.ADMIN };
+      },
+    },
+  });
+
+  assert.deepEqual(await resolver.getPermissionsForUser('user-1', 'event-1'), []);
+});
+
+test('seat permission resolver keeps legacy SUPPORT fallback compatible', async () => {
+  const resolver = new SeatEventRoleResolver({
+    eventAccessProjection: {
+      async findUnique() {
+        return null;
+      },
+    },
+    eventRoleProjection: {
+      async findUnique() {
+        return { role: EventRoleType.SUPPORT };
+      },
+    },
+  });
+
+  const permissions = await resolver.getPermissionsForUser('user-1', 'event-1');
+  assert.ok(permissions.includes(EventPermissionKey.ViewSupport));
+  assert.equal(permissions.includes(EventPermissionKey.ViewSeats), false);
+});
+
 test('guest handler validates state and propagates canonical Kafka metadata', async () => {
   const events = [];
   const cacheValues = new Map([
@@ -208,4 +267,23 @@ test('guest handler rejects missing verification state', async () => {
     }),
     SeatVerificationTokenException,
   );
+});
+
+test('seat permission resolver denies ViewSeats when neither access nor role projection exists', async () => {
+  const resolver = new SeatEventRoleResolver({
+    eventAccessProjection: {
+      async findUnique() {
+        return null;
+      },
+    },
+    eventRoleProjection: {
+      async findUnique() {
+        return null;
+      },
+    },
+  });
+
+  const permissions = await resolver.getPermissionsForUser('user-1', 'event-1');
+  assert.equal(permissions.includes(EventPermissionKey.ViewSeats), false);
+  assert.deepEqual(permissions, []);
 });

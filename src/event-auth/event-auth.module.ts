@@ -1,13 +1,20 @@
 import { SeatEventRoleResolver } from '../seat/services/seat-event-role-resolver.service.js';
 import { Module } from '@nestjs/common';
-import { EventRoleGuard, EventRoleResolver } from '@omnixys/security';
+import {
+  EventPermissionGuard,
+  EventPermissionResolver,
+  EventRoleGuard,
+  EventRoleResolver,
+} from '@omnixys/security';
 
 @Module({
   providers: [
     EventRoleGuard,
+    EventPermissionGuard,
     SeatEventRoleResolver,
     { provide: EventRoleResolver, useExisting: SeatEventRoleResolver },
+    { provide: EventPermissionResolver, useExisting: SeatEventRoleResolver },
   ],
-  exports: [EventRoleGuard, EventRoleResolver],
+  exports: [EventRoleGuard, EventPermissionGuard, EventRoleResolver, EventPermissionResolver],
 })
 export class EventAuthModule {}

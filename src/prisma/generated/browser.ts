@@ -53,12 +53,25 @@ export type LayoutChangeLog = Prisma.LayoutChangeLogModel
  */
 export type EventRoleProjection = Prisma.EventRoleProjectionModel
 /**
+ * Model EventAccessProjection
+ * 
+ */
+export type EventAccessProjection = Prisma.EventAccessProjectionModel
+/**
  * Model EventSettingsProjection
  * ----------------------------------------------------------------------
  * EventSettingsProjection – local cache of event settings synced via Kafka
  * ----------------------------------------------------------------------
  */
 export type EventSettingsProjection = Prisma.EventSettingsProjectionModel
+/**
+ * Model InvitationProjection
+ * ----------------------------------------------------------------------
+ * InvitationProjection – local cache of invitation seating info synced
+ * from the Invitation Service via Kafka.
+ * ----------------------------------------------------------------------
+ */
+export type InvitationProjection = Prisma.InvitationProjectionModel
 /**
  * Model SeatPresenceProjection
  * ----------------------------------------------------------------------

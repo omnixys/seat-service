@@ -58,7 +58,9 @@ export const ModelName = {
   LayoutVersion: 'LayoutVersion',
   LayoutChangeLog: 'LayoutChangeLog',
   EventRoleProjection: 'EventRoleProjection',
+  EventAccessProjection: 'EventAccessProjection',
   EventSettingsProjection: 'EventSettingsProjection',
+  InvitationProjection: 'InvitationProjection',
   SeatPresenceProjection: 'SeatPresenceProjection'
 } as const
 
@@ -200,6 +202,19 @@ export const EventRoleProjectionScalarFieldEnum = {
 export type EventRoleProjectionScalarFieldEnum = (typeof EventRoleProjectionScalarFieldEnum)[keyof typeof EventRoleProjectionScalarFieldEnum]
 
 
+export const EventAccessProjectionScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  userId: 'userId',
+  permissions: 'permissions',
+  roles: 'roles',
+  occurredAt: 'occurredAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventAccessProjectionScalarFieldEnum = (typeof EventAccessProjectionScalarFieldEnum)[keyof typeof EventAccessProjectionScalarFieldEnum]
+
+
 export const EventSettingsProjectionScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
@@ -207,10 +222,22 @@ export const EventSettingsProjectionScalarFieldEnum = {
   endsAt: 'endsAt',
   maxSeats: 'maxSeats',
   allowGuestSeatSelection: 'allowGuestSeatSelection',
+  seatColorGroups: 'seatColorGroups',
   updatedAt: 'updatedAt'
 } as const
 
 export type EventSettingsProjectionScalarFieldEnum = (typeof EventSettingsProjectionScalarFieldEnum)[keyof typeof EventSettingsProjectionScalarFieldEnum]
+
+
+export const InvitationProjectionScalarFieldEnum = {
+  id: 'id',
+  invitationId: 'invitationId',
+  guestId: 'guestId',
+  selectedInvitedBy: 'selectedInvitedBy',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvitationProjectionScalarFieldEnum = (typeof InvitationProjectionScalarFieldEnum)[keyof typeof InvitationProjectionScalarFieldEnum]
 
 
 export const SeatPresenceProjectionScalarFieldEnum = {

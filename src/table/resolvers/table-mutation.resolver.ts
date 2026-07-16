@@ -11,21 +11,21 @@ import { TablePayload } from '../models/payloads/table.payload.js';
 import { TableWriteService } from '../services/table-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { EventRoleType, RealmRoleType } from '@omnixys/contracts';
+import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
 import {
   CookieAuthGuard,
   CurrentUser,
   CurrentUserData,
-  EventRoleGuard,
-  EventRoles,
+  EventPermissionGuard,
+  EventPermissions,
   RoleGuard,
   Roles,
 } from '@omnixys/security';
 
 @Resolver()
-@UseGuards(CookieAuthGuard, RoleGuard, EventRoleGuard)
+@UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
 @Roles(RealmRoleType.USER)
-@EventRoles(EventRoleType.ADMIN)
+@EventPermissions(EventPermissionKey.ManageSeats)
 export class TableMutationResolver {
   constructor(private readonly tableWriteService: TableWriteService) {}
 

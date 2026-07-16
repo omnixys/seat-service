@@ -4,12 +4,17 @@ import { SectionPayload } from '../../section/models/payloads/section.payload.js
 import { TableMapper } from '../../table/models/mappers/table.mapper.js';
 import { TablePayload } from '../../table/models/payloads/table.payload.js';
 import { SeatingEntityNotFoundException } from '../errors/seat-domain.error.js';
+import { SeatColorGroupPayload } from '../models/payloads/seat-color-group.payload.js';
 import { SeatPayload } from '../models/payloads/seat.payload.js';
+import { ColorGroupMatcherService } from '../services/color-group-matcher.service.js';
 import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
 
 @Resolver(() => SeatPayload)
 export class SeatFieldsResolver {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly colorGroupMatcher: ColorGroupMatcherService,
+  ) {}
 
   // ------------------------------------------------------
   // SECTION (Seat.sectionId -> SectionPayload)
@@ -46,5 +51,18 @@ export class SeatFieldsResolver {
     }
 
     return TableMapper.toPayload(table);
+  }
+
+  // ------------------------------------------------------
+  // COLOR GROUP (seat -> invitation -> selectedInvitedBy -> seatColorGroups)
+  // ------------------------------------------------------
+  @ResolveField(() => SeatColorGroupPayload, { nullable: true })
+  async colorGroup(
+    @Parent() seat: SeatPayload,
+  ): Promise<SeatColorGroupPayload | null> {
+    return this.colorGroupMatcher.matchByInvitation(
+      seat.eventId,
+      seat.invitationId,
+    );
   }
 }

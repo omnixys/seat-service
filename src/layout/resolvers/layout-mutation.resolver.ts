@@ -21,21 +21,21 @@ import { LayoutWriteService } from '../services/layout-write.service.js';
 import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { EventRoleType, RealmRoleType } from '@omnixys/contracts';
+import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
 import {
   CookieAuthGuard,
   CurrentUser,
   CurrentUserData,
-  EventRoleGuard,
-  EventRoles,
+  EventPermissionGuard,
+  EventPermissions,
   RoleGuard,
   Roles,
 } from '@omnixys/security';
 
 @Resolver()
-@UseGuards(CookieAuthGuard, RoleGuard, EventRoleGuard)
+@UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
 @Roles(RealmRoleType.USER, RealmRoleType.ADMIN)
-@EventRoles(EventRoleType.ADMIN)
+@EventPermissions(EventPermissionKey.ManageSeats)
 export class LayoutMutationResolver {
   constructor(private readonly layoutWrite: LayoutWriteService) {}
 

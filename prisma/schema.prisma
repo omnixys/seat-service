@@ -235,6 +235,20 @@ model EventRoleProjection {
   @@map("event_role_projection")
 }
 
+model EventAccessProjection {
+  id          String    @id @default(uuid()) @map("id") @db.Uuid
+  eventId     String    @map("event_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  permissions String[]  @default([]) @map("permissions")
+  roles       Json?     @map("roles")
+  occurredAt  DateTime? @map("occurred_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  @@unique([eventId, userId], name: "uq_event_access_projection")
+  @@index([eventId], name: "idx_event_access_projection_event")
+  @@map("event_access_projection")
+}
+
 /// ----------------------------------------------------------------------
 /// EventSettingsProjection – local cache of event settings synced via Kafka
 /// ----------------------------------------------------------------------
@@ -245,9 +259,24 @@ model EventSettingsProjection {
   endsAt                  DateTime? @map("ends_at")
   maxSeats                Int?      @map("max_seats")
   allowGuestSeatSelection Boolean   @default(false) @map("allow_guest_seat_selection")
+  seatColorGroups         Json?     @map("seat_color_groups")
   updatedAt               DateTime? @updatedAt @map("updated_at")
 
   @@map("event_settings_projection")
+}
+
+/// ----------------------------------------------------------------------
+/// InvitationProjection – local cache of invitation seating info synced
+/// from the Invitation Service via Kafka.
+/// ----------------------------------------------------------------------
+model InvitationProjection {
+  id                String    @id @default(uuid()) @map("id") @db.Uuid
+  invitationId      String    @unique @map("invitation_id") @db.Uuid
+  guestId           String?   @map("guest_id") @db.Uuid
+  selectedInvitedBy Json?     @map("selected_invited_by")
+  updatedAt         DateTime? @updatedAt @map("updated_at")
+
+  @@map("invitation_projection")
 }
 
 /// ----------------------------------------------------------------------
@@ -255,9 +284,9 @@ model EventSettingsProjection {
 /// from the Ticket Service via event.milestone.recorded Kafka events.
 /// ----------------------------------------------------------------------
 model SeatPresenceProjection {
-  id            String        @id @default(uuid()) @map("id") @db.Uuid
-  seatId        String        @unique @map("seat_id") @db.Uuid
-  eventId       String        @map("event_id") @db.Uuid
+  id      String @id @default(uuid()) @map("id") @db.Uuid
+  seatId  String @unique @map("seat_id") @db.Uuid
+  eventId String @map("event_id") @db.Uuid
 
   presenceState PresenceState @default(OUTSIDE) @map("presence_state")
   checkedInAt   DateTime?     @map("checked_in_at")
@@ -281,6 +310,7 @@ enum EventRoleType {
   ADMIN
   SECURITY
   GUEST
+  SUPPORT
 
   @@map("event_role_type")
 }
