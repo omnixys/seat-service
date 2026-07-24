@@ -47,7 +47,9 @@ export const env = {
   LOG_LEVEL: getEnv('LOG_LEVEL', 'info'),
   HTTPS: getEnv('HTTPS', 'false', { transform: toBool }),
   KEYS_PATH: getEnv('KEYS_PATH', './keys'),
-  TEMPO_URI: getEnv('TEMPO_URI', 'http://localhost:4318/v1/traces'),
+  TEMPO_URI:
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT ??
+    getEnv('TEMPO_URI', 'http://localhost:4318'),
   PORT: getEnv('PORT', '4000', { transform: toNumber }),
   KC_CLIENT_SECRET: getEnv('KC_CLIENT_SECRET', '', { required: true }),
   KC_URL: getEnv('KC_URL', 'http://localhost:18080/auth'),
