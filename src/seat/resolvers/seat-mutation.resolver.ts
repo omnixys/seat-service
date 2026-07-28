@@ -8,6 +8,7 @@ import { SeatWriteService } from '../services/seat-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
+import { OmnixysLogger } from '@omnixys/logger';
 import {
   CookieAuthGuard,
   CurrentUser,
@@ -23,7 +24,13 @@ import {
 @Roles(RealmRoleType.USER)
 @EventPermissions(EventPermissionKey.ManageSeats)
 export class SeatMutationResolver {
-  constructor(private readonly write: SeatWriteService) {}
+  private readonly log;
+  constructor(
+    private readonly write: SeatWriteService,
+    logger: OmnixysLogger,
+  ) {
+    this.log = logger.log(this.constructor.name);
+  }
 
   // ---------------------------------------------------------------------------
   // SEAT MUTATIONS
@@ -34,6 +41,7 @@ export class SeatMutationResolver {
     @Args('input') input: CreateSeatInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('createSeat: eventId=%s | sectionId=%s', input.eventId, input.sectionId);
     return this.write.createSeat(input, user.id);
   }
 
@@ -42,6 +50,7 @@ export class SeatMutationResolver {
     @Args('input') input: UpdateSeatInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('updateSeat: seatId=%s', input.id);
     return this.write.updateSeat(input, user.id);
   }
 
@@ -50,6 +59,7 @@ export class SeatMutationResolver {
     @Args('seatId') seatId: string,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('deleteSeat: seatId=%s', seatId);
     return this.write.deleteSeat(seatId, user.id);
   }
 
@@ -58,6 +68,7 @@ export class SeatMutationResolver {
     @Args('input') input: AssignSeatInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('assignSeat: seatId=%s | guestId=%s', input.seatId, input.guestId ?? 'none');
     return this.write.assignSeat(input, user.id);
   }
 
@@ -66,6 +77,7 @@ export class SeatMutationResolver {
     @Args('seatId') seatId: string,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('unassignSeat: seatId=%s', seatId);
     return this.write.unassignSeat(seatId, user.id);
   }
 }

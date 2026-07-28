@@ -22,6 +22,7 @@ import { LayoutVersionPayload } from '../models/payloads/layout-version.payload.
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
+import { OmnixysLogger } from '@omnixys/logger';
 import {
   CookieAuthGuard,
   CurrentUser,
@@ -37,7 +38,13 @@ import {
 @Roles(RealmRoleType.USER, RealmRoleType.ADMIN)
 @EventPermissions(EventPermissionKey.ManageSeats)
 export class LayoutMutationResolver {
-  constructor(private readonly layoutWrite: LayoutWriteService) {}
+  private readonly log;
+  constructor(
+    private readonly layoutWrite: LayoutWriteService,
+    logger: OmnixysLogger,
+  ) {
+    this.log = logger.log(this.constructor.name);
+  }
 
   // ---------------------------------------------------------------------------
   // VERSIONING & CHANGELOG
@@ -49,18 +56,21 @@ export class LayoutMutationResolver {
     @Args('input') input: SaveLayoutVersionInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('saveLayoutVersion: eventId=%s | version=%s', input.eventId, input.version);
     return this.layoutWrite.saveLayoutVersion(input, user.id);
   }
 
   @Mutation(() => Boolean)
   @UseGuards(CookieAuthGuard)
   async undoLayout(@Args('eventId') eventId: string) {
+    this.log.debug('undoLayout: eventId=%s', eventId);
     return this.layoutWrite.undo(eventId);
   }
 
   @Mutation(() => Boolean)
   @UseGuards(CookieAuthGuard)
   async redoLayout(@Args('eventId') eventId: string) {
+    this.log.debug('redoLayout: eventId=%s', eventId);
     return this.layoutWrite.redo(eventId);
   }
 
@@ -74,6 +84,7 @@ export class LayoutMutationResolver {
     @Args('input') input: AutoGenerateLayoutInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('autoGenerateLayout: eventId=%s', input.eventId);
     return this.layoutWrite.autoGenerate(input, user.id);
   }
 
@@ -83,6 +94,7 @@ export class LayoutMutationResolver {
     @Args('input') input: AutoGenerateSeatMapInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('autoGenerateSeatMap: eventId=%s | seats=%s | tables=%s', input.eventId, input.seatCount, input.tableCount);
     return this.layoutWrite.autoGenerateSeatMap(input, user.id);
   }
 

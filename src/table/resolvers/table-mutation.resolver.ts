@@ -12,6 +12,7 @@ import { TableWriteService } from '../services/table-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
+import { OmnixysLogger } from '@omnixys/logger';
 import {
   CookieAuthGuard,
   CurrentUser,
@@ -27,7 +28,13 @@ import {
 @Roles(RealmRoleType.USER)
 @EventPermissions(EventPermissionKey.ManageSeats)
 export class TableMutationResolver {
-  constructor(private readonly tableWriteService: TableWriteService) {}
+  private readonly log;
+  constructor(
+    private readonly tableWriteService: TableWriteService,
+    logger: OmnixysLogger,
+  ) {
+    this.log = logger.log(this.constructor.name);
+  }
 
   // ---------------------------------------------------------------------------
   // TABLE MUTATIONS
@@ -39,6 +46,7 @@ export class TableMutationResolver {
     @Args('input') input: CreateTableInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('createTable: eventId=%s | sectionId=%s', input.eventId, input.sectionId);
     return this.tableWriteService.createTable(input, user.id);
   }
 
@@ -48,6 +56,7 @@ export class TableMutationResolver {
     @Args('input') input: UpdateTableInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('updateTable: tableId=%s', input.id);
     return this.tableWriteService.updateTable(input, user.id);
   }
 
@@ -57,6 +66,7 @@ export class TableMutationResolver {
     @Args('tableId') tableId: string,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('deleteTable: tableId=%s', tableId);
     return this.tableWriteService.deleteTable(tableId, user.id);
   }
 
@@ -66,6 +76,7 @@ export class TableMutationResolver {
     @Args('input') input: RenameTableInput,
     @CurrentUser() user: CurrentUserData,
   ): Promise<RenamePayload> {
+    this.log.debug('renameTable: tableId=%s | newName=%s', input.tableId, input.newName);
     return this.tableWriteService.renameTable(input, user.id);
   }
 

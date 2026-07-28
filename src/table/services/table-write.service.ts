@@ -45,6 +45,7 @@ export class TableWriteService {
    *  - Deep-merged default metadata
    */
   async createTable(input: CreateTableInput, actorId: string) {
+    this.logger.debug('createTable: eventId=%s | sectionId=%s | actorId=%s', input.eventId, input.sectionId, actorId);
     // Compute next order ONLY if missing
     const autoOrder = await nextOrder(this.prisma.table, {
       sectionId: input.sectionId,
@@ -94,6 +95,7 @@ export class TableWriteService {
    *  - Meta is deep merged if provided
    */
   async updateTable(input: UpdateTableInput, actorId: string) {
+    this.logger.debug('updateTable: tableId=%s | actorId=%s', input.id, actorId);
     const exists = await this.prisma.table.findUnique({
       where: { id: input.id },
     });
@@ -135,7 +137,7 @@ export class TableWriteService {
    * Deletes a table and all related seats (cascade).
    */
   async deleteTable(tableId: string, actorId: string) {
-    this.logger.debug('delete table: tableId: %s', tableId);
+    this.logger.debug('deleteTable: tableId=%s | actorId=%s', tableId, actorId);
     const exists = await this.prisma.table.findUnique({
       where: { id: tableId },
     });
@@ -160,6 +162,7 @@ export class TableWriteService {
 
   async renameTable(input: RenameTableInput, actorId: string): Promise<RenamePayload> {
     const { newName, tableId } = input;
+    this.logger.debug('renameTable: tableId=%s | newName=%s | actorId=%s', tableId, newName, actorId);
 
     const exists = await this.prisma.table.findUnique({
       where: { id: tableId },

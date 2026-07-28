@@ -54,6 +54,7 @@ export class SeatWriteService {
    * - Meta defaults are always applied if missing.
    */
   async createSeat(input: CreateSeatInput, actorId: string) {
+    this.logger.debug('createSeat: eventId=%s | sectionId=%s | actorId=%s', input.eventId, input.sectionId, actorId);
     const created = await this.prisma.seat.create({
       data: {
         eventId: input.eventId,
@@ -87,6 +88,7 @@ export class SeatWriteService {
    * Updates seat geometry or metadata.
    */
   async updateSeat(input: UpdateSeatInput, actorId: string) {
+    this.logger.debug('updateSeat: seatId=%s | actorId=%s', input.id, actorId);
     const exists = await this.prisma.seat.findUnique({
       where: { id: input.id },
     });
@@ -126,7 +128,7 @@ export class SeatWriteService {
    * Deletes a seat entirely.
    */
   async deleteSeat(seatId: string, actorId: string) {
-    this.logger.debug('delete Seat: seatId: %s', seatId);
+    this.logger.debug('deleteSeat: seatId=%s | actorId=%s', seatId, actorId);
     const exists = await this.prisma.seat.findUnique({
       where: { id: seatId },
     });
@@ -157,6 +159,7 @@ export class SeatWriteService {
    */
   async assignSeat(input: AssignSeatInput, actorId: string) {
     const { seatId, guestId, invitationId, note } = input;
+    this.logger.debug('assignSeat: seatId=%s | guestId=%s | actorId=%s', seatId, guestId ?? 'none', actorId);
 
     // 👉 Echte semantische Entscheidung
     const hasAssignment = Boolean(guestId || invitationId);
@@ -353,6 +356,7 @@ export class SeatWriteService {
    * Removes a guest assignment from a seat.
    */
   async unassignSeat(seatId: string, actorId: string) {
+    this.logger.debug('unassignSeat: seatId=%s | actorId=%s', seatId, actorId);
     const seat = await this.prisma.seat.findUnique({
       where: { id: seatId },
     });

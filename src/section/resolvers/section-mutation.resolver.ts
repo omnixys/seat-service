@@ -3,6 +3,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
+import { OmnixysLogger } from '@omnixys/logger';
 
 import { CreateSectionInput } from '../models/inputs/create-section.input.js';
 import { RenameSectionInput } from '../models/inputs/rename-section.input.js';
@@ -28,7 +29,13 @@ import {
 @Roles(RealmRoleType.USER)
 @EventPermissions(EventPermissionKey.ManageSeats)
 export class SectionMutationResolver {
-  constructor(private readonly sectionWriteService: SectionWriteService) {}
+  private readonly log;
+  constructor(
+    private readonly sectionWriteService: SectionWriteService,
+    logger: OmnixysLogger,
+  ) {
+    this.log = logger.log(this.constructor.name);
+  }
 
   // ---------------------------------------------------------------------------
   // SECTION MUTATIONS
@@ -39,6 +46,7 @@ export class SectionMutationResolver {
     @Args('input') input: CreateSectionInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('createSection: eventId=%s', input.eventId);
     return this.sectionWriteService.createSection(input, user.id);
   }
 
@@ -47,6 +55,7 @@ export class SectionMutationResolver {
     @Args('input') input: UpdateSectionInput,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('updateSection: sectionId=%s', input.id);
     return this.sectionWriteService.updateSection(input, user.id);
   }
 
@@ -55,6 +64,7 @@ export class SectionMutationResolver {
     @Args('sectionId') sectionId: string,
     @CurrentUser() user: CurrentUserData,
   ) {
+    this.log.debug('deleteSection: sectionId=%s', sectionId);
     return this.sectionWriteService.deleteSection(sectionId, user.id);
   }
 
