@@ -54,7 +54,12 @@ export class SeatWriteService {
    * - Meta defaults are always applied if missing.
    */
   async createSeat(input: CreateSeatInput, actorId: string) {
-    this.logger.debug('createSeat: eventId=%s | sectionId=%s | actorId=%s', input.eventId, input.sectionId, actorId);
+    this.logger.debug(
+      'createSeat: eventId=%s | sectionId=%s | actorId=%s',
+      input.eventId,
+      input.sectionId,
+      actorId,
+    );
     const created = await this.prisma.seat.create({
       data: {
         eventId: input.eventId,
@@ -159,7 +164,12 @@ export class SeatWriteService {
    */
   async assignSeat(input: AssignSeatInput, actorId: string) {
     const { seatId, guestId, invitationId, note } = input;
-    this.logger.debug('assignSeat: seatId=%s | guestId=%s | actorId=%s', seatId, guestId ?? 'none', actorId);
+    this.logger.debug(
+      'assignSeat: seatId=%s | guestId=%s | actorId=%s',
+      seatId,
+      guestId ?? 'none',
+      actorId,
+    );
 
     // 👉 Echte semantische Entscheidung
     const hasAssignment = Boolean(guestId || invitationId);

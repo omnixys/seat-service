@@ -56,7 +56,11 @@ export class LayoutMutationResolver {
     @Args('input') input: SaveLayoutVersionInput,
     @CurrentUser() user: CurrentUserData,
   ) {
-    this.log.debug('saveLayoutVersion: eventId=%s | version=%s', input.eventId, input.version);
+    this.log.debug(
+      'saveLayoutVersion: eventId=%s | version=%s',
+      input.eventId,
+      input.version,
+    );
     return this.layoutWrite.saveLayoutVersion(input, user.id);
   }
 
@@ -94,7 +98,12 @@ export class LayoutMutationResolver {
     @Args('input') input: AutoGenerateSeatMapInput,
     @CurrentUser() user: CurrentUserData,
   ) {
-    this.log.debug('autoGenerateSeatMap: eventId=%s | seats=%s | tables=%s', input.eventId, input.seatCount, input.tableCount);
+    this.log.debug(
+      'autoGenerateSeatMap: eventId=%s | seats=%s | tables=%s',
+      input.eventId,
+      input.seatCount,
+      input.tableCount,
+    );
     return this.layoutWrite.autoGenerateSeatMap(input, user.id);
   }
 

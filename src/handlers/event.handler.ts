@@ -60,13 +60,19 @@ export class EventHandler {
     _context: IKafkaEventContext,
   ): Promise<void> {
     return TraceRunner.run('[HANDLER] create Seats', async () => {
-      this.logger.info('create_seat_received', { eventId: payload.eventId, maxSeats: payload.maxSeats });
+      this.logger.info('create_seat_received', {
+        eventId: payload.eventId,
+        maxSeats: payload.maxSeats,
+      });
 
       try {
         await this.layoutWriteService.autoGenerateFromMaxSeats(payload);
         this.logger.info('create_seat_success', { eventId: payload.eventId });
       } catch (error) {
-        this.logger.exception(error, 'create_seat_failed', { eventId: payload.eventId });
+        this.logger.error('create_seat_failed', {
+          error,
+          eventId: payload.eventId,
+        });
         throw error;
       }
     });
@@ -81,7 +87,10 @@ export class EventHandler {
       const headers = context.headers;
       const actorId = headers[KAFKA_HEADERS.ACTOR_ID] ?? 'unknown';
 
-      this.logger.info('delete_seat_received', { eventIds: payload.eventIds, actorId });
+      this.logger.info('delete_seat_received', {
+        eventIds: payload.eventIds,
+        actorId,
+      });
 
       try {
         await this.layoutWriteService.deleteSeats({
@@ -90,7 +99,11 @@ export class EventHandler {
         });
         this.logger.info('delete_seat_success', { eventIds: payload.eventIds });
       } catch (error) {
-        this.logger.exception(error, 'delete_seat_failed', { eventIds: payload.eventIds, actorId });
+        this.logger.error('delete_seat_failed', {
+          error,
+          eventIds: payload.eventIds,
+          actorId,
+        });
         throw error;
       }
     });

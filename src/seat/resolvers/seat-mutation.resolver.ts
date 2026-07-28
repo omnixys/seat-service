@@ -41,7 +41,11 @@ export class SeatMutationResolver {
     @Args('input') input: CreateSeatInput,
     @CurrentUser() user: CurrentUserData,
   ) {
-    this.log.debug('createSeat: eventId=%s | sectionId=%s', input.eventId, input.sectionId);
+    this.log.debug(
+      'createSeat: eventId=%s | sectionId=%s',
+      input.eventId,
+      input.sectionId,
+    );
     return this.write.createSeat(input, user.id);
   }
 
@@ -68,7 +72,11 @@ export class SeatMutationResolver {
     @Args('input') input: AssignSeatInput,
     @CurrentUser() user: CurrentUserData,
   ) {
-    this.log.debug('assignSeat: seatId=%s | guestId=%s', input.seatId, input.guestId ?? 'none');
+    this.log.debug(
+      'assignSeat: seatId=%s | guestId=%s',
+      input.seatId,
+      input.guestId ?? 'none',
+    );
     return this.write.assignSeat(input, user.id);
   }
 

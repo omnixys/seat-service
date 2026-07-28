@@ -58,7 +58,10 @@ export class EventRoleHandler {
       const { eventId, userId, permissions, roles, occurredAt } = payload;
       const occurredAtDate = new Date(occurredAt);
 
-      this.logger.info('event_user_access_changed_received', { eventId, userId });
+      this.logger.info('event_user_access_changed_received', {
+        eventId,
+        userId,
+      });
 
       const existing = await this.prisma.eventAccessProjection.findUnique({
         where: { uq_event_access_projection: { eventId, userId } },
@@ -92,9 +95,16 @@ export class EventRoleHandler {
             occurredAt: occurredAtDate,
           },
         });
-        this.logger.info('event_user_access_changed_upserted', { eventId, userId });
+        this.logger.info('event_user_access_changed_upserted', {
+          eventId,
+          userId,
+        });
       } catch (error) {
-        this.logger.exception(error, 'event_user_access_changed_failed', { eventId, userId });
+        this.logger.error('event_user_access_changed_failed', {
+          error,
+          eventId,
+          userId,
+        });
         throw error;
       }
     });
@@ -109,7 +119,11 @@ export class EventRoleHandler {
       const { eventId, userId, role, occurredAt } = payload;
       const projectedRole = role as unknown as PrismaEventRoleType;
 
-      this.logger.info('event_role_assigned_received', { eventId, userId, role });
+      this.logger.info('event_role_assigned_received', {
+        eventId,
+        userId,
+        role,
+      });
 
       const existing = await this.prisma.eventRoleProjection.findUnique({
         where: { uq_event_role_projection: { eventId, userId } },
@@ -133,9 +147,18 @@ export class EventRoleHandler {
           create: { eventId, userId, role: projectedRole },
           update: { role: projectedRole },
         });
-        this.logger.info('event_role_assigned_upserted', { eventId, userId, role });
+        this.logger.info('event_role_assigned_upserted', {
+          eventId,
+          userId,
+          role,
+        });
       } catch (error) {
-        this.logger.exception(error, 'event_role_assigned_failed', { eventId, userId, role });
+        this.logger.error('event_role_assigned_failed', {
+          error,
+          eventId,
+          userId,
+          role,
+        });
         throw error;
       }
     });
@@ -173,7 +196,11 @@ export class EventRoleHandler {
         });
         this.logger.info('event_role_removed_success', { eventId, userId });
       } catch (error) {
-        this.logger.exception(error, 'event_role_removed_failed', { eventId, userId });
+        this.logger.error('event_role_removed_failed', {
+          error,
+          eventId,
+          userId,
+        });
         throw error;
       }
     });
@@ -187,12 +214,18 @@ export class EventRoleHandler {
     return TraceRunner.run('[HANDLER] event.ownerChanged', async () => {
       const { eventId, oldOwnerId, newOwnerId, occurredAt } = payload;
 
-      this.logger.info('event_owner_changed_received', { eventId, oldOwnerId, newOwnerId });
+      this.logger.info('event_owner_changed_received', {
+        eventId,
+        oldOwnerId,
+        newOwnerId,
+      });
 
       try {
         if (oldOwnerId) {
           const existing = await this.prisma.eventRoleProjection.findUnique({
-            where: { uq_event_role_projection: { eventId, userId: oldOwnerId } },
+            where: {
+              uq_event_role_projection: { eventId, userId: oldOwnerId },
+            },
             select: { updatedAt: true },
           });
 
@@ -227,9 +260,17 @@ export class EventRoleHandler {
           create: { eventId, userId: newOwnerId, role: 'ADMIN' },
           update: { role: 'ADMIN' },
         });
-        this.logger.info('event_owner_changed_upserted', { eventId, newOwnerId });
+        this.logger.info('event_owner_changed_upserted', {
+          eventId,
+          newOwnerId,
+        });
       } catch (error) {
-        this.logger.exception(error, 'event_owner_changed_failed', { eventId, oldOwnerId, newOwnerId });
+        this.logger.error('event_owner_changed_failed', {
+          error,
+          eventId,
+          oldOwnerId,
+          newOwnerId,
+        });
         throw error;
       }
     });
@@ -241,7 +282,9 @@ export class EventRoleHandler {
     _context: IKafkaEventContext,
   ): Promise<void> {
     return TraceRunner.run('[HANDLER] event.deleted', async () => {
-      this.logger.info('event_deleted_received', { eventIds: payload.eventIds });
+      this.logger.info('event_deleted_received', {
+        eventIds: payload.eventIds,
+      });
 
       try {
         await Promise.all([
@@ -255,9 +298,14 @@ export class EventRoleHandler {
             where: { eventId: { in: payload.eventIds } },
           }),
         ]);
-        this.logger.info('event_deleted_projections_removed', { eventIds: payload.eventIds });
+        this.logger.info('event_deleted_projections_removed', {
+          eventIds: payload.eventIds,
+        });
       } catch (error) {
-        this.logger.exception(error, 'event_deleted_failed', { eventIds: payload.eventIds });
+        this.logger.error('event_deleted_failed', {
+          error,
+          eventIds: payload.eventIds,
+        });
         throw error;
       }
     });

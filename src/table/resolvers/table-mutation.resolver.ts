@@ -46,7 +46,11 @@ export class TableMutationResolver {
     @Args('input') input: CreateTableInput,
     @CurrentUser() user: CurrentUserData,
   ) {
-    this.log.debug('createTable: eventId=%s | sectionId=%s', input.eventId, input.sectionId);
+    this.log.debug(
+      'createTable: eventId=%s | sectionId=%s',
+      input.eventId,
+      input.sectionId,
+    );
     return this.tableWriteService.createTable(input, user.id);
   }
 
@@ -76,7 +80,11 @@ export class TableMutationResolver {
     @Args('input') input: RenameTableInput,
     @CurrentUser() user: CurrentUserData,
   ): Promise<RenamePayload> {
-    this.log.debug('renameTable: tableId=%s | newName=%s', input.tableId, input.newName);
+    this.log.debug(
+      'renameTable: tableId=%s | newName=%s',
+      input.tableId,
+      input.newName,
+    );
     return this.tableWriteService.renameTable(input, user.id);
   }
 
