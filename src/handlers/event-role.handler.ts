@@ -58,6 +58,8 @@ export class EventRoleHandler {
       const { eventId, userId, permissions, roles, occurredAt } = payload;
       const occurredAtDate = new Date(occurredAt);
 
+      this.logger.info('event_user_access_changed_received', { eventId, userId });
+
       const existing = await this.prisma.eventAccessProjection.findUnique({
         where: { uq_event_access_projection: { eventId, userId } },
         select: { occurredAt: true },
@@ -74,21 +76,27 @@ export class EventRoleHandler {
         return;
       }
 
-      await this.prisma.eventAccessProjection.upsert({
-        where: { uq_event_access_projection: { eventId, userId } },
-        create: {
-          eventId,
-          userId,
-          permissions,
-          roles: roles as unknown as Prisma.InputJsonValue,
-          occurredAt: occurredAtDate,
-        },
-        update: {
-          permissions,
-          roles: roles as unknown as Prisma.InputJsonValue,
-          occurredAt: occurredAtDate,
-        },
-      });
+      try {
+        await this.prisma.eventAccessProjection.upsert({
+          where: { uq_event_access_projection: { eventId, userId } },
+          create: {
+            eventId,
+            userId,
+            permissions,
+            roles: roles as unknown as Prisma.InputJsonValue,
+            occurredAt: occurredAtDate,
+          },
+          update: {
+            permissions,
+            roles: roles as unknown as Prisma.InputJsonValue,
+            occurredAt: occurredAtDate,
+          },
+        });
+        this.logger.info('event_user_access_changed_upserted', { eventId, userId });
+      } catch (error) {
+        this.logger.exception(error, 'event_user_access_changed_failed', { eventId, userId });
+        throw error;
+      }
     });
   }
 
@@ -100,6 +108,8 @@ export class EventRoleHandler {
     return TraceRunner.run('[HANDLER] event.roleAssigned', async () => {
       const { eventId, userId, role, occurredAt } = payload;
       const projectedRole = role as unknown as PrismaEventRoleType;
+
+      this.logger.info('event_role_assigned_received', { eventId, userId, role });
 
       const existing = await this.prisma.eventRoleProjection.findUnique({
         where: { uq_event_role_projection: { eventId, userId } },
@@ -117,11 +127,17 @@ export class EventRoleHandler {
         return;
       }
 
-      await this.prisma.eventRoleProjection.upsert({
-        where: { uq_event_role_projection: { eventId, userId } },
-        create: { eventId, userId, role: projectedRole },
-        update: { role: projectedRole },
-      });
+      try {
+        await this.prisma.eventRoleProjection.upsert({
+          where: { uq_event_role_projection: { eventId, userId } },
+          create: { eventId, userId, role: projectedRole },
+          update: { role: projectedRole },
+        });
+        this.logger.info('event_role_assigned_upserted', { eventId, userId, role });
+      } catch (error) {
+        this.logger.exception(error, 'event_role_assigned_failed', { eventId, userId, role });
+        throw error;
+      }
     });
   }
 
@@ -132,6 +148,8 @@ export class EventRoleHandler {
   ): Promise<void> {
     return TraceRunner.run('[HANDLER] event.roleRemoved', async () => {
       const { eventId, userId, occurredAt } = payload;
+
+      this.logger.info('event_role_removed_received', { eventId, userId });
 
       const existing = await this.prisma.eventRoleProjection.findUnique({
         where: { uq_event_role_projection: { eventId, userId } },
@@ -149,9 +167,15 @@ export class EventRoleHandler {
         return;
       }
 
-      await this.prisma.eventRoleProjection.deleteMany({
-        where: { eventId, userId },
-      });
+      try {
+        await this.prisma.eventRoleProjection.deleteMany({
+          where: { eventId, userId },
+        });
+        this.logger.info('event_role_removed_success', { eventId, userId });
+      } catch (error) {
+        this.logger.exception(error, 'event_role_removed_failed', { eventId, userId });
+        throw error;
+      }
     });
   }
 
@@ -163,43 +187,51 @@ export class EventRoleHandler {
     return TraceRunner.run('[HANDLER] event.ownerChanged', async () => {
       const { eventId, oldOwnerId, newOwnerId, occurredAt } = payload;
 
-      if (oldOwnerId) {
-        const existing = await this.prisma.eventRoleProjection.findUnique({
-          where: { uq_event_role_projection: { eventId, userId: oldOwnerId } },
+      this.logger.info('event_owner_changed_received', { eventId, oldOwnerId, newOwnerId });
+
+      try {
+        if (oldOwnerId) {
+          const existing = await this.prisma.eventRoleProjection.findUnique({
+            where: { uq_event_role_projection: { eventId, userId: oldOwnerId } },
+            select: { updatedAt: true },
+          });
+
+          if (
+            !existing?.updatedAt ||
+            new Date(occurredAt).getTime() >= existing.updatedAt.getTime()
+          ) {
+            await this.prisma.eventRoleProjection.deleteMany({
+              where: { eventId, userId: oldOwnerId },
+            });
+          }
+        }
+
+        const existingNew = await this.prisma.eventRoleProjection.findUnique({
+          where: { uq_event_role_projection: { eventId, userId: newOwnerId } },
           select: { updatedAt: true },
         });
 
         if (
-          !existing?.updatedAt ||
-          new Date(occurredAt).getTime() >= existing.updatedAt.getTime()
+          existingNew?.updatedAt &&
+          new Date(occurredAt).getTime() < existingNew.updatedAt.getTime()
         ) {
-          await this.prisma.eventRoleProjection.deleteMany({
-            where: { eventId, userId: oldOwnerId },
+          this.logger.debug('Skipping stale ownerChanged upsert', {
+            eventId,
+            userId: newOwnerId,
           });
+          return;
         }
-      }
 
-      const existingNew = await this.prisma.eventRoleProjection.findUnique({
-        where: { uq_event_role_projection: { eventId, userId: newOwnerId } },
-        select: { updatedAt: true },
-      });
-
-      if (
-        existingNew?.updatedAt &&
-        new Date(occurredAt).getTime() < existingNew.updatedAt.getTime()
-      ) {
-        this.logger.debug('Skipping stale ownerChanged upsert', {
-          eventId,
-          userId: newOwnerId,
+        await this.prisma.eventRoleProjection.upsert({
+          where: { uq_event_role_projection: { eventId, userId: newOwnerId } },
+          create: { eventId, userId: newOwnerId, role: 'ADMIN' },
+          update: { role: 'ADMIN' },
         });
-        return;
+        this.logger.info('event_owner_changed_upserted', { eventId, newOwnerId });
+      } catch (error) {
+        this.logger.exception(error, 'event_owner_changed_failed', { eventId, oldOwnerId, newOwnerId });
+        throw error;
       }
-
-      await this.prisma.eventRoleProjection.upsert({
-        where: { uq_event_role_projection: { eventId, userId: newOwnerId } },
-        create: { eventId, userId: newOwnerId, role: 'ADMIN' },
-        update: { role: 'ADMIN' },
-      });
     });
   }
 
@@ -209,17 +241,25 @@ export class EventRoleHandler {
     _context: IKafkaEventContext,
   ): Promise<void> {
     return TraceRunner.run('[HANDLER] event.deleted', async () => {
-      await Promise.all([
-        this.prisma.eventRoleProjection.deleteMany({
-          where: { eventId: { in: payload.eventIds } },
-        }),
-        this.prisma.eventSettingsProjection.deleteMany({
-          where: { eventId: { in: payload.eventIds } },
-        }),
-        this.prisma.eventAccessProjection.deleteMany({
-          where: { eventId: { in: payload.eventIds } },
-        }),
-      ]);
+      this.logger.info('event_deleted_received', { eventIds: payload.eventIds });
+
+      try {
+        await Promise.all([
+          this.prisma.eventRoleProjection.deleteMany({
+            where: { eventId: { in: payload.eventIds } },
+          }),
+          this.prisma.eventSettingsProjection.deleteMany({
+            where: { eventId: { in: payload.eventIds } },
+          }),
+          this.prisma.eventAccessProjection.deleteMany({
+            where: { eventId: { in: payload.eventIds } },
+          }),
+        ]);
+        this.logger.info('event_deleted_projections_removed', { eventIds: payload.eventIds });
+      } catch (error) {
+        this.logger.exception(error, 'event_deleted_failed', { eventIds: payload.eventIds });
+        throw error;
+      }
     });
   }
 }
