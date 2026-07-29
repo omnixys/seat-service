@@ -8,6 +8,7 @@
  * ------------------------------------------------------------------------- */
 
 import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
+import { AnalyticsOutboxService } from '../../analytics/analytics-outbox.service.js';
 import { LayoutChangeType, SeatStatus, type Prisma } from '../../prisma/generated/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
@@ -33,6 +34,7 @@ export class SeatWriteService {
     private readonly prisma: PrismaService,
     private readonly omnixysLogger: OmnixysLogger,
     private readonly layoutWriteService: LayoutWriteService,
+    private readonly analyticsOutbox: AnalyticsOutboxService,
   ) {
     this.logger = this.omnixysLogger.log(this.constructor.name);
   }
@@ -226,6 +228,17 @@ export class SeatWriteService {
               },
             },
           });
+          await this.analyticsOutbox.enqueue(tx, 'seat.unassigned.v1', {
+            eventName: 'SeatUnassigned',
+            aggregateId: s.id,
+            aggregateType: 'Seat',
+            subjectId: s.guestId ?? undefined,
+            properties: {
+              seatId: s.id,
+              eventId: seat.eventId,
+              reason: 'REASSIGNED',
+            },
+          });
         }
       }
 
@@ -252,6 +265,21 @@ export class SeatWriteService {
           data: {},
         },
       });
+      await this.analyticsOutbox.enqueue(
+        tx,
+        hasAssignment ? 'seat.assigned.v1' : 'seat.unassigned.v1',
+        {
+          eventName: hasAssignment ? 'SeatAssigned' : 'SeatUnassigned',
+          aggregateId: seat.id,
+          aggregateType: 'Seat',
+          subjectId: guestId,
+          properties: {
+            seatId: seat.id,
+            eventId: seat.eventId,
+            hasInvitation: Boolean(invitationId),
+          },
+        },
+      );
 
       // ---------------------------------------------------------
       // 3) Layout / Audit Log
@@ -345,6 +373,17 @@ export class SeatWriteService {
             data: {},
           },
         });
+        await this.analyticsOutbox.enqueue(tx, 'seat.assigned.v1', {
+          eventName: 'SeatAssigned',
+          aggregateId: result.id,
+          aggregateType: 'Seat',
+          subjectId: guestId,
+          properties: {
+            seatId: result.id,
+            eventId,
+            hasInvitation: Boolean(invitationId),
+          },
+        });
         return result;
       });
 
@@ -376,24 +415,37 @@ export class SeatWriteService {
       return;
     }
 
-    const updated = await this.prisma.seat.update({
-      where: { id: seatId },
-      data: {
-        guestId: null,
-        invitationId: null,
-        status: 'AVAILABLE',
-        note: null,
-      },
-    });
-
-    await this.prisma.seatAssignmentLog.create({
-      data: {
-        eventId: seat.eventId,
-        seatId: seat.id,
-        guestId: null,
-        action: 'UNASSIGNED',
-        data: {},
-      },
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const result = await tx.seat.update({
+        where: { id: seatId },
+        data: {
+          guestId: null,
+          invitationId: null,
+          status: 'AVAILABLE',
+          note: null,
+        },
+      });
+      await tx.seatAssignmentLog.create({
+        data: {
+          eventId: seat.eventId,
+          seatId: seat.id,
+          guestId: seat.guestId,
+          invitationId: seat.invitationId,
+          action: 'UNASSIGNED',
+          data: {},
+        },
+      });
+      await this.analyticsOutbox.enqueue(tx, 'seat.unassigned.v1', {
+        eventName: 'SeatUnassigned',
+        aggregateId: seat.id,
+        aggregateType: 'Seat',
+        subjectId: seat.guestId ?? undefined,
+        properties: {
+          seatId: seat.id,
+          eventId: seat.eventId,
+        },
+      });
+      return result;
     });
 
     await this.layoutWriteService.logChange({

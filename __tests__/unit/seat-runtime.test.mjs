@@ -67,11 +67,13 @@ test('automatic assignment stays within the event and claims with compare-and-se
             },
           },
           seatAssignmentLog: { async create() {} },
+          analyticsOutbox: { async create() {} },
         });
       },
     },
     logger,
     { async logChange() {} },
+    { async enqueue() {} },
   );
 
   const result = await service.assignSeatToGuest({
@@ -106,6 +108,7 @@ test('assignment races fail with canonical diagnostics', async () => {
       },
     },
     logger,
+    {},
     {},
   );
 

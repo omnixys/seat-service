@@ -61,7 +61,8 @@ export const ModelName = {
   EventAccessProjection: 'EventAccessProjection',
   EventSettingsProjection: 'EventSettingsProjection',
   InvitationProjection: 'InvitationProjection',
-  SeatPresenceProjection: 'SeatPresenceProjection'
+  SeatPresenceProjection: 'SeatPresenceProjection',
+  AnalyticsOutbox: 'AnalyticsOutbox'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -252,6 +253,26 @@ export const SeatPresenceProjectionScalarFieldEnum = {
 } as const
 
 export type SeatPresenceProjectionScalarFieldEnum = (typeof SeatPresenceProjectionScalarFieldEnum)[keyof typeof SeatPresenceProjectionScalarFieldEnum]
+
+
+export const AnalyticsOutboxScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  topic: 'topic',
+  payload: 'payload',
+  correlationId: 'correlationId',
+  actorId: 'actorId',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  lockedAt: 'lockedAt',
+  lockedBy: 'lockedBy',
+  publishedAt: 'publishedAt',
+  deadLetteredAt: 'deadLetteredAt',
+  lastError: 'lastError',
+  createdAt: 'createdAt'
+} as const
+
+export type AnalyticsOutboxScalarFieldEnum = (typeof AnalyticsOutboxScalarFieldEnum)[keyof typeof AnalyticsOutboxScalarFieldEnum]
 
 
 export const SortOrder = {

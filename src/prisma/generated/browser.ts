@@ -80,3 +80,8 @@ export type InvitationProjection = Prisma.InvitationProjectionModel
  * ----------------------------------------------------------------------
  */
 export type SeatPresenceProjection = Prisma.SeatPresenceProjectionModel
+/**
+ * Model AnalyticsOutbox
+ * 
+ */
+export type AnalyticsOutbox = Prisma.AnalyticsOutboxModel
