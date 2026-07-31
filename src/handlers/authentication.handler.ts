@@ -19,15 +19,15 @@ import { env } from '../config/env.js';
 import { SeatVerificationTokenException } from '../seat/errors/seat-domain.error.js';
 import { SeatWriteService } from '../seat/services/seat-write.service.js';
 import { Injectable } from '@nestjs/common';
-import { ValkeyKey, ValkeyService } from '@omnixys/cache';
-import { ContextAccessor } from '@omnixys/context';
+import { ValkeyKey, ValkeyService } from '@omnixys/cache-ts';
+import { ContextAccessor } from '@omnixys/context-ts';
 import type {
   CreateUserWithInvitationIdDTO,
   GuestSeatKey,
   GuestSignUpTokenPayload,
   GuestTicketKey,
   UserIdDTO,
-} from '@omnixys/contracts';
+} from '@omnixys/contracts-ts';
 import {
   KafkaEvent,
   KafkaEventHandler,
@@ -36,10 +36,10 @@ import {
   KafkaProducerService,
   KAFKA_HEADERS,
   type EventType,
-} from '@omnixys/kafka';
-import { OmnixysLogger } from '@omnixys/logger';
-import { TraceRunner } from '@omnixys/observability';
-import { EncryptionService } from '@omnixys/security';
+} from '@omnixys/kafka-ts';
+import { OmnixysLogger } from '@omnixys/logger-ts';
+import { TraceRunner } from '@omnixys/observability-ts';
+import { EncryptionService } from '@omnixys/security-ts';
 
 const { SERVICE } = env;
 
@@ -177,7 +177,7 @@ export class AuthenticationHandler {
     return {
       actorId: context?.principal?.actorId ?? actorId,
       tenantId:
-        context?.tenant?.tenantId ?? context?.principal?.tenantId ?? 'omnixys',
+        context?.tenant?.tenantId ?? context?.principal?.tenantId ?? env.DEFAULT_TENANT_ID,
       service: SERVICE,
       operation,
       version: '1',
