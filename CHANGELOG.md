@@ -3,6 +3,8 @@
 All notable changes in this project will be documented in this file.
 
 
+## [3.3.0](https://github.com/omnixys/seat-service/compare/v3.2.0...v3.3.0) (2026-08-03)
+
 ## [3.2.0](https://github.com/omnixys/seat-service/compare/v3.1.0...v3.2.0) (2026-07-28)
 
 ## [3.1.0](https://github.com/omnixys/seat-service/compare/v3.0.0...v3.1.0) (2026-07-24)
