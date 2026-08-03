@@ -9,7 +9,7 @@ import { GuestEventSeatInput } from '../models/inputs/guest-event-seat.input.js'
 import { SeatAssignmentLogMapper } from '../models/mappers/seat-assignment-log.mapper.js';
 import { SeatMapper } from '../models/mappers/seat.mapper.js';
 import { Injectable } from '@nestjs/common';
-import { OmnixysLogger } from '@omnixys/logger';
+import { OmnixysLogger } from '@omnixys/logger-ts';
 
 @Injectable()
 export class SeatReadService {

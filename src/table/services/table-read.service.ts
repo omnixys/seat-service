@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { SeatingEntityNotFoundException } from '../../seat/errors/seat-domain.error.js';
 import { TableMapper } from '../models/mappers/table.mapper.js';
 import { Injectable } from '@nestjs/common';
-import { OmnixysLogger } from '@omnixys/logger';
+import { OmnixysLogger } from '@omnixys/logger-ts';
 
 @Injectable()
 export class TableReadService {

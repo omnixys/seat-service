@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-import { CookieAuthGuard } from '@omnixys/security';
+import { CookieAuthGuard } from '@omnixys/security-ts';
 
 import { SectionPayload } from '../models/payloads/section.payload.js';
 import { SectionReadService } from '../services/section-read.service.js';

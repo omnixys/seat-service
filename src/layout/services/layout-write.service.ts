@@ -10,7 +10,7 @@ import {
   SeatNotFoundException,
   SeatingEntityNotFoundException,
 } from '../../seat/errors/seat-domain.error.js';
-import type { CreateSeatDTO } from '@omnixys/contracts';
+import type { CreateSeatDTO } from '@omnixys/contracts-ts';
 
 import { AutoGenerateSeatMapInput } from '../models/inputs/auto-generate-seat-map.input.js';
 import {
@@ -47,8 +47,8 @@ import { nextOrder } from '../../utils/auto-order.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
 import { CloneSectionInput } from '../models/inputs/clone-section.input.js';
 import { DuplicateTableInput } from '../models/inputs/duplicate-Table-input.js';
-import { OmnixysLogger } from '@omnixys/logger';
-import { TraceRunner } from '@omnixys/observability';
+import { OmnixysLogger } from '@omnixys/logger-ts';
+import { TraceRunner } from '@omnixys/observability-ts';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 import jsonpatch from 'fast-json-patch';
 

@@ -6,7 +6,7 @@ import { SectionMapper } from '../../section/models/mappers/section.mapper.js';
 import { LayoutChangeLogMapper } from '../models/mappers/layout-change-log.mapper.js';
 import { LayoutVersionMapper } from '../models/mappers/layout-version.mapper.js';
 import { Injectable } from '@nestjs/common';
-import { OmnixysLogger } from '@omnixys/logger';
+import { OmnixysLogger } from '@omnixys/logger-ts';
 
 @Injectable()
 export class LayoutReadService {

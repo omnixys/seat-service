@@ -20,7 +20,7 @@ import { CreateTableInput } from '../models/inputs/create-table.input.js';
 import { RenameTableInput } from '../models/inputs/rename-table.input.js';
 import { UpdateTableInput } from '../models/inputs/update-table.input.js';
 import { Injectable } from '@nestjs/common';
-import { OmnixysLogger } from '@omnixys/logger';
+import { OmnixysLogger } from '@omnixys/logger-ts';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
 @Injectable()

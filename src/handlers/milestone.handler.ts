@@ -5,15 +5,15 @@
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { Injectable } from '@nestjs/common';
-import type { EventMilestoneRecordedDTO } from '@omnixys/contracts';
+import type { EventMilestoneRecordedDTO } from '@omnixys/contracts-ts';
 import {
   KafkaEvent,
   KafkaEventHandler,
   KafkaTopics,
   type IKafkaEventContext,
-} from '@omnixys/kafka';
-import { OmnixysLogger } from '@omnixys/logger';
-import { TraceRunner } from '@omnixys/observability';
+} from '@omnixys/kafka-ts';
+import { OmnixysLogger } from '@omnixys/logger-ts';
+import { TraceRunner } from '@omnixys/observability-ts';
 
 @KafkaEventHandler('seat')
 @Injectable()

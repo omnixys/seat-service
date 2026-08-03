@@ -2,7 +2,7 @@ import { TablePayload } from '../models/payloads/table.payload.js';
 import { TableReadService } from '../services/table-read.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-import { CookieAuthGuard } from '@omnixys/security';
+import { CookieAuthGuard } from '@omnixys/security-ts';
 
 @Resolver()
 @UseGuards(CookieAuthGuard)

@@ -17,16 +17,16 @@
 
 import { LayoutWriteService } from '../layout/services/layout-write.service.js';
 import { Injectable } from '@nestjs/common';
-import type { CreateSeatDTO, EventIdsDTO } from '@omnixys/contracts';
+import type { CreateSeatDTO, EventIdsDTO } from '@omnixys/contracts-ts';
 import {
   KafkaEvent,
   KafkaEventHandler,
   KafkaTopics,
   IKafkaEventContext,
   KAFKA_HEADERS,
-} from '@omnixys/kafka';
-import { OmnixysLogger } from '@omnixys/logger';
-import { TraceRunner } from '@omnixys/observability';
+} from '@omnixys/kafka-ts';
+import { OmnixysLogger } from '@omnixys/logger-ts';
+import { TraceRunner } from '@omnixys/observability-ts';
 
 /**
  * Kafka event handler responsible for useristrative commands such as

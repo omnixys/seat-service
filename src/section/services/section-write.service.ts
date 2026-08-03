@@ -20,7 +20,7 @@ import { RenameSectionInput } from '../models/inputs/rename-section.input.js';
 import { UpdateSectionInput } from '../models/inputs/update-section.input.js';
 import { RenameConflict, RenamePayload } from '../models/payloads/rename.payload.js';
 import { Injectable } from '@nestjs/common';
-import { OmnixysLogger } from '@omnixys/logger';
+import { OmnixysLogger } from '@omnixys/logger-ts';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
 @Injectable()

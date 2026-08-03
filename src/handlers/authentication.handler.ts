@@ -41,7 +41,7 @@ import { OmnixysLogger } from '@omnixys/logger-ts';
 import { TraceRunner } from '@omnixys/observability-ts';
 import { EncryptionService } from '@omnixys/security-ts';
 
-const { SERVICE } = env;
+const { SERVICE, DEFAULT_TENANT_ID } = env;
 
 interface KafkaMetadata {
   actorId: string;
@@ -177,7 +177,9 @@ export class AuthenticationHandler {
     return {
       actorId: context?.principal?.actorId ?? actorId,
       tenantId:
-        context?.tenant?.tenantId ?? context?.principal?.tenantId ?? env.DEFAULT_TENANT_ID,
+        context?.tenant?.tenantId ??
+        context?.principal?.tenantId ??
+        DEFAULT_TENANT_ID,
       service: SERVICE,
       operation,
       version: '1',

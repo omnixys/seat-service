@@ -7,8 +7,8 @@
  * - Applies auto-order (only-if-missing)
  * ------------------------------------------------------------------------- */
 
-import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
 import { AnalyticsOutboxService } from '../../analytics/analytics-outbox.service.js';
+import { LayoutWriteService } from '../../layout/services/layout-write.service.js';
 import { LayoutChangeType, SeatStatus, type Prisma } from '../../prisma/generated/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
@@ -22,8 +22,8 @@ import { AssignSeatInput } from '../models/inputs/assign-seat.input.js';
 import { CreateSeatInput } from '../models/inputs/create-seat.input.js';
 import { UpdateSeatInput } from '../models/inputs/update-seat.input.js';
 import { Injectable } from '@nestjs/common';
-import { OmnixysLogger } from '@omnixys/logger';
-import { TraceRunner } from '@omnixys/observability';
+import { OmnixysLogger } from '@omnixys/logger-ts';
+import { TraceRunner } from '@omnixys/observability-ts';
 import { InputJsonValue } from '@prisma/client/runtime/client';
 
 @Injectable()

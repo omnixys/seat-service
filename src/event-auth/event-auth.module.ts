@@ -5,7 +5,7 @@ import {
   EventPermissionResolver,
   EventRoleGuard,
   EventRoleResolver,
-} from '@omnixys/security';
+} from '@omnixys/security-ts';
 
 @Module({
   providers: [

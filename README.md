@@ -31,7 +31,7 @@ Layout / Section / Table / Seat services ---> PostgreSQL
 Kafka: Authentication -> Seat -> Ticket
 ```
 
-The service consumes canonical request metadata from `@omnixys/context`. Structured logs, errors, traces, and Kafka headers therefore share request, correlation, actor, tenant, and trace identifiers.
+The service consumes canonical request metadata from `@omnixys/context-ts`. Structured logs, errors, traces, and Kafka headers therefore share request, correlation, actor, tenant, and trace identifiers.
 
 ## Guest assignment flow
 

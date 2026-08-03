@@ -8,7 +8,7 @@
 
 import type { SeatShape } from '../../prisma/generated/client.js';
 import { SeatType } from '../../prisma/generated/client.js';
-import { TraceRunner } from '@omnixys/observability';
+import { TraceRunner } from '@omnixys/observability-ts';
 
 /**
  * GeometryEngine v5 — Hierarchical Coordinate System

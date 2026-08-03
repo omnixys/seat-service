@@ -7,7 +7,7 @@ import { SeatPayload } from '../models/payloads/seat.payload.js';
 import { SeatReadService } from '../services/seat-read.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
+import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts-ts';
 import {
   EventPermissionGuard,
   EventPermissionResolver,
@@ -16,12 +16,12 @@ import {
   RoleGuard,
   Roles,
   isOwnerOrEventAdmin,
-} from '@omnixys/security';
+} from '@omnixys/security-ts';
 import {
   CookieAuthGuard,
   CurrentUser,
   type CurrentUserData,
-} from '@omnixys/security';
+} from '@omnixys/security-ts';
 
 @Resolver()
 @UseGuards(CookieAuthGuard)

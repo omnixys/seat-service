@@ -11,13 +11,7 @@ import { SeatWriteService } from './services/seat-write.service.js';
 import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [
-    PrismaModule,
-    ScalarsModule,
-    EventAuthModule,
-    LayoutModule,
-    AnalyticsModule,
-  ],
+  imports: [PrismaModule, ScalarsModule, EventAuthModule, LayoutModule, AnalyticsModule],
   providers: [
     SeatQueryResolver,
     SeatMutationResolver,

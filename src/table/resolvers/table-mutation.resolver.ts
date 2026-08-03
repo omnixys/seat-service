@@ -11,8 +11,8 @@ import { TablePayload } from '../models/payloads/table.payload.js';
 import { TableWriteService } from '../services/table-write.service.js';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts';
-import { OmnixysLogger } from '@omnixys/logger';
+import { EventPermissionKey, RealmRoleType } from '@omnixys/contracts-ts';
+import { OmnixysLogger } from '@omnixys/logger-ts';
 import {
   CookieAuthGuard,
   CurrentUser,
@@ -21,7 +21,7 @@ import {
   EventPermissions,
   RoleGuard,
   Roles,
-} from '@omnixys/security';
+} from '@omnixys/security-ts';
 
 @Resolver()
 @UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
