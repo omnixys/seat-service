@@ -58,7 +58,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [25.8.2]
+        node-version: [24.10.0]
 
     steps:
       - name: 🧾 Checkout Repository
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [25.8.2]
+        node-version: [24.10.0]
 
     steps:
       - uses: actions/checkout@v6
@@ -204,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [25.8.2]
+        node-version: [24.10.0]
 
     steps:
       - name: 🧾 Checkout repository
@@ -296,7 +296,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [25.8.2]
+        node-version: [24.10.0]
 
     steps:
       - name: 🧾 Checkout repository

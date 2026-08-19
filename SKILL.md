@@ -9,7 +9,7 @@
 
 - Kind: Service
 - Package: `seat-service` (version: 3.3.0)
-- Runtime: Node >=25.8.2 (pnpm >=10.33.0)
+- Runtime: Node >=24.10.0 (pnpm >=10.33.0)
 - Description: Omnixys Seat Service – seats, sections, tables, layout, event-auth, analytics.
 - Architecture: src/adapter, admin, analytics, config, core, event-auth, handlers, layout, prisma, seat, section, security, table, utils
 - Database: PostgreSQL via Prisma (prisma/schema.prisma); Migrations: Prisma Migrate (prisma:migrate / generate / validate)
