@@ -1,6 +1,6 @@
 {
   "name": "seat-service",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "Omnixys Seat Service",
   "author": {
     "name": "Caleb Gyamfi",
@@ -142,8 +142,8 @@
     "typescript-eslint": "^8.62.0"
   },
   "pnpm": {
-  "overrides": {
-    "fastify": "5.8.5"
+    "overrides": {
+      "fastify": "5.8.5"
+    }
   }
-}
 }
