@@ -3,6 +3,14 @@
 All notable changes in this project will be documented in this file.
 
 
+## [3.3.6](https://github.com/omnixys/seat-service/compare/v3.3.5...v3.3.6) (2026-08-23)
+
+### Logger
+
+* **Logger:** fix terminal logger ([](https://github.com/omnixys/seat-service/commit/0bffa6bb0f82aeb7320efda8ab2919bc244b79a6))
+* **Logger:** fix terminal logger ([](https://github.com/omnixys/seat-service/commit/bb394113e665b097dd0b8091c1de930d30f6e350))
+* **Logger:** fix terminal logger ([](https://github.com/omnixys/seat-service/commit/e3e838ed167005f679cc65afa554d83ab40d212e))
+
 ## [3.3.5](https://github.com/omnixys/seat-service/compare/v3.3.4...v3.3.5) (2026-08-23)
 
 ## [3.3.4](https://github.com/omnixys/seat-service/compare/v3.3.3...v3.3.4) (2026-08-19)
