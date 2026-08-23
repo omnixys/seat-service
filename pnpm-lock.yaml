@@ -136,8 +136,8 @@ importers:
         version: 7.8.2
     devDependencies:
       '@commitlint/config-conventional':
-        specifier: latest
-        version: 21.2.2
+        specifier: ^20.5.3
+        version: 20.5.3
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@9.39.5(jiti@2.7.0))
@@ -576,17 +576,13 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@commitlint/config-conventional@21.2.2':
-    resolution: {integrity: sha512-NxA37SZviusFUEYOQZ5hNnZ1h7O/KiemPkxjOlpzKJNnWxThiwc6/SaZhaPa8fyLvfRBAywhQhJJk8XESHWlpQ==}
-    engines: {node: '>=22.12.0'}
+  '@commitlint/config-conventional@20.5.3':
+    resolution: {integrity: sha512-j34Qqeaa152chJgz2ysyk0BCpHenJn1lV0Rx0VXf8k3ccQcED+48EZrzMvo9jLmJUyBrrBwvu89I+2er4gW7QQ==}
+    engines: {node: '>=v18'}
 
-  '@commitlint/types@21.2.0':
-    resolution: {integrity: sha512-7zVFCDB2reMvJH5dmbKnOQPjZEvjdJTH8jc0U/PIPU1r3/+vf5pD1HlfitV2MWsWXrvu7u39iY1lyLUPOaN0Gw==}
-    engines: {node: '>=22.12.0'}
-
-  '@conventional-changelog/template@1.4.0':
-    resolution: {integrity: sha512-aalGyl7dbB5PArRebDIX43ZvBlXrYm9uWzGJ26t+4SzJVPsOuvfILGGbw5X4yX7i50YEmJ8zvbiWnqH/AAnZqg==}
-    engines: {node: '>=22'}
+  '@commitlint/types@20.5.0':
+    resolution: {integrity: sha512-ZJoS8oSq2CAZEpc/YI9SulLrdiIyXeHb/OGqGrkUP6Q7YV+0ouNAa7GjqRdXeQPncHQIDz/jbCTlHScvYvO/gA==}
+    engines: {node: '>=v18'}
 
   '@electric-sql/pglite-socket@0.1.3':
     resolution: {integrity: sha512-LAciWM0M1dCL8hlsxu2venbVZcdxema0BtDfpWYVqr+Y468UADw0pFWidhKw1M8sfJ8rdLT71tjMmnirf/IZRQ==}
@@ -1684,6 +1680,15 @@ packages:
       '@omnixys/context-ts': ^3.1.3
       '@omnixys/contracts-ts': ^3.3.0
       fastify: 5.8.5
+    peerDependenciesMeta:
+      '@nestjs/common':
+        optional: true
+      '@nestjs/core':
+        optional: true
+      '@nestjs/graphql':
+        optional: true
+      fastify:
+        optional: true
 
   '@omnixys/security-ts@4.0.4':
     resolution: {integrity: sha512-uwgUjrgQLhHuZQC+MqduKnpGqt1yQXKbPRZ+Y4SBv7zL2pzdGCpC8rcfVdewIYvIGqFar0P7h0WOebDAUXkjGg==, tarball: https://npm.pkg.github.com/download/@omnixys/security-ts/4.0.4/7f9383c490ba11b8c6b23b62fc96dc4a5d48a3e6}
@@ -2518,10 +2523,6 @@ packages:
     resolution: {integrity: sha512-KxXvfapcixpz6rVEB6HPjOUZT22yN6v0vI0urQSk1L8MlEWPDFCZkhw2xmkyoTGYeFw7tWTZd7e3lVzRZRN/EA==}
     engines: {node: '>=18'}
 
-  '@simple-libs/stream-utils@2.0.0':
-    resolution: {integrity: sha512-fCTuZK4QBa+39Oz9l4OGfJfz+GpwCp3AqO7Zch3to99xHPgstVsRFpeQ8LNd2o1Gv8raL2mCFwiaHh7bFSp5DQ==}
-    engines: {node: '>=22'}
-
   '@sinclair/typebox@0.27.12':
     resolution: {integrity: sha512-hhyNJ+nbR6ZR7pToHvllEFun9TL0sbL+tk/ON75lo+Xas054uez98qRbsuNt7MBCyZKK4+8Yli/OAGZhmfBZ/g==}
 
@@ -3189,10 +3190,6 @@ packages:
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
 
-  argue-cli@3.1.0:
-    resolution: {integrity: sha512-DhBpBfXL4SS2uC0N922MMajKR3CdrTG0u2or1PNYgXMsrSzViJrbtvT0nCLlLGUI0plam/ZZCs7aAauHtW9thw==}
-    engines: {node: '>=22'}
-
   argv-formatter@1.0.0:
     resolution: {integrity: sha512-F2+Hkm9xFaRg+GkaNnbwXNDV5O6pnCFEmqyhvfC/Ic5LbgOWjJh3L+mN/s91rxVL3znE7DYVpW0GJFT+4YBgWw==}
 
@@ -3673,9 +3670,9 @@ packages:
     resolution: {integrity: sha512-6gfI3otXK5Ph5DfCOI1dblr+kN3FAm5a97hYoQkqNZxOaYa5WKfXH+AnpsmS+iUH2mgVC2Cg2Qw9m5OKcmNrIg==}
     engines: {node: '>=18'}
 
-  conventional-changelog-conventionalcommits@10.4.0:
-    resolution: {integrity: sha512-Rriac6ZrAlVm6cy9Bz4NSp+WMHpwNXoPIYex+HjCgduAVUSbnew29DQjQw0C4g9u3HtSYzGiGY+pdBXAZo+4aA==}
-    engines: {node: '>=22'}
+  conventional-changelog-conventionalcommits@9.3.1:
+    resolution: {integrity: sha512-dTYtpIacRpcZgrvBYvBfArMmK2xvIpv2TaxM0/ZI5CBtNUzvF2x0t15HsbRABWprS6UPmvj+PzHVjSx4qAVKyw==}
+    engines: {node: '>=18'}
 
   conventional-changelog-writer@8.4.0:
     resolution: {integrity: sha512-HHBFkk1EECxxmCi4CTu091iuDpQv5/OavuCUAuZmrkWpmYfyD816nom1CvtfXJ/uYfAAjavgHvXHX291tSLK8g==}
@@ -3689,11 +3686,6 @@ packages:
   conventional-commits-parser@6.4.0:
     resolution: {integrity: sha512-tvRg7FIBNlyPzjdG8wWRlPHQJJHI7DylhtRGeU9Lq+JuoPh5BKpPRX83ZdLrvXuOSu5Eo/e7SzOQhU4Hd2Miuw==}
     engines: {node: '>=18'}
-    hasBin: true
-
-  conventional-commits-parser@7.1.2:
-    resolution: {integrity: sha512-O+x4N2yH+ijvqWlIyTHsXTAP+algNWgGbjY2duCe8w2vUMvUB95cLRslCPfTMQyLAKlet3bhZTdu6ozn4M+QJQ==}
-    engines: {node: '>=22'}
     hasBin: true
 
   convert-hrtime@5.0.0:
@@ -7656,17 +7648,15 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@commitlint/config-conventional@21.2.2':
+  '@commitlint/config-conventional@20.5.3':
     dependencies:
-      '@commitlint/types': 21.2.0
-      conventional-changelog-conventionalcommits: 10.4.0
+      '@commitlint/types': 20.5.0
+      conventional-changelog-conventionalcommits: 9.3.1
 
-  '@commitlint/types@21.2.0':
+  '@commitlint/types@20.5.0':
     dependencies:
-      conventional-commits-parser: 7.1.2
+      conventional-commits-parser: 6.4.0
       picocolors: 1.1.1
-
-  '@conventional-changelog/template@1.4.0': {}
 
   '@electric-sql/pglite-socket@0.1.3(@electric-sql/pglite@0.4.3)':
     dependencies:
@@ -8745,9 +8735,6 @@ snapshots:
 
   '@omnixys/observability-ts@3.3.6(b4aea2be407752f276732fdda65b0cd2)':
     dependencies:
-      '@nestjs/common': 11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core': 11.2.1(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/microservices@11.2.1)(@nestjs/platform-express@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/graphql': 13.4.5(@apollo/subgraph@2.14.4(graphql@16.14.2))(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(class-transformer@0.5.1)(class-validator@0.14.4)(graphql@16.14.2)(reflect-metadata@0.2.2)(ts-morph@27.0.2)
       '@omnixys/context-ts': 3.1.3(@fastify/cookie@11.1.2)(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(@nestjs/graphql@13.4.5(@apollo/subgraph@2.14.4(graphql@16.14.2))(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(class-transformer@0.5.1)(class-validator@0.14.4)(graphql@16.14.2)(reflect-metadata@0.2.2)(ts-morph@27.0.2))(@omnixys/contracts-ts@3.3.0(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2)))(fastify@5.8.5)(graphql@16.14.2)(rxjs@7.8.2)
       '@omnixys/contracts-ts': 3.3.0(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@opentelemetry/api': 1.9.1
@@ -8770,9 +8757,13 @@ snapshots:
       '@opentelemetry/sdk-trace-base': 2.10.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/sdk-trace-web': 2.10.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.43.0
-      fastify: 5.8.5
       rxjs: 7.8.2
       web-vitals: 4.2.4
+    optionalDependencies:
+      '@nestjs/common': 11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.2.1(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/microservices@11.2.1)(@nestjs/platform-express@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/graphql': 13.4.5(@apollo/subgraph@2.14.4(graphql@16.14.2))(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(class-transformer@0.5.1)(class-validator@0.14.4)(graphql@16.14.2)(reflect-metadata@0.2.2)(ts-morph@27.0.2)
+      fastify: 5.8.5
     transitivePeerDependencies:
       - '@opentelemetry/core'
       - supports-color
@@ -9939,8 +9930,6 @@ snapshots:
 
   '@simple-libs/stream-utils@1.2.0': {}
 
-  '@simple-libs/stream-utils@2.0.0': {}
-
   '@sinclair/typebox@0.27.12': {}
 
   '@sindresorhus/is@4.6.0': {}
@@ -10781,8 +10770,6 @@ snapshots:
 
   argparse@2.0.1: {}
 
-  argue-cli@3.1.0: {}
-
   argv-formatter@1.0.0: {}
 
   array-differ@3.0.0: {}
@@ -11275,9 +11262,9 @@ snapshots:
     dependencies:
       compare-func: 2.0.0
 
-  conventional-changelog-conventionalcommits@10.4.0:
+  conventional-changelog-conventionalcommits@9.3.1:
     dependencies:
-      '@conventional-changelog/template': 1.4.0
+      compare-func: 2.0.0
 
   conventional-changelog-writer@8.4.0:
     dependencies:
@@ -11293,11 +11280,6 @@ snapshots:
     dependencies:
       '@simple-libs/stream-utils': 1.2.0
       meow: 13.2.0
-
-  conventional-commits-parser@7.1.2:
-    dependencies:
-      '@simple-libs/stream-utils': 2.0.0
-      argue-cli: 3.1.0
 
   convert-hrtime@5.0.0: {}
 
