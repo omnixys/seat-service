@@ -3,6 +3,16 @@
 All notable changes in this project will be documented in this file.
 
 
+## [3.4.0](https://github.com/omnixys/seat-service/compare/v3.3.6...v3.4.0) (2026-08-26)
+
+### Deps
+
+* **Deps:** update omnixys ts packages ([](https://github.com/omnixys/seat-service/commit/5f0501f8b16406905840528b016ebe509b1474e9))
+
+### Otel
+
+* **Otel:** add otel logs ([](https://github.com/omnixys/seat-service/commit/b5167360aded7384680f7590535e02b4838fa5fa))
+
 ## [3.3.6](https://github.com/omnixys/seat-service/compare/v3.3.5...v3.3.6) (2026-08-23)
 
 ### Logger
