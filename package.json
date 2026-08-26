@@ -70,12 +70,12 @@
     "@fastify/rate-limit": "^10.3.0",
     "@nestjs/apollo": "^13.4.5",
     "@nestjs/axios": "^4.0.1",
-    "@nestjs/common": "^11.2.1",
+    "@nestjs/common": "^11.2.3",
     "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.2.1",
+    "@nestjs/core": "^11.2.3",
     "@nestjs/graphql": "^13.4.5",
-    "@nestjs/platform-express": "^11.2.1",
-    "@nestjs/platform-fastify": "^11.2.1",
+    "@nestjs/platform-express": "^11.2.3",
+    "@nestjs/platform-fastify": "^11.2.3",
     "@nestjs/terminus": "^11.1.1",
     "@omnixys/cache-ts": "^3.3.0",
     "@omnixys/context-ts": "^3.2.1",
@@ -86,7 +86,7 @@
     "@omnixys/kafka-ts": "^3.3.0",
     "@omnixys/logger-ts": "^3.2.6",
     "@omnixys/observability-ts": "^3.4.1",
-    "@omnixys/security-ts": "^4.1.0",
+    "@omnixys/security-ts": "^4.1.2",
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
@@ -140,10 +140,5 @@
     "tsx": "^4.23.12",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.67.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "fastify": "5.8.5"
-    }
   }
 }
