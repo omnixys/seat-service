@@ -3,6 +3,16 @@
 All notable changes in this project will be documented in this file.
 
 
+## [3.4.3](https://github.com/omnixys/seat-service/compare/v3.4.2...v3.4.3) (2026-08-26)
+
+### Build
+
+* **Build:** fix build errors ([](https://github.com/omnixys/seat-service/commit/18fb31b38ad5d2e96fbe7954553cbe75149c948a))
+
+### Other
+
+* **Other:** Merge branch 'main' of https://github.com/omnixys/seat-service ([](https://github.com/omnixys/seat-service/commit/c9efb2d790ef826fd3657f727d516b2dfecf78f7))
+
 ## [3.4.2](https://github.com/omnixys/seat-service/compare/v3.4.1...v3.4.2) (2026-08-26)
 
 ### Build
