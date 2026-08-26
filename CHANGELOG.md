@@ -3,6 +3,13 @@
 All notable changes in this project will be documented in this file.
 
 
+## [3.4.1](https://github.com/omnixys/seat-service/compare/v3.4.0...v3.4.1) (2026-08-26)
+
+### Deps
+
+* **Deps:** update logger to 3.2.6 ([](https://github.com/omnixys/seat-service/commit/96b0789327c6718a3bd86e41acfa341f181375e0))
+* **Deps:** update shared TypeScript packages ([](https://github.com/omnixys/seat-service/commit/9f8ec54d5c4d857ff7596297e54ca0d63ad02026))
+
 ## [3.4.0](https://github.com/omnixys/seat-service/compare/v3.3.6...v3.4.0) (2026-08-26)
 
 ### Deps
