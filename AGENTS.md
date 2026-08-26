@@ -10,7 +10,7 @@
 Omnixys Seat Service – seats, sections, tables, layout, event-auth, analytics.
 
 - Repository path: `services/seat` (relative to the Omnixys root)
-- Package: `seat-service` (version: 3.3.0)
+- Package: `seat-service` (version: 3.4.0)
 - Runtime: Node >=24.10.0 (pnpm >=10.33.0)
 - Kind: Service
 
