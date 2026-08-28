@@ -3,6 +3,12 @@
 All notable changes in this project will be documented in this file.
 
 
+## [3.4.5](https://github.com/omnixys/seat-service/compare/v3.4.4...v3.4.5) (2026-08-28)
+
+### Deps
+
+* **Deps:** update contracts-ts ([](https://github.com/omnixys/seat-service/commit/5c9ed538847798804be24a66f94bd51312421a91))
+
 ## [3.4.4](https://github.com/omnixys/seat-service/compare/v3.4.3...v3.4.4) (2026-08-26)
 
 ### Build
