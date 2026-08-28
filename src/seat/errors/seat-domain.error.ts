@@ -49,6 +49,15 @@ export class SeatUnavailableException extends SeatDomainException {
   }
 }
 
+export class SeatHolderConflictException extends SeatDomainException {
+  constructor() {
+    super(
+      'SEAT_HOLDER_CONFLICT',
+      'A seat can be assigned to either a guest or an invitation, but not both',
+    );
+  }
+}
+
 export class SeatAssignmentNotFoundException extends SeatDomainException {
   constructor(eventId: string, guestId: string) {
     super('SEAT_ASSIGNMENT_NOT_FOUND', 'Seat assignment was not found', {

@@ -14,6 +14,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { prepareMeta } from '../../utils/meta-defaults.js';
 import {
   SeatEventMismatchException,
+  SeatHolderConflictException,
   SeatNotFoundException,
   SeatUnavailableException,
 } from '../errors/seat-domain.error.js';
@@ -166,6 +167,11 @@ export class SeatWriteService {
    */
   async assignSeat(input: AssignSeatInput, actorId: string) {
     const { seatId, guestId, invitationId, note } = input;
+
+    if (guestId && invitationId) {
+      throw new SeatHolderConflictException();
+    }
+
     this.logger.debug(
       'assignSeat: seatId=%s | guestId=%s | actorId=%s',
       seatId,
@@ -173,7 +179,6 @@ export class SeatWriteService {
       actorId,
     );
 
-    // 👉 Echte semantische Entscheidung
     const hasAssignment = Boolean(guestId || invitationId);
 
     return this.prisma.$transaction(async (tx) => {
@@ -185,17 +190,28 @@ export class SeatWriteService {
         throw new SeatNotFoundException(seatId);
       }
 
+      const previousSubjectId = seat.guestId ?? seat.invitationId;
+      const targetSubjectId = guestId ?? invitationId;
+
+      // Bereits freier Seat + Unassign => No-op
+      if (!hasAssignment && !previousSubjectId) {
+        return seat;
+      }
+
       // ---------------------------------------------------------
-      // 1) Andere Seats freimachen (wegen UNIQUE constraints)
+      // 1) Andere Seats freimachen
       // ---------------------------------------------------------
       if (hasAssignment) {
         const assignmentFilters: Prisma.SeatWhereInput[] = [];
+
         if (guestId) {
           assignmentFilters.push({ guestId });
         }
+
         if (invitationId) {
           assignmentFilters.push({ invitationId });
         }
+
         const conflictingSeats = await tx.seat.findMany({
           where: {
             eventId: seat.eventId,
@@ -205,13 +221,15 @@ export class SeatWriteService {
         });
 
         for (const s of conflictingSeats) {
+          const conflictingSubjectId = s.guestId ?? s.invitationId;
+
           await tx.seat.update({
             where: { id: s.id },
             data: {
               guestId: null,
               invitationId: null,
               note: null,
-              status: 'AVAILABLE',
+              status: SeatStatus.AVAILABLE,
             },
           });
 
@@ -219,8 +237,11 @@ export class SeatWriteService {
             data: {
               eventId: seat.eventId,
               seatId: s.id,
-              guestId,
-              invitationId,
+
+              // Wichtig: vorheriger Holder von s
+              guestId: s.guestId,
+              invitationId: s.invitationId,
+
               action: 'UNASSIGNED',
               data: {
                 reason: 'REASSIGNED',
@@ -228,61 +249,109 @@ export class SeatWriteService {
               },
             },
           });
-          await this.analyticsOutbox.enqueue(tx, 'seat.unassigned.v1', {
-            eventName: 'SeatUnassigned',
-            aggregateId: s.id,
-            aggregateType: 'Seat',
-            subjectId: s.guestId ?? undefined,
-            properties: {
-              seatId: s.id,
-              eventId: seat.eventId,
-              reason: 'REASSIGNED',
-            },
-          });
+
+          if (conflictingSubjectId) {
+            await this.analyticsOutbox.enqueue(tx, 'seat.unassigned.v1', {
+              eventName: 'SeatUnassigned',
+              aggregateId: s.id,
+              aggregateType: 'Seat',
+              subjectId: conflictingSubjectId,
+              properties: {
+                seatId: s.id,
+                eventId: seat.eventId,
+                reason: 'REASSIGNED',
+              },
+            });
+          }
         }
       }
 
       // ---------------------------------------------------------
       // 2) Ziel-Seat aktualisieren
       // ---------------------------------------------------------
-      const updated = await tx.seat.update({
-        where: { id: seat.id },
+      const claimed = await tx.seat.updateMany({
+        where: hasAssignment
+          ? {
+              id: seat.id,
+              eventId: seat.eventId,
+              OR: [
+                {
+                  status: SeatStatus.AVAILABLE,
+                  guestId: null,
+                  invitationId: null,
+                },
+                {
+                  guestId: guestId ?? null,
+                  invitationId: invitationId ?? null,
+                },
+              ],
+            }
+          : {
+              id: seat.id,
+              eventId: seat.eventId,
+            },
         data: {
           guestId: guestId ?? null,
           invitationId: invitationId ?? null,
-          note: note ?? null, // UI only
-          status: hasAssignment ? 'ASSIGNED' : 'AVAILABLE',
+          note: note ?? null,
+          status: hasAssignment ? SeatStatus.ASSIGNED : SeatStatus.AVAILABLE,
         },
       });
 
+      if (claimed.count !== 1) {
+        throw new SeatUnavailableException(seat.eventId, seat.id);
+      }
+
+      const updated = await tx.seat.findUnique({
+        where: { id: seat.id },
+      });
+
+      if (!updated) {
+        throw new SeatNotFoundException(seat.id);
+      }
+
+      // ---------------------------------------------------------
+      // 3) Assignment Log
+      // ---------------------------------------------------------
       await tx.seatAssignmentLog.create({
         data: {
           eventId: seat.eventId,
           seatId: seat.id,
-          guestId,
-          invitationId,
+
+          // Bei Unassign den vorherigen Holder speichern
+          guestId: hasAssignment ? guestId : seat.guestId,
+          invitationId: hasAssignment ? invitationId : seat.invitationId,
+
           action: hasAssignment ? 'ASSIGNED' : 'UNASSIGNED',
           data: {},
         },
       });
-      await this.analyticsOutbox.enqueue(
-        tx,
-        hasAssignment ? 'seat.assigned.v1' : 'seat.unassigned.v1',
-        {
-          eventName: hasAssignment ? 'SeatAssigned' : 'SeatUnassigned',
-          aggregateId: seat.id,
-          aggregateType: 'Seat',
-          subjectId: guestId,
-          properties: {
-            seatId: seat.id,
-            eventId: seat.eventId,
-            hasInvitation: Boolean(invitationId),
-          },
-        },
-      );
 
       // ---------------------------------------------------------
-      // 3) Layout / Audit Log
+      // 4) Analytics
+      // ---------------------------------------------------------
+      const subjectId = hasAssignment ? targetSubjectId : previousSubjectId;
+
+      if (subjectId) {
+        await this.analyticsOutbox.enqueue(
+          tx,
+          hasAssignment ? 'seat.assigned.v1' : 'seat.unassigned.v1',
+          {
+            eventName: hasAssignment ? 'SeatAssigned' : 'SeatUnassigned',
+            aggregateId: seat.id,
+            aggregateType: 'Seat',
+            subjectId,
+            properties: {
+              seatId: seat.id,
+              eventId: seat.eventId,
+              hasInvitation: hasAssignment ? Boolean(invitationId) : Boolean(seat.invitationId),
+            },
+          },
+        );
+      }
+
+      // ---------------------------------------------------------
+      // 5) Layout / Audit Log
       // ---------------------------------------------------------
       await this.layoutWriteService.logChange({
         eventId: seat.eventId,
@@ -406,6 +475,7 @@ export class SeatWriteService {
    */
   async unassignSeat(seatId: string, actorId: string) {
     this.logger.debug('unassignSeat: seatId=%s | actorId=%s', seatId, actorId);
+
     const seat = await this.prisma.seat.findUnique({
       where: { id: seatId },
     });
@@ -415,16 +485,24 @@ export class SeatWriteService {
       return;
     }
 
+    const subjectId = seat.guestId ?? seat.invitationId;
+
+    // Bereits frei → idempotenter No-op
+    if (!subjectId) {
+      return seat;
+    }
+
     const updated = await this.prisma.$transaction(async (tx) => {
       const result = await tx.seat.update({
         where: { id: seatId },
         data: {
           guestId: null,
           invitationId: null,
-          status: 'AVAILABLE',
+          status: SeatStatus.AVAILABLE,
           note: null,
         },
       });
+
       await tx.seatAssignmentLog.create({
         data: {
           eventId: seat.eventId,
@@ -435,23 +513,25 @@ export class SeatWriteService {
           data: {},
         },
       });
+
       await this.analyticsOutbox.enqueue(tx, 'seat.unassigned.v1', {
         eventName: 'SeatUnassigned',
         aggregateId: seat.id,
         aggregateType: 'Seat',
-        subjectId: seat.guestId ?? undefined,
+        subjectId,
         properties: {
           seatId: seat.id,
           eventId: seat.eventId,
         },
       });
+
       return result;
     });
 
     await this.layoutWriteService.logChange({
       eventId: seat.eventId,
       actorId,
-      type: 'SEAT_UNASSIGNED',
+      type: LayoutChangeType.SEAT_UNASSIGNED,
       payload: { seatId },
     });
 

@@ -1,6 +1,7 @@
 import { AuthenticationHandler } from '../../dist/handlers/authentication.handler.js';
 import { SeatStatus } from '../../dist/prisma/generated/client.js';
 import {
+  SeatHolderConflictException,
   SeatUnavailableException,
   SeatVerificationTokenException,
 } from '../../dist/seat/errors/seat-domain.error.js';
@@ -127,6 +128,59 @@ test('assignment races fail with canonical diagnostics', async () => {
       },
     );
   });
+});
+
+test('direct invitation assignment refuses to overwrite a concurrently occupied seat', async () => {
+  const target = seat();
+  const service = new SeatWriteService(
+    {
+      async $transaction(work) {
+        return work({
+          seat: {
+            async findUnique() {
+              return target;
+            },
+            async findMany() {
+              return [];
+            },
+            async updateMany() {
+              return { count: 0 };
+            },
+          },
+        });
+      },
+    },
+    logger,
+    {},
+    {},
+  );
+
+  await assert.rejects(
+    service.assignSeat(
+      {
+        seatId: target.id,
+        invitationId: '00000000-0000-4000-8000-000000000007',
+      },
+      '00000000-0000-4000-8000-000000000006',
+    ),
+    SeatUnavailableException,
+  );
+});
+
+test('direct assignment accepts exactly one holder', async () => {
+  const service = new SeatWriteService({}, logger, {}, {});
+
+  await assert.rejects(
+    service.assignSeat(
+      {
+        seatId: '00000000-0000-4000-8000-000000000001',
+        guestId: '00000000-0000-4000-8000-000000000004',
+        invitationId: '00000000-0000-4000-8000-000000000005',
+      },
+      '00000000-0000-4000-8000-000000000006',
+    ),
+    SeatHolderConflictException,
+  );
 });
 
 test('seat permission resolver prefers access projection over legacy roles', async () => {

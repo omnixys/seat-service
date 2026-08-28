@@ -53,13 +53,14 @@ export class SeatQueryResolver {
     return this.read.getSeatsByTable(tableId);
   }
 
+  // TODO accessView korregieren! gäste dürfen ihre eigenen sitze ansehen können
   @Query(() => SeatPayload, { nullable: true })
   async seat(
     @Args('id', { type: () => ID }) id: string,
-    @CurrentUser() user: CurrentUserData,
+    // @CurrentUser() user: CurrentUserData,
   ): Promise<SeatPayload> {
-    const eventId = await this.resolveEventIdForSeat(id);
-    await this.requireViewSeats(eventId, user.id);
+    // const eventId = await this.resolveEventIdForSeat(id);
+    // await this.requireViewSeats(eventId, user.id);
     return this.read.getSeatById(id);
   }
 
