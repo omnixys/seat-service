@@ -86,7 +86,7 @@ export class AuthenticationHandler {
   @KafkaEvent(KafkaTopics.seat.addGuestId)
   async handleAddGuest(payload: CreateUserWithInvitationIdDTO): Promise<void> {
     return TraceRunner.run('[HANDLER] addGuestId', async () => {
-      const { userId, token, invitationId } = payload;
+      const { userId, token, invitationId, keycloakSub } = payload;
 
       const decrypted = this.encryptionServie.decrypt(token, true);
       const { seatKey } = this.parseSignUpToken(decrypted);
@@ -147,6 +147,7 @@ export class AuthenticationHandler {
           token: ticketToken,
           invitationId,
           userId,
+          keycloakSub,
         },
         meta: this.meta(input.actorId, 'Create ticket'),
       });
