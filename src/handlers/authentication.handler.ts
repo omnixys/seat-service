@@ -43,7 +43,8 @@ import { EncryptionService } from '@omnixys/security-ts';
 
 const { SERVICE, DEFAULT_TENANT_ID } = env;
 
-const UUID_V7_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_V7_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function isValidUuidV7(value: string): boolean {
   return UUID_V7_PATTERN.test(value);
@@ -172,7 +173,9 @@ export class AuthenticationHandler {
       const headers = context.headers;
       const actorId = headers[KAFKA_HEADERS.ACTOR_ID];
       if (!actorId) {
-        this.logger.error('Missing ACTOR_ID header in addGuestId event - fail closed');
+        this.logger.error(
+          'Missing ACTOR_ID header in addGuestId event - fail closed',
+        );
         return;
       }
       await this.seatWriteService.unassignSeatsByGuestId(userId, actorId);
@@ -222,7 +225,9 @@ export class AuthenticationHandler {
           (assignment) => typeof assignment?.invitationId !== 'string',
         )
       ) {
-        throw new TypeError('Invalid seat assignment payload or actorId not UUIDv7');
+        throw new TypeError(
+          'Invalid seat assignment payload or actorId not UUIDv7',
+        );
       }
       return value as GuestSeatKey;
     } catch (cause) {
