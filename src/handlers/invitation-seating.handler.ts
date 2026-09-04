@@ -45,7 +45,9 @@ export class InvitationSeatingHandler {
           } satisfies Record<string, unknown>,
         });
 
-        this.logger.debug('Invitation projection updated', { invitationId });
+        this.logger.debug('Invitation projection updated: %o', {
+          invitationId,
+        });
       },
     );
   }

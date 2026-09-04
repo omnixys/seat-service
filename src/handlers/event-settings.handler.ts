@@ -103,7 +103,7 @@ export class EventSettingsHandler {
         existing?.updatedAt &&
         new Date(occurredAt).getTime() < existing.updatedAt.getTime()
       ) {
-        this.logger.debug('Skipping stale event.updated', { eventId });
+        this.logger.debug('Skipping stale event.updated: %o', { eventId });
         return;
       }
 

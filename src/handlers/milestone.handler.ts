@@ -41,7 +41,7 @@ export class MilestoneHandler {
       }
 
       if (!payload.referenceId) {
-        this.logger.debug('Skipping milestone without referenceId', {
+        this.logger.debug('Skipping milestone without referenceId: %o', {
           milestoneId: payload.milestoneId,
         });
         return;
