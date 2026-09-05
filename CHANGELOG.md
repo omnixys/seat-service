@@ -3,6 +3,36 @@
 All notable changes in this project will be documented in this file.
 
 
+## [4.0.0](https://github.com/omnixys/seat-service/compare/v3.4.5...v4.0.0) (2026-09-05)
+
+### Deps
+
+* **Deps:** update omnixys deps ([](https://github.com/omnixys/seat-service/commit/b6e16a5dd11bb6c225b044291a523a3ee3b735ff))
+
+### Identity
+
+* **Identity:** document U/K identity conventions in AGENTS.md ([](https://github.com/omnixys/seat-service/commit/ca563ab6b1572538d123dd6e203743bea50001cc))
+* **Identity:** fail-closed on missing ACTOR_ID, UUIDv7 validation in GuestSeatKey parser ([](https://github.com/omnixys/seat-service/commit/2338ae893452798228a364110ffa87c19ff266f9))
+
+### Logging
+
+* **Logging:** add service:seat provenance source to logger acquisitions ([](https://github.com/omnixys/seat-service/commit/595ec6a1cb789988e6252964bef910f792cea7b4))
+* **Logging:** add missing format placeholders to structured log calls ([](https://github.com/omnixys/seat-service/commit/7e1b3bd295bdfc3502b1ec9eee8e5362ade37b90))
+
+### Other
+
+* **Other:** Merge pull request #2 from omnixys/migration/uuid-v7 ([](https://github.com/omnixys/seat-service/commit/019d0a78c90946f5daf0f387a94b3dc8f1030440)), closes [#2](https://github.com/omnixys/seat-service/issues/2)
+
+### Runtime
+
+* **Runtime:** require node 26.8.1 and pnpm 11.24.0 ([](https://github.com/omnixys/seat-service/commit/e86382c66bc7a0c6550ba3dccac134ed3b40b564))
+
+### Seat
+
+* **Seat:** rewire omnixys service deps to file: ([](https://github.com/omnixys/seat-service/commit/0008680756eda7ca9ba497e5aa9f34de46043a25))
+* **Seat:** type analytics_outbox.actor_id as user UUID ([](https://github.com/omnixys/seat-service/commit/e3f563ccc7519372c4536fbe4f3f691446123d1b))
+* **Seat:** forward keycloakSub on ticket.create ([](https://github.com/omnixys/seat-service/commit/610b5a3338b634733f4a152a9ce70988802d7ae5))
+
 ## [3.4.5](https://github.com/omnixys/seat-service/compare/v3.4.4...v3.4.5) (2026-08-28)
 
 ### Deps
