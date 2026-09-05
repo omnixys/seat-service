@@ -37,7 +37,7 @@ export class EventSettingsHandler {
     private readonly omnixysLogger: OmnixysLogger,
     private readonly prisma: PrismaService,
   ) {
-    this.logger = this.omnixysLogger.log(this.constructor.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name, 'service:seat');
   }
 
   @KafkaEvent(KafkaTopics.event.created)
@@ -103,7 +103,7 @@ export class EventSettingsHandler {
         existing?.updatedAt &&
         new Date(occurredAt).getTime() < existing.updatedAt.getTime()
       ) {
-        this.logger.debug('Skipping stale event.updated', { eventId });
+        this.logger.debug('Skipping stale event.updated: %o', { eventId });
         return;
       }
 

@@ -14,7 +14,7 @@ export class SectionReadService {
     private readonly prisma: PrismaService,
     private readonly omnixysLogger: OmnixysLogger,
   ) {
-    this.logger = this.omnixysLogger.log(this.constructor.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name, 'service:seat');
   }
 
   /** Throws if section does not exist */

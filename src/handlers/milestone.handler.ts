@@ -24,7 +24,7 @@ export class MilestoneHandler {
     private readonly omnixysLogger: OmnixysLogger,
     private readonly prisma: PrismaService,
   ) {
-    this.logger = this.omnixysLogger.log(this.constructor.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name, 'service:seat');
   }
 
   @KafkaEvent(KafkaTopics.event.milestoneRecorded)
@@ -41,7 +41,7 @@ export class MilestoneHandler {
       }
 
       if (!payload.referenceId) {
-        this.logger.debug('Skipping milestone without referenceId', {
+        this.logger.debug('Skipping milestone without referenceId: %o', {
           milestoneId: payload.milestoneId,
         });
         return;

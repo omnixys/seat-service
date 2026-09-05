@@ -21,7 +21,7 @@ import {
 
 @Resolver()
 @UseGuards(CookieAuthGuard, RoleGuard, EventPermissionGuard)
-@Roles(RealmRoleType.USER)
+@Roles(RealmRoleType.USER, RealmRoleType.ADMIN)
 @EventPermissions(EventPermissionKey.ManageSeats)
 export class SeatMutationResolver {
   private readonly log;
@@ -29,7 +29,7 @@ export class SeatMutationResolver {
     private readonly write: SeatWriteService,
     logger: OmnixysLogger,
   ) {
-    this.log = logger.log(this.constructor.name);
+    this.log = logger.log(this.constructor.name, 'service:seat');
   }
 
   // ---------------------------------------------------------------------------

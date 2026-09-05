@@ -51,7 +51,7 @@ export class EventHandler {
     private readonly omnixysLogger: OmnixysLogger,
     private readonly layoutWriteService: LayoutWriteService,
   ) {
-    this.logger = this.omnixysLogger.log(this.constructor.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name, 'service:seat');
   }
 
   @KafkaEvent(KafkaTopics.seat.create)
@@ -60,16 +60,18 @@ export class EventHandler {
     _context: IKafkaEventContext,
   ): Promise<void> {
     return TraceRunner.run('[HANDLER] create Seats', async () => {
-      this.logger.info('create_seat_received', {
+      this.logger.info('create_seat_received: %o', {
         eventId: payload.eventId,
         maxSeats: payload.maxSeats,
       });
 
       try {
         await this.layoutWriteService.autoGenerateFromMaxSeats(payload);
-        this.logger.info('create_seat_success', { eventId: payload.eventId });
+        this.logger.info('create_seat_success: %o', {
+          eventId: payload.eventId,
+        });
       } catch (error) {
-        this.logger.error('create_seat_failed', {
+        this.logger.error('create_seat_failed: %o', {
           error,
           eventId: payload.eventId,
         });
@@ -87,7 +89,7 @@ export class EventHandler {
       const headers = context.headers;
       const actorId = headers[KAFKA_HEADERS.ACTOR_ID] ?? 'unknown';
 
-      this.logger.info('delete_seat_received', {
+      this.logger.info('delete_seat_received: %o', {
         eventIds: payload.eventIds,
         actorId,
       });
@@ -97,9 +99,11 @@ export class EventHandler {
           eventIds: payload.eventIds,
           actorId,
         });
-        this.logger.info('delete_seat_success', { eventIds: payload.eventIds });
+        this.logger.info('delete_seat_success: %o', {
+          eventIds: payload.eventIds,
+        });
       } catch (error) {
-        this.logger.error('delete_seat_failed', {
+        this.logger.error('delete_seat_failed: %o', {
           error,
           eventIds: payload.eventIds,
           actorId,

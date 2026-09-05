@@ -14,7 +14,7 @@ export class TableReadService {
     private readonly prisma: PrismaService,
     private readonly omnixysLogger: OmnixysLogger,
   ) {
-    this.logger = this.omnixysLogger.log(this.constructor.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name, 'service:seat');
   }
 
   /** Throws if table does not exist */
