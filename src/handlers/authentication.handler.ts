@@ -87,7 +87,7 @@ export class AuthenticationHandler {
     private readonly encryptionServie: EncryptionService,
     private readonly kafkaProducer: KafkaProducerService,
   ) {
-    this.logger = this.omnixysLogger.log(this.constructor.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name, 'service:seat');
   }
 
   @KafkaEvent(KafkaTopics.seat.addGuestId)

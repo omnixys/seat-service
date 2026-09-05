@@ -33,7 +33,7 @@ export class TableMutationResolver {
     private readonly tableWriteService: TableWriteService,
     logger: OmnixysLogger,
   ) {
-    this.log = logger.log(this.constructor.name);
+    this.log = logger.log(this.constructor.name, 'service:seat');
   }
 
   // ---------------------------------------------------------------------------

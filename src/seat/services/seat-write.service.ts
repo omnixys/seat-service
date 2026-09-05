@@ -37,7 +37,7 @@ export class SeatWriteService {
     private readonly layoutWriteService: LayoutWriteService,
     private readonly analyticsOutbox: AnalyticsOutboxService,
   ) {
-    this.logger = this.omnixysLogger.log(this.constructor.name);
+    this.logger = this.omnixysLogger.log(this.constructor.name, 'service:seat');
   }
 
   /* ---------------------------------------------------------------------------

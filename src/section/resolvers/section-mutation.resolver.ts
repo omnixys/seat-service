@@ -34,7 +34,7 @@ export class SectionMutationResolver {
     private readonly sectionWriteService: SectionWriteService,
     logger: OmnixysLogger,
   ) {
-    this.log = logger.log(this.constructor.name);
+    this.log = logger.log(this.constructor.name, 'service:seat');
   }
 
   // ---------------------------------------------------------------------------
