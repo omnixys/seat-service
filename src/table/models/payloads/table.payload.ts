@@ -47,8 +47,8 @@ export class TablePayload {
   @Field(() => Float, { nullable: true, defaultValue: 0 })
   rotation?: number;
 
-  @Field(() => JsonScalar)
-  meta!: any;
+  @Field(() => JsonScalar, { nullable: true })
+  meta?: any;
 
   @Field(() => GraphQLISODateTime)
   createdAt!: Date;

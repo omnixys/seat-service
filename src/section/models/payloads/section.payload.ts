@@ -44,8 +44,8 @@ export class SectionPayload {
   @Field(() => Float, { nullable: true })
   rotation?: number;
 
-  @Field(() => JsonScalar)
-  meta!: any;
+  @Field(() => JsonScalar, { nullable: true })
+  meta?: any;
 
   @Field(() => GraphQLISODateTime)
   createdAt!: Date;
