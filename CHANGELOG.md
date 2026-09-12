@@ -3,6 +3,13 @@
 All notable changes in this project will be documented in this file.
 
 
+## [4.2.0](https://github.com/omnixys/seat-service/compare/v4.1.2...v4.2.0) (2026-09-12)
+
+### Seat
+
+* **Seat:** reserve seat for invited guest before ticket creation ([](https://github.com/omnixys/seat-service/commit/b76aff27d8e7c1098b5d96620d0ca0e3b1bccb2d))
+* **Seat:** bump omnixys packages to 4.4.0 ([](https://github.com/omnixys/seat-service/commit/4dd48c8c75832fd6d28d184676ca6d0a43f6b10a))
+
 ## [4.1.2](https://github.com/omnixys/seat-service/compare/v4.1.1...v4.1.2) (2026-09-11)
 
 ### Deps
