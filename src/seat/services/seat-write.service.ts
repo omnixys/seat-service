@@ -468,6 +468,104 @@ export class SeatWriteService {
   }
 
   /* ---------------------------------------------------------------------------
+   * RESERVE SEAT FOR INVITATION
+   * ------------------------------------------------------------------------- */
+  /**
+   * Reserves the first available seat for an invitation that has no seat yet.
+   *
+   * Idempotent: when the invitation already owns a seat (RESERVED or ASSIGNED)
+   * it is returned unchanged. The claimed seat keeps `guestId = null` so the
+   * sign-up flow can deterministically claim it via `assignSeatToGuest` (see
+   * `reservedForInvitation` branch above).
+   */
+  async reserveSeatForInvitation(input: {
+    eventId: string;
+    invitationId: string;
+  }) {
+    const { eventId, invitationId } = input;
+
+    return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.seat.findFirst({
+        where: { eventId, invitationId },
+      });
+
+      if (existing && existing.guestId === null) {
+        this.logger.debug(
+          'Seat already reserved for invitation: seatId=%s invitationId=%s',
+          existing.id,
+          invitationId,
+        );
+        return existing;
+      }
+
+      if (existing) {
+        this.logger.debug(
+          'Invitation already owns a seat (assigned): seatId=%s invitationId=%s',
+          existing.id,
+          invitationId,
+        );
+        return existing;
+      }
+
+      const free = await tx.seat.findFirst({
+        where: {
+          eventId,
+          status: SeatStatus.AVAILABLE,
+          guestId: null,
+          invitationId: null,
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      if (!free) {
+        throw new SeatUnavailableException(eventId, undefined);
+      }
+
+      const claimed = await tx.seat.updateMany({
+        where: {
+          id: free.id,
+          eventId,
+          status: SeatStatus.AVAILABLE,
+          guestId: null,
+          invitationId: null,
+        },
+        data: {
+          status: SeatStatus.RESERVED,
+          invitationId,
+        },
+      });
+
+      if (claimed.count !== 1) {
+        const retry = await tx.seat.findFirst({
+          where: { eventId, invitationId },
+        });
+        if (retry && retry.guestId === null) {
+          return retry;
+        }
+        throw new SeatUnavailableException(eventId, free.id);
+      }
+
+      await tx.seatAssignmentLog.create({
+        data: {
+          eventId,
+          seatId: free.id,
+          invitationId,
+          guestId: null,
+          action: 'ASSIGNED',
+          data: { reservation: true, reason: 'GUEST_CONFIRMATION' },
+        },
+      });
+
+      const result = await tx.seat.findUnique({ where: { id: free.id } });
+      if (!result) {
+        throw new SeatNotFoundException(free.id);
+      }
+
+      return result;
+    });
+  }
+
+  /* ---------------------------------------------------------------------------
    * UNASSIGN SEAT
    * ------------------------------------------------------------------------- */
   /**

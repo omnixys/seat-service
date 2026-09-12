@@ -22,6 +22,7 @@ import { AuthenticationHandler } from './authentication.handler.js';
 import { EventRoleHandler } from './event-role.handler.js';
 import { EventSettingsHandler } from './event-settings.handler.js';
 import { EventHandler } from './event.handler.js';
+import { GuestSeatReservationHandler } from './guest-seat-reservation.handler.js';
 import { InvitationSeatingHandler } from './invitation-seating.handler.js';
 import { MilestoneHandler } from './milestone.handler.js';
 import { Module } from '@nestjs/common';
@@ -35,6 +36,7 @@ import { Module } from '@nestjs/common';
     EventSettingsHandler,
     InvitationSeatingHandler,
     MilestoneHandler,
+    GuestSeatReservationHandler,
   ],
   exports: [
     EventHandler,
@@ -43,6 +45,7 @@ import { Module } from '@nestjs/common';
     EventSettingsHandler,
     InvitationSeatingHandler,
     MilestoneHandler,
+    GuestSeatReservationHandler,
   ],
 })
 export class HandlerModule {}
