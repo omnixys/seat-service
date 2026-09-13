@@ -380,9 +380,21 @@ export class SeatWriteService {
           return existing;
         }
 
+        // A guest confirmation may reserve a seat before the guest account
+        // exists. Reclaim that authoritative reservation first; otherwise a
+        // plus-one would claim another free seat and violate the unique
+        // (eventId, invitationId) constraint.
+        const reservedSeat =
+          !seatId && invitationId
+            ? await tx.seat.findFirst({
+                where: { eventId, invitationId, guestId: null },
+                orderBy: { createdAt: 'asc' },
+              })
+            : null;
         const seat = seatId
           ? await tx.seat.findUnique({ where: { id: seatId } })
-          : await tx.seat.findFirst({
+          : (reservedSeat ??
+            (await tx.seat.findFirst({
               where: {
                 eventId,
                 status: SeatStatus.AVAILABLE,
@@ -390,7 +402,7 @@ export class SeatWriteService {
                 invitationId: null,
               },
               orderBy: { createdAt: 'asc' },
-            });
+            })));
 
         if (!seat) {
           throw new SeatUnavailableException(eventId, seatId);
@@ -401,6 +413,13 @@ export class SeatWriteService {
 
         const reservedForInvitation =
           invitationId !== undefined && seat.invitationId === invitationId && seat.guestId === null;
+        this.logger.debug(
+          'Guest seat claim selected: invitationId=%s guestId=%s seatId=%s claimMode=%s',
+          invitationId,
+          guestId,
+          seat.id,
+          reservedForInvitation ? 'reserved' : 'available',
+        );
         const claimed = await tx.seat.updateMany({
           where: reservedForInvitation
             ? {
@@ -424,6 +443,13 @@ export class SeatWriteService {
           },
         });
         if (claimed.count !== 1) {
+          this.logger.warn(
+            'Guest seat claim lost: invitationId=%s guestId=%s seatId=%s claimMode=%s',
+            invitationId,
+            guestId,
+            seat.id,
+            reservedForInvitation ? 'reserved' : 'available',
+          );
           throw new SeatUnavailableException(eventId, seat.id);
         }
 

@@ -7,9 +7,9 @@ import {
 } from '../../dist/seat/errors/seat-domain.error.js';
 import { SeatWriteService } from '../../dist/seat/services/seat-write.service.js';
 import { SeatEventRoleResolver } from '../../dist/seat/services/seat-event-role-resolver.service.js';
-import { ContextAccessor } from '@omnixys/context';
-import { EventPermissionKey, EventRoleType } from '@omnixys/contracts';
-import { KafkaTopics } from '@omnixys/kafka';
+import { ContextAccessor } from '@omnixys/context-ts';
+import { EventPermissionKey, EventRoleType } from '@omnixys/contracts-ts';
+import { KafkaTopics } from '@omnixys/kafka-ts';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
@@ -85,8 +85,72 @@ test('automatic assignment stays within the event and claims with compare-and-se
   });
 
   assert.equal(result.id, available.id);
-  assert.equal(queries[1].where.eventId, available.eventId);
-  assert.equal(queries[1].where.status, SeatStatus.AVAILABLE);
+  assert.equal(queries[1].where.invitationId, assigned.invitationId);
+  assert.equal(queries[2].where.eventId, available.eventId);
+  assert.equal(queries[2].where.status, SeatStatus.AVAILABLE);
+});
+
+test('guest assignment reclaims a reserved seat for the same invitation', async () => {
+  const reservation = seat({
+    status: SeatStatus.RESERVED,
+    invitationId: '00000000-0000-4000-8000-000000000005',
+  });
+  const assigned = seat({
+    status: SeatStatus.ASSIGNED,
+    invitationId: reservation.invitationId,
+    guestId: '00000000-0000-4000-8000-000000000004',
+  });
+  const queries = [];
+  const updates = [];
+  const service = new SeatWriteService(
+    {
+      async $transaction(work) {
+        return work({
+          seat: {
+            async findFirst(args) {
+              queries.push(args);
+              return args.where.invitationId === reservation.invitationId && args.where.guestId === null
+                ? reservation
+                : null;
+            },
+            async updateMany(args) {
+              updates.push(args);
+              return { count: 1 };
+            },
+            async findUnique() {
+              return assigned;
+            },
+          },
+          seatAssignmentLog: { async create() {} },
+          analyticsOutbox: { async create() {} },
+        });
+      },
+    },
+    logger,
+    { async logChange() {} },
+    { async enqueue() {} },
+  );
+
+  const result = await service.assignSeatToGuest({
+    eventId: reservation.eventId,
+    guestId: assigned.guestId,
+    invitationId: reservation.invitationId,
+    actorId: '00000000-0000-4000-8000-000000000006',
+  });
+
+  assert.equal(result.id, reservation.id);
+  assert.equal(queries.length, 2);
+  assert.equal(
+    queries.some((query) => query.where.status === SeatStatus.AVAILABLE),
+    false,
+    'must not search for a second available seat',
+  );
+  assert.deepEqual(updates[0].where, {
+    id: reservation.id,
+    eventId: reservation.eventId,
+    invitationId: reservation.invitationId,
+    guestId: null,
+  });
 });
 
 test('assignment races fail with canonical diagnostics', async () => {
@@ -119,7 +183,7 @@ test('assignment races fail with canonical diagnostics', async () => {
         eventId: available.eventId,
         guestId: '00000000-0000-4000-8000-000000000004',
         invitationId: '00000000-0000-4000-8000-000000000005',
-        actorId: '00000000-0000-4000-8000-000000000006',
+        actorId: '00000000-0000-7000-8000-000000000006',
       }),
       (error) => {
         assert.ok(error instanceof SeatUnavailableException);
@@ -247,7 +311,7 @@ test('guest handler validates state and propagates canonical Kafka metadata', as
       'seat-key',
       JSON.stringify({
         eventId: '00000000-0000-4000-8000-000000000002',
-        actorId: '00000000-0000-4000-8000-000000000006',
+        actorId: '00000000-0000-7000-8000-000000000006',
         assignments: [
           {
             invitationId: '00000000-0000-4000-8000-000000000005',
