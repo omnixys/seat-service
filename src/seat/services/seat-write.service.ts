@@ -478,10 +478,7 @@ export class SeatWriteService {
    * sign-up flow can deterministically claim it via `assignSeatToGuest` (see
    * `reservedForInvitation` branch above).
    */
-  async reserveSeatForInvitation(input: {
-    eventId: string;
-    invitationId: string;
-  }) {
+  async reserveSeatForInvitation(input: { eventId: string; invitationId: string }) {
     const { eventId, invitationId } = input;
 
     return this.prisma.$transaction(async (tx) => {
