@@ -3,6 +3,20 @@
 All notable changes in this project will be documented in this file.
 
 
+## [4.2.2](https://github.com/omnixys/seat-service/compare/v4.2.1...v4.2.2) (2026-09-13)
+
+### Guest-provisioning
+
+* **Guest-provisioning:** trace seat completion ([](https://github.com/omnixys/seat-service/commit/50012440022ac931ac8cda862963954f3f6826dd))
+
+### Other
+
+* **Other:** Merge branch 'main' of https://github.com/omnixys/seat-service ([](https://github.com/omnixys/seat-service/commit/a86902bd23d04a36ffa95864f78c6e55298e7dab))
+
+### Seat
+
+* **Seat:** reclaim reserved guest seats ([](https://github.com/omnixys/seat-service/commit/b411303bf16ed2f3939907b2eb397e1521616433))
+
 ## [4.2.1](https://github.com/omnixys/seat-service/compare/v4.2.0...v4.2.1) (2026-09-13)
 
 ### Deps
