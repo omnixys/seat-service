@@ -95,6 +95,12 @@ export class AuthenticationHandler {
     return TraceRunner.run('[HANDLER] addGuestId', async () => {
       const { userId, token, invitationId, keycloakSub } = payload;
 
+      this.logger.info(
+        'Guest provisioning seat step started: invitationId=%s userId=%s',
+        invitationId,
+        userId,
+      );
+
       const decrypted = this.encryptionServie.decrypt(token, true);
       const { seatKey } = this.parseSignUpToken(decrypted);
 
@@ -158,6 +164,13 @@ export class AuthenticationHandler {
         },
         meta: this.meta(input.actorId, 'Create ticket'),
       });
+
+      this.logger.info(
+        'Guest provisioning seat step completed: invitationId=%s userId=%s seatId=%s',
+        invitationId,
+        userId,
+        seat.id,
+      );
     });
   }
 
