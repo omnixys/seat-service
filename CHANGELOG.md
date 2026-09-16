@@ -3,6 +3,12 @@
 All notable changes in this project will be documented in this file.
 
 
+## [4.2.3](https://github.com/omnixys/seat-service/compare/v4.2.2...v4.2.3) (2026-09-16)
+
+### Deps
+
+* **Deps:** update omnixys logger-ts package ([](https://github.com/omnixys/seat-service/commit/783709447117a996c3e4a44b741a23b1a99f0aca))
+
 ## [4.2.2](https://github.com/omnixys/seat-service/compare/v4.2.1...v4.2.2) (2026-09-13)
 
 ### Guest-provisioning
