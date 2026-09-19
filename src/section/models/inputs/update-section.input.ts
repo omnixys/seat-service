@@ -32,6 +32,9 @@ export class UpdateSectionInput {
   @Field(() => Float, { nullable: true })
   height?: number;
 
+  @Field(() => Float, { nullable: true })
+  rotation?: number;
+
   @Field(() => JsonScalar, { nullable: true })
   meta?: any;
 }

@@ -115,6 +115,9 @@ export class SeatWriteService {
         x: input.x ?? undefined,
         y: input.y ?? undefined,
         rotation: input.rotation ?? undefined,
+        width: input.width ?? undefined,
+        height: input.height ?? undefined,
+        shape: input.shape ?? undefined,
         meta: input.meta ? (prepareMeta(input.meta) as InputJsonValue) : undefined,
       },
     });

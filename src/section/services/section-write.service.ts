@@ -101,6 +101,7 @@ export class SectionWriteService {
         y: input.y ?? undefined,
         width: input.width ?? undefined,
         height: input.height ?? undefined,
+        rotation: input.rotation ?? undefined,
         meta: input.meta ? (prepareMeta(input.meta) as InputJsonValue) : undefined,
       },
     });
