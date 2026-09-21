@@ -5,6 +5,7 @@ import { SeatPayload } from '../../seat/models/payloads/seat.payload.js';
 import { SectionPayload } from '../../section/models/payloads/section.payload.js';
 import { TablePayload } from '../../table/models/payloads/table.payload.js';
 
+import { ApplyLayoutGeometryInput } from '../models/inputs/apply-layout-geometry.input.js';
 import { AutoGenerateSeatMapInput } from '../models/inputs/auto-generate-seat-map.input.js';
 import { AutoGenerateLayoutInput } from '../models/inputs/auto-generate.input.js';
 import { CloneSectionInput } from '../models/inputs/clone-section.input.js';
@@ -15,7 +16,6 @@ import {
   MoveTableInput,
 } from '../models/inputs/move-seat.input.js';
 import { SaveLayoutVersionInput } from '../models/inputs/save-layout-version.input.js';
-import { ApplyLayoutGeometryInput } from '../models/inputs/apply-layout-geometry.input.js';
 
 import { LayoutWriteService } from '../services/layout-write.service.js';
 

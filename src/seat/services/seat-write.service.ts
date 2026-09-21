@@ -515,7 +515,7 @@ export class SeatWriteService {
         where: { eventId, invitationId },
       });
 
-      if (existing && existing.guestId === null) {
+      if (existing?.guestId === null) {
         this.logger.debug(
           'Seat already reserved for invitation: seatId=%s invitationId=%s',
           existing.id,
@@ -565,7 +565,7 @@ export class SeatWriteService {
         const retry = await tx.seat.findFirst({
           where: { eventId, invitationId },
         });
-        if (retry && retry.guestId === null) {
+        if (retry?.guestId === null) {
           return retry;
         }
         throw new SeatUnavailableException(eventId, free.id);
