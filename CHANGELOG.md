@@ -3,6 +3,12 @@
 All notable changes in this project will be documented in this file.
 
 
+## [4.3.1](https://github.com/omnixys/seat-service/compare/v4.3.0...v4.3.1) (2026-09-21)
+
+### Seat
+
+* **Seat:** resolve lint findings ([](https://github.com/omnixys/seat-service/commit/98c7d7d8264c40e862a945b4bd61ad1263fa18d1))
+
 ## [4.3.0](https://github.com/omnixys/seat-service/compare/v4.2.3...v4.3.0) (2026-09-21)
 
 ### Config
