@@ -48,6 +48,11 @@ export type LayoutVersion = Prisma.LayoutVersionModel
  */
 export type LayoutChangeLog = Prisma.LayoutChangeLogModel
 /**
+ * Model LayoutGeometryHistory
+ * 
+ */
+export type LayoutGeometryHistory = Prisma.LayoutGeometryHistoryModel
+/**
  * Model EventRoleProjection
  * 
  */

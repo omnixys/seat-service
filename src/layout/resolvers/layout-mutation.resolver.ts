@@ -15,6 +15,7 @@ import {
   MoveTableInput,
 } from '../models/inputs/move-seat.input.js';
 import { SaveLayoutVersionInput } from '../models/inputs/save-layout-version.input.js';
+import { ApplyLayoutGeometryInput } from '../models/inputs/apply-layout-geometry.input.js';
 
 import { LayoutWriteService } from '../services/layout-write.service.js';
 
@@ -76,6 +77,14 @@ export class LayoutMutationResolver {
   async redoLayout(@Args('eventId') eventId: string) {
     this.log.debug('redoLayout: eventId=%s', eventId);
     return this.layoutWrite.redo(eventId);
+  }
+
+  @Mutation(() => Boolean)
+  async applySeatMapGeometry(
+    @Args('input') input: ApplyLayoutGeometryInput,
+    @CurrentUser() user: CurrentUserData,
+  ) {
+    return this.layoutWrite.applyGeometry(input, user.id);
   }
 
   // ---------------------------------------------------------------------------

@@ -23,6 +23,7 @@ import {
   MoveSectionInput,
   MoveTableInput,
 } from '../models/inputs/move-seat.input.js';
+import { ApplyLayoutGeometryInput, LayoutGeometryKind } from '../models/inputs/apply-layout-geometry.input.js';
 import { SaveLayoutVersionInput } from '../models/inputs/save-layout-version.input.js';
 
 import {
@@ -130,6 +131,18 @@ export class LayoutWriteService {
   async undo(eventId: string): Promise<boolean> {
     this.logger.debug('Undo requested for event %s', eventId);
 
+    const geometry = await this.prisma.layoutGeometryHistory.findFirst({
+      where: { eventId, applied: true },
+      orderBy: { position: 'desc' },
+    });
+    if (geometry) {
+      await this.prisma.$transaction(async (tx) => {
+        await this.applyHistoryGeometry(tx, geometry.before as never);
+        await tx.layoutGeometryHistory.update({ where: { id: geometry.id }, data: { applied: false } });
+      });
+      return true;
+    }
+
     const latest = await this.loadLatestVersion(eventId);
     if (!latest) {
       this.logger.warn('Undo failed: no versions exist (event=%s)', eventId);
@@ -158,6 +171,18 @@ export class LayoutWriteService {
 
   async redo(eventId: string): Promise<boolean> {
     this.logger.debug('Redo requested for event %s', eventId);
+
+    const geometry = await this.prisma.layoutGeometryHistory.findFirst({
+      where: { eventId, applied: false },
+      orderBy: { position: 'asc' },
+    });
+    if (geometry) {
+      await this.prisma.$transaction(async (tx) => {
+        await this.applyHistoryGeometry(tx, geometry.after as never);
+        await tx.layoutGeometryHistory.update({ where: { id: geometry.id }, data: { applied: true } });
+      });
+      return true;
+    }
 
     const latest = await this.loadLatestVersion(eventId);
     if (!latest) {
@@ -544,6 +569,51 @@ export class LayoutWriteService {
   // -------------------------------------------------------
   // MOVE SEAT
   // -------------------------------------------------------
+
+  async applyGeometry(input: ApplyLayoutGeometryInput, actorId: string): Promise<boolean> {
+    if (!input.changes.length) return false;
+    const ids = input.changes.map((change) => change.id);
+    if (new Set(ids).size !== ids.length) throw new Error('Duplicate geometry id.');
+    if (input.changes.some((change) => ![change.x, change.y, change.width, change.height, change.rotation].every(Number.isFinite) || change.width <= 0 || change.height <= 0)) throw new Error('Invalid geometry.');
+    await this.prisma.$transaction(async (tx) => {
+      const [seats, tables, sections] = await Promise.all([
+        tx.seat.findMany({ where: { id: { in: ids }, eventId: input.eventId } }),
+        tx.table.findMany({ where: { id: { in: ids }, eventId: input.eventId } }),
+        tx.section.findMany({ where: { id: { in: ids }, eventId: input.eventId } }),
+      ]);
+      const records = new Map<string, { item: { x: number | null; y: number | null; width: number | null; height: number | null; rotation: number | null }; kind: LayoutGeometryKind }>();
+      for (const item of seats) records.set(item.id, { item, kind: LayoutGeometryKind.SEAT });
+      for (const item of tables) records.set(item.id, { item, kind: LayoutGeometryKind.TABLE });
+      for (const item of sections) records.set(item.id, { item, kind: LayoutGeometryKind.SECTION });
+      if (records.size !== ids.length || input.changes.some((change) => records.get(change.id)?.kind !== change.kind)) throw new SeatingEntityNotFoundException('section', input.eventId);
+      const before = input.changes.map((change) => {
+        const item = records.get(change.id)!.item;
+        return { id: change.id, kind: change.kind, x: item.x, y: item.y, width: item.width, height: item.height, rotation: item.rotation };
+      });
+      await tx.layoutGeometryHistory.deleteMany({ where: { eventId: input.eventId, applied: false } });
+      for (const change of input.changes) {
+        const data = { x: change.x, y: change.y, width: change.width, height: change.height, rotation: change.rotation };
+        if (change.kind === LayoutGeometryKind.SEAT) await tx.seat.update({ where: { id: change.id }, data });
+        else if (change.kind === LayoutGeometryKind.TABLE) await tx.table.update({ where: { id: change.id }, data });
+        else await tx.section.update({ where: { id: change.id }, data });
+      }
+      const last = await tx.layoutGeometryHistory.aggregate({ where: { eventId: input.eventId }, _max: { position: true } });
+      await tx.layoutGeometryHistory.create({ data: { eventId: input.eventId, actorId, position: (last._max.position ?? -1) + 1, before: before as InputJsonValue, after: input.changes as unknown as InputJsonValue } });
+    });
+    return true;
+  }
+
+  private async applyHistoryGeometry(
+    tx: Parameters<Parameters<typeof this.prisma.$transaction>[0]>[0],
+    entries: Array<{ id: string; kind: LayoutGeometryKind; x: number; y: number; width: number; height: number; rotation: number }>,
+  ) {
+    for (const entry of entries) {
+      const data = { x: entry.x, y: entry.y, width: entry.width, height: entry.height, rotation: entry.rotation };
+      if (entry.kind === LayoutGeometryKind.SEAT) await tx.seat.update({ where: { id: entry.id }, data });
+      else if (entry.kind === LayoutGeometryKind.TABLE) await tx.table.update({ where: { id: entry.id }, data });
+      else await tx.section.update({ where: { id: entry.id }, data });
+    }
+  }
 
   async moveSeat(input: MoveSeatInput, actorId: string) {
     const seat = await this.prisma.seat.findUnique({ where: { id: input.id } });

@@ -57,6 +57,7 @@ export const ModelName = {
   SeatAssignmentLog: 'SeatAssignmentLog',
   LayoutVersion: 'LayoutVersion',
   LayoutChangeLog: 'LayoutChangeLog',
+  LayoutGeometryHistory: 'LayoutGeometryHistory',
   EventRoleProjection: 'EventRoleProjection',
   EventAccessProjection: 'EventAccessProjection',
   EventSettingsProjection: 'EventSettingsProjection',
@@ -190,6 +191,20 @@ export const LayoutChangeLogScalarFieldEnum = {
 } as const
 
 export type LayoutChangeLogScalarFieldEnum = (typeof LayoutChangeLogScalarFieldEnum)[keyof typeof LayoutChangeLogScalarFieldEnum]
+
+
+export const LayoutGeometryHistoryScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  actorId: 'actorId',
+  position: 'position',
+  before: 'before',
+  after: 'after',
+  applied: 'applied',
+  createdAt: 'createdAt'
+} as const
+
+export type LayoutGeometryHistoryScalarFieldEnum = (typeof LayoutGeometryHistoryScalarFieldEnum)[keyof typeof LayoutGeometryHistoryScalarFieldEnum]
 
 
 export const EventRoleProjectionScalarFieldEnum = {

@@ -403,6 +403,7 @@ export const ModelName = {
   SeatAssignmentLog: 'SeatAssignmentLog',
   LayoutVersion: 'LayoutVersion',
   LayoutChangeLog: 'LayoutChangeLog',
+  LayoutGeometryHistory: 'LayoutGeometryHistory',
   EventRoleProjection: 'EventRoleProjection',
   EventAccessProjection: 'EventAccessProjection',
   EventSettingsProjection: 'EventSettingsProjection',
@@ -424,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "section" | "table" | "seat" | "seatAssignmentLog" | "layoutVersion" | "layoutChangeLog" | "eventRoleProjection" | "eventAccessProjection" | "eventSettingsProjection" | "invitationProjection" | "seatPresenceProjection" | "analyticsOutbox"
+    modelProps: "section" | "table" | "seat" | "seatAssignmentLog" | "layoutVersion" | "layoutChangeLog" | "layoutGeometryHistory" | "eventRoleProjection" | "eventAccessProjection" | "eventSettingsProjection" | "invitationProjection" | "seatPresenceProjection" | "analyticsOutbox"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -869,6 +870,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.LayoutChangeLogCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.LayoutChangeLogCountAggregateOutputType> | number
+        }
+      }
+    }
+    LayoutGeometryHistory: {
+      payload: Prisma.$LayoutGeometryHistoryPayload<ExtArgs>
+      fields: Prisma.LayoutGeometryHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LayoutGeometryHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LayoutGeometryHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.LayoutGeometryHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LayoutGeometryHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.LayoutGeometryHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.LayoutGeometryHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.LayoutGeometryHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LayoutGeometryHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.LayoutGeometryHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>
+        }
+        update: {
+          args: Prisma.LayoutGeometryHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.LayoutGeometryHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LayoutGeometryHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LayoutGeometryHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.LayoutGeometryHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LayoutGeometryHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.LayoutGeometryHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLayoutGeometryHistory>
+        }
+        groupBy: {
+          args: Prisma.LayoutGeometryHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LayoutGeometryHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LayoutGeometryHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LayoutGeometryHistoryCountAggregateOutputType> | number
         }
       }
     }
@@ -1466,6 +1541,20 @@ export const LayoutChangeLogScalarFieldEnum = {
 export type LayoutChangeLogScalarFieldEnum = (typeof LayoutChangeLogScalarFieldEnum)[keyof typeof LayoutChangeLogScalarFieldEnum]
 
 
+export const LayoutGeometryHistoryScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  actorId: 'actorId',
+  position: 'position',
+  before: 'before',
+  after: 'after',
+  applied: 'applied',
+  createdAt: 'createdAt'
+} as const
+
+export type LayoutGeometryHistoryScalarFieldEnum = (typeof LayoutGeometryHistoryScalarFieldEnum)[keyof typeof LayoutGeometryHistoryScalarFieldEnum]
+
+
 export const EventRoleProjectionScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
@@ -1976,6 +2065,7 @@ export type GlobalOmitConfig = {
   seatAssignmentLog?: Prisma.SeatAssignmentLogOmit
   layoutVersion?: Prisma.LayoutVersionOmit
   layoutChangeLog?: Prisma.LayoutChangeLogOmit
+  layoutGeometryHistory?: Prisma.LayoutGeometryHistoryOmit
   eventRoleProjection?: Prisma.EventRoleProjectionOmit
   eventAccessProjection?: Prisma.EventAccessProjectionOmit
   eventSettingsProjection?: Prisma.EventSettingsProjectionOmit
