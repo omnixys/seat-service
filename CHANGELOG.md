@@ -3,6 +3,22 @@
 All notable changes in this project will be documented in this file.
 
 
+## [4.3.0](https://github.com/omnixys/seat-service/compare/v4.2.3...v4.3.0) (2026-09-21)
+
+### Config
+
+* **Config:** require critical env vars in development and staging ([](https://github.com/omnixys/seat-service/commit/6fa8eb672da23fb6e30fc62adf2c3349d142414c))
+* **Config:** require critical env vars in production ([](https://github.com/omnixys/seat-service/commit/2077fe12a8d1415f1e0b874c9d7174b0f7c4bfe0))
+
+### Deps
+
+* **Deps:** update omnixys packages ([](https://github.com/omnixys/seat-service/commit/611abba7aa255b3958d3466092465f0cb266f7cf))
+
+### Seat
+
+* **Seat:** persist seat geometry and section rotation on update ([](https://github.com/omnixys/seat-service/commit/b682390f3ecff6c92feee2258e47ccd9ed3138ce))
+* **Seat:** cover geometry write persistence ([](https://github.com/omnixys/seat-service/commit/58b6ce436f065836e0e6e526a21287bd6232b795))
+
 ## [4.2.3](https://github.com/omnixys/seat-service/compare/v4.2.2...v4.2.3) (2026-09-16)
 
 ### Deps
