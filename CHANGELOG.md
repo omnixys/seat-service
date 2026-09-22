@@ -3,6 +3,12 @@
 All notable changes in this project will be documented in this file.
 
 
+## [4.3.2](https://github.com/omnixys/seat-service/compare/v4.3.1...v4.3.2) (2026-09-22)
+
+### Deps
+
+* **Deps:** update omnixys package.json script add migrate deploy ([](https://github.com/omnixys/seat-service/commit/0381197b5a23d7995ccbca1fd8a0b603ea2d7c53))
+
 ## [4.3.1](https://github.com/omnixys/seat-service/compare/v4.3.0...v4.3.1) (2026-09-21)
 
 ### Seat
