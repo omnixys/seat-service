@@ -57,7 +57,8 @@
     "prisma:pull": "prisma db pull",
     "generate": "pnpm prisma format && pnpm prisma validate && prisma generate",
     "release": "semantic-release",
-    "deps:audit": "tsx scripts/dependency-audit.ts"
+    "deps:audit": "tsx scripts/dependency-audit.ts",
+    "migrate": "prisma migrate deploy"
   },
   "dependencies": {
     "@apollo/server": "^5.5.1",
